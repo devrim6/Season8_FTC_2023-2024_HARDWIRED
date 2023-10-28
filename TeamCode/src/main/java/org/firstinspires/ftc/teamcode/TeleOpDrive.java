@@ -13,8 +13,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class TeleOpDrive extends LinearOpMode {
     /* Init whatever you need */
     HardwareMapping robot = new HardwareMapping();
-    HardwareMapping.Intake intake = new HardwareMapping.Intake();
-    HardwareMapping.Outtake outtake = new HardwareMapping.Outtake();
+    HardwareMapping.Intake intake = robot.new Intake();
+    HardwareMapping.Outtake outtake = robot.new Outtake();
     enum mode {
         TELEOP,
         HEADING_LOCK
@@ -23,7 +23,9 @@ public class TeleOpDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
-        MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(0,0,0));
+        MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
+        // Init motors/servos/etc
+
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger;
@@ -37,22 +39,32 @@ public class TeleOpDrive extends LinearOpMode {
                     drive.setDrivePowers(new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
                                     -gamepad1.left_stick_y/(1+triggerSlowdown),
-                                    -gamepad1.left_stick_x/(1+triggerSlowdown)
-                            ),
+                                    -gamepad1.left_stick_x/(1+triggerSlowdown)),
                             -gamepad1.right_stick_x/(1+triggerSlowdown*3)
                     ));
-
                     drive.updatePoseEstimate();
 
-                    telemetry.addData("x", drive.pose.position.x);
-                    telemetry.addData("y", drive.pose.position.y);
-                    telemetry.addData("heading", drive.pose.heading);
-                    telemetry.update();
-
-
-
+                    break;
                 case HEADING_LOCK:
+
+                    drive.setDrivePowers(new PoseVelocity2d(
+                            new Vector2d(-gamepad1.left_stick_y/(1+triggerSlowdown),
+                                    -gamepad1.left_stick_x/(1+triggerSlowdown)),
+                            Math.toRadians(90)
+                    ));
+                    drive.updatePoseEstimate();
+                    break;
             }
+
+            if(gamepad2.dpad_left) Actions.runBlocking(outtake.runToPosition("ground"));
+            if(gamepad2.dpad_up) Actions.runBlocking(outtake.runToPosition("third"), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
+
+            telemetry.addData("x", drive.pose.position.x);
+            telemetry.addData("y", drive.pose.position.y);
+            telemetry.addData("heading", drive.pose.heading);
+            telemetry.update();
         }
     }
 }

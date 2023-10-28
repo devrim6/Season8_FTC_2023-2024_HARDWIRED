@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -13,6 +14,11 @@ import org.checkerframework.checker.units.qual.A;
 
 public class HardwareMapping {
     private double pivotAngle;
+
+    double PI = 3.1415;
+    double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
+    double WHEEL_DIAMETER_CM = 3.565;
+    double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
 
     public static Servo intakeServoLeft, intakeServoRight, outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
                  outtakeLatch, outtakeClawUpper, outtakeClawBottom;
@@ -44,9 +50,20 @@ public class HardwareMapping {
         hangMotor = hwMap.get(DcMotorEx.class, "hangMotor");
         slideMotorLeft = hwMap.get(DcMotorEx.class, "slideMotorLeft");
         slideMotorRight = hwMap.get(DcMotorEx.class, "slideMotorRight");
+
+        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
-    public static class Outtake {
+    public void resetEncoder(){
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public class Outtake {
         public Outtake() {} // The constructor
 
         public Action pivot(double angle, double angle2){
@@ -118,17 +135,72 @@ public class HardwareMapping {
                         }
                         return false;}
                 };}
-    }
-
-    public static class Intake {
-        public Intake() {} // The constructor
-
-        public Action power(double speed, double servoSpeed){
+        public Action runToPosition(String direction){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intakeMotor.setPower(speed);
-                    intakeServoRoller.setPower(servoSpeed);
+                    switch(direction){
+                        case "third":
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setTargetPosition((int)(24*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(24*TICKS_PER_CM_Z));
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                        case "second":
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setTargetPosition((int)(10*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(10*TICKS_PER_CM_Z));
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                        case "first":
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setTargetPosition((int)(5*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(5*TICKS_PER_CM_Z));
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                        case "ground":
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setTargetPosition((int)(0*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(0*TICKS_PER_CM_Z));
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                    }
+                    return false;
+                }
+            };}
+    }
+
+    public class Intake {
+        public Intake() {} // The constructor
+
+        public Action powerOn(){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(0.5);
+                    intakeServoRoller.setPower(-0.3);
+                    return false;
+                }
+            };}
+        public Action reverse(){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(-0.5);
+                    intakeServoRoller.setPower(0.3);
+                    return false;
+                }
+            };}
+        public Action stop(){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setPower(0);
+                    intakeServoRoller.setPower(0);
                     return false;
                 }
             };}
