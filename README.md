@@ -1,4 +1,3 @@
-# Road Runner Quickstart
-
-Check out the [docs](https://rr.brott.dev/docs/v1-0/tuning/).
+# Season 8 2023-2024 HARDWIRED 20974
+Github repo for 20974
 
