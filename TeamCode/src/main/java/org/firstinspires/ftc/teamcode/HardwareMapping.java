@@ -20,14 +20,15 @@ public class HardwareMapping {
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
 
-    public static Servo intakeServoLeft, intakeServoRight, outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
+    public Servo intakeServoLeft, intakeServoRight, outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
                  outtakeLatch, outtakeClawUpper, outtakeClawBottom;
-    public static CRServo intakeServoRoller;
-    public static DcMotorEx intakeMotor;
+    public CRServo intakeServoRoller;
+    public DcMotorEx intakeMotor;
     public DcMotorEx hangMotor;
     public DcMotorEx slideMotorLeft;
     public DcMotorEx slideMotorRight;
     HardwareMap hwMap = null;
+    public HardwareMapping(){}
     public void init(HardwareMap ahwMap){
         hwMap = ahwMap;
 
@@ -56,6 +57,7 @@ public class HardwareMapping {
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     public void resetEncoder(){
@@ -201,6 +203,35 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(0);
                     intakeServoRoller.setPower(0);
+                    return false;
+                }
+            };}
+        public Action angle(int level){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    switch (level){
+                        case 1:
+                            intakeServoLeft.setPosition(0);
+                            intakeServoRight.setPosition(0);
+                            break;
+                        case 2:
+                            intakeServoLeft.setPosition(0.2);
+                            intakeServoRight.setPosition(-0.2);
+                            break;
+                        case 3:
+                            intakeServoLeft.setPosition(0.4);
+                            intakeServoRight.setPosition(-0.4);
+                            break;
+                        case 4:
+                            intakeServoLeft.setPosition(0.6);
+                            intakeServoRight.setPosition(-0.6);
+                            break;
+                        case 5:
+                            intakeServoLeft.setPosition(1);
+                            intakeServoRight.setPosition(-1);
+                            break;
+                    }
                     return false;
                 }
             };}

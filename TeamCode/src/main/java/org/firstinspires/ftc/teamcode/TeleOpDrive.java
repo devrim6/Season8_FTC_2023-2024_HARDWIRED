@@ -38,23 +38,22 @@ public class TeleOpDrive extends LinearOpMode {
 
                     drive.setDrivePowers(new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
-                                    -gamepad1.left_stick_y/(1+triggerSlowdown),
-                                    -gamepad1.left_stick_x/(1+triggerSlowdown)),
-                            -gamepad1.right_stick_x/(1+triggerSlowdown*3)
+                                    -gamepad2.left_stick_y/(1+triggerSlowdown),
+                                    -gamepad2.left_stick_x/(1+triggerSlowdown)),
+                            -gamepad2.right_stick_x/(1+triggerSlowdown*3)
                     ));
-                    drive.updatePoseEstimate();
-
                     break;
                 case HEADING_LOCK:
 
                     drive.setDrivePowers(new PoseVelocity2d(
-                            new Vector2d(-gamepad1.left_stick_y/(1+triggerSlowdown),
-                                    -gamepad1.left_stick_x/(1+triggerSlowdown)),
+                            new Vector2d(-gamepad2.left_stick_y/(1+triggerSlowdown),
+                                    -gamepad2.left_stick_x/(1+triggerSlowdown)),
                             Math.toRadians(90)
                     ));
-                    drive.updatePoseEstimate();
                     break;
             }
+
+            drive.updatePoseEstimate();
 
             if(gamepad2.dpad_left) Actions.runBlocking(outtake.runToPosition("ground"));
             if(gamepad2.dpad_up) Actions.runBlocking(outtake.runToPosition("third"), outtake.pivot(0.4, -0.4));
@@ -64,6 +63,7 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
+            telemetry.addLine("---DEBUG---");
             telemetry.update();
         }
     }
