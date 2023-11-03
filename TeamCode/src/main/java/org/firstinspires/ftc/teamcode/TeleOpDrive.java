@@ -26,6 +26,49 @@ public class TeleOpDrive extends LinearOpMode {
         HEADING_LOCK
     }
     mode currentMode = mode.TELEOP;
+
+    /**
+     *  DRIVER 1
+     *   X         - Power on/off INTAKE
+     *   Y         - Engage hooks on/off
+     *   B         -
+     *   A         -
+     *   Left/Right stick - Base controls
+     *   DPAD left     - Lift ground
+     *   DPAD down     - Lift 1st level
+     *   DPAD right    - Lift 2nd level
+     *   DPAD up       - Lift 3rd level
+     *
+     *   DRIVER 2
+     *   X         - Power on/off INTAKE
+     *   Y         - Engage hooks on/off
+     *   B         -
+     *   A         -
+     *   Left stick Y - manual slide control
+     *   Left stick X - manual outtake pitch (keep 60 degree angle)
+     *   DPAD left     - Lift ground
+     *   DPAD down     - Lift 1st level
+     *   DPAD right    - Lift 2nd level
+     *   DPAD up       - Lift 3rd level
+     *
+     *       _=====_                               _=====_
+     *      / _____ \                             / _____ \
+     *    +.-'_____'-.---------------------------.-'_____'-.+
+     *   /   |     |  '.                       .'  |  _  |   \
+     *  / ___| /|\ |___ \    BACK     START   / ___| (Y) |___ \
+     * / |      |      | ;                   ; |              | ;
+     * | | <---   ---> | |                   | |(X)       (B) | |
+     * | |___   |   ___| ;  MODE             ; |___        ___| ;
+     * |\    | \|/ |    /  _              _   \    | (A) |    /|
+     * | \   |_____|  .','" "',        ,'" "', '.  |_____|  .' |
+     * |  '-.______.-' /       \      /       \  '-._____.-'   |
+     * |               |       |------|       |                |
+     * |              /\       /      \       /\               |
+     * |             /  '.___.'        '.___.'  \              |
+     * |            /                            \             |
+     *  \          /                              \           /
+     *   \________/                                \_________/
+     */
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
@@ -45,7 +88,8 @@ public class TeleOpDrive extends LinearOpMode {
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger;
-        boolean isIntakePowered = false, intakeManualControl = false;
+        //TODO: transfer hook state between auto in case auto fails
+        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=false;
 
         //Funky time
         waitForStart();
@@ -72,8 +116,8 @@ public class TeleOpDrive extends LinearOpMode {
 
             drive.updatePoseEstimate();
 
-            // Gamepad controls
 
+            // Gamepad controls
 
             //Slide controls
             //Driver 1 and 2
@@ -82,24 +126,36 @@ public class TeleOpDrive extends LinearOpMode {
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
 
+            //Hook engage control
+            if(gamepad2.y || gamepad1.y){ // Double tap prevention, maybe works?
+                if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.Y) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.Y)) {
+                    areHooksEngaged=!areHooksEngaged;
+                    if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                    else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
+                }
+            }
+
             //Intake controls
             if(gamepad2.x || gamepad1.x){ // Double tap prevention, maybe works?
                 if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
                     isIntakePowered=!isIntakePowered;
-                    intakeManualControl = true;
                     if(isIntakePowered){
                         Actions.runBlocking(intake.powerOn());
+                        intakeManualControl = true;
                     } else {
                         Actions.runBlocking(intake.stop());
                     }
                 }
             }
 
+
             //If intake is running and two pixels are already in, stop the intake
             //TODO: implement check for manual reverse in case 3rd pixel comes in (kinda did with intakemanualcontrol? needs testing)
             if(isIntakePowered && intakeManualControl){
                 if(!Objects.equals(robot.checkColorRange("upper"), "none")&& !Objects.equals(robot.checkColorRange("bottom"), "none")) {
                     Actions.runBlocking(intake.stop());
+                    Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                    areHooksEngaged=true;
                     isIntakePowered = false;
                     intakeManualControl = false;
                 }
@@ -110,6 +166,8 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("heading", drive.pose.heading);
             telemetry.addLine("---DEBUG---");
             telemetry.addData("intakeManualControl: ", intakeManualControl);
+            telemetry.addData("isIntakePowered: ", isIntakePowered);
+            telemetry.addData("areHooksEngaged: ", areHooksEngaged);
             telemetry.update();
         }
     }
