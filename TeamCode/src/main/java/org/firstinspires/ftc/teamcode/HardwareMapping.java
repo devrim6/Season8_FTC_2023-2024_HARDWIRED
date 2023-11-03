@@ -4,11 +4,17 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.arcrobotics.ftclib.hardware.SensorColor;
 
 import org.checkerframework.checker.units.qual.A;
 
@@ -27,6 +33,10 @@ public class HardwareMapping {
     public DcMotorEx hangMotor;
     public DcMotorEx slideMotorLeft;
     public DcMotorEx slideMotorRight;
+
+    public GamepadEx gamepad1Ex, gamepad2Ex;
+
+    public SensorColor bottomHookSensor, upperHookSensor;
     HardwareMap hwMap = null;
     public HardwareMapping(){}
     public void init(HardwareMap ahwMap){
@@ -58,11 +68,45 @@ public class HardwareMapping {
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        /* Sensors */
+        upperHookSensor = ahwMap.get(SensorColor.class, "upperHookSensor");
+        bottomHookSensor = ahwMap.get(SensorColor.class, "bottomHookSensor");
+
+    }
+
+    public void gamepadInit(Gamepad gmpd1, Gamepad gmpd2){
+        gamepad1Ex = new GamepadEx(gmpd1);
+        gamepad2Ex = new GamepadEx(gmpd2);
     }
 
     public void resetEncoder(){
         hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    public Object[] getColorSensorHSV(){
+        float[] hsv1= new float[3];
+        float[] hsv2= new float[3];
+        upperHookSensor.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv1);
+        bottomHookSensor.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv2);
+        return new Object[]{hsv1, hsv2};
+    }
+    public String checkColorRange(String sensor){
+        float[] hsv = new float[3];
+        switch (sensor){
+            case "upper":
+                hsv = (float[])getColorSensorHSV()[0];
+                break;
+            case "bottom":
+                hsv = (float[])getColorSensorHSV()[1];
+                break;
+        }
+        if(hsv[0] <= 320 && hsv[0] >= 280) return "purple";
+        else if(hsv[0] <= 130 && hsv[0] >= 110) return "green";
+        else if(hsv[0] <= 74 && hsv[0] >= 51) return "yellow";
+        else if(hsv[1] <= 10 && hsv[1] >= 0) return "white";
+        return "none";
     }
 
     public class Outtake {
