@@ -31,13 +31,14 @@ public class TeleOpDrive extends LinearOpMode {
      *  DRIVER 1
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
-     *   B         -
+     *   B         - 
      *   A         -
      *   Left/Right stick - Base controls
      *   DPAD left     - Lift ground
      *   DPAD down     - Lift 1st level
      *   DPAD right    - Lift 2nd level
      *   DPAD up       - Lift 3rd level
+     *   LEFT/RIGHT BUMPER - Change intake angle
      *
      *   DRIVER 2
      *   X         - Power on/off INTAKE
@@ -50,6 +51,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   DPAD down     - Lift 1st level
      *   DPAD right    - Lift 2nd level
      *   DPAD up       - Lift 3rd level
+     *   LEFT/RIGHT BUMPER - Change intake angle
      *
      *       _=====_                               _=====_
      *      / _____ \                             / _____ \
@@ -80,6 +82,7 @@ public class TeleOpDrive extends LinearOpMode {
         //led-uri pe cuva/text pe consola sa zica ce tip de pixel ii in care parte a robotului, gen culoare sau daca exista
         //implementare senzori pt pixeli in cuva, daca sunt 2 in cuva driver 1/2 numai reverse poate da la intake motors/roller
         //centrare pe april tag la backboard in teleop, depinde daca ne ajuta sau nu
+        //al trilea senzor/da reverse la intake in caz de 3rd pixel, cel mai probabil senzor dar nu imi dau seama cum sa implementez sau ce senzor, maybe sub totul, in rampa?
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
@@ -90,6 +93,8 @@ public class TeleOpDrive extends LinearOpMode {
         double triggerSlowdown = gamepad2.right_trigger;
         //TODO: transfer hook state between auto in case auto fails
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=false;
+        long startTime=0;
+        int intakeLevel = PoseTransfer.intakeLevel;
 
         //Funky time
         waitForStart();
@@ -128,7 +133,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Hook engage control
             if(gamepad2.y || gamepad1.y){ // Double tap prevention, maybe works?
-                if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.Y) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.Y)) {
+                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                     areHooksEngaged=!areHooksEngaged;
                     if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
                     else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
@@ -142,23 +147,36 @@ public class TeleOpDrive extends LinearOpMode {
                     if(isIntakePowered){
                         Actions.runBlocking(intake.powerOn());
                         intakeManualControl = true;
-                    } else {
-                        Actions.runBlocking(intake.stop());
-                    }
+                    } else Actions.runBlocking(intake.stop());
+                }
+            }
+
+            if(gamepad2.right_bumper || gamepad1.right_bumper){ // Double tap prevention, maybe works?
+                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                    intakeLevel++; if(intakeLevel>5) intakeLevel=5;
+                    else Actions.runBlocking(intake.angle(intakeLevel));
+                }
+            }
+            if(gamepad2.left_bumper || gamepad1.left_bumper){ // Double tap prevention, maybe works?
+                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
+                    intakeLevel--; if(intakeLevel<1) intakeLevel=1;
+                    else Actions.runBlocking(intake.angle(intakeLevel));
                 }
             }
 
 
-            //If intake is running and two pixels are already in, stop the intake
-            //TODO: implement check for manual reverse in case 3rd pixel comes in (kinda did with intakemanualcontrol? needs testing)
+            //If intake is running and two pixels are already in then stop the intake, lower the hooks
+            //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
             if(isIntakePowered && intakeManualControl){
                 if(!Objects.equals(robot.checkColorRange("upper"), "none")&& !Objects.equals(robot.checkColorRange("bottom"), "none")) {
-                    Actions.runBlocking(intake.stop());
-                    Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                    areHooksEngaged=true;
-                    isIntakePowered = false;
-                    intakeManualControl = false;
-                }
+                    if(System.currentTimeMillis()> startTime + 1000){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
+                        Actions.runBlocking(intake.stop());
+                        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                        areHooksEngaged = true;
+                        isIntakePowered = false;
+                        intakeManualControl = false;
+                    }
+                } else startTime = System.currentTimeMillis();
             }
 
             telemetry.addData("x", drive.pose.position.x);

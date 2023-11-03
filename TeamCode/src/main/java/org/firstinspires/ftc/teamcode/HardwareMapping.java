@@ -272,8 +272,8 @@ public class HardwareMapping {
                             intakeServoRight.setPosition(-0.6);
                             break;
                         case 5:
-                            intakeServoLeft.setPosition(1);
-                            intakeServoRight.setPosition(-1);
+                            intakeServoLeft.setPosition(0.8);
+                            intakeServoRight.setPosition(-0.8);
                             break;
                     }
                     return false;
