@@ -26,9 +26,13 @@ public class HardwareMapping {
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
 
-    public Servo intakeServoLeft, intakeServoRight, outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
-                 outtakeLatch, outtakeClawUpper, outtakeClawBottom;
+    public Servo intakeServoLeft, intakeServoRight;
     public CRServo intakeServoRoller;
+    public Servo planeLauncherServo;
+
+    public Servo outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
+            outtakeLatch, outtakeClawUpper, outtakeClawBottom;
+
     public DcMotorEx intakeMotor;
     public DcMotorEx hangMotor;
     public DcMotorEx slideMotorLeft;
@@ -55,6 +59,7 @@ public class HardwareMapping {
         outtakeLatch = hwMap.get(Servo.class, "outtakeLatch");
         outtakeClawBottom = hwMap.get(Servo.class, "outtakeClawBottom");
         outtakeClawUpper = hwMap.get(Servo.class, "outtakeClawUpper");
+        planeLauncherServo = hwMap.get(Servo.class, "planeLauncherServo");
 
         /* Motors */
         intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
@@ -72,6 +77,8 @@ public class HardwareMapping {
         /* Sensors */
         upperHookSensor = ahwMap.get(SensorColor.class, "upperHookSensor");
         bottomHookSensor = ahwMap.get(SensorColor.class, "bottomHookSensor");
+
+        planeLauncherServo.setPosition(0.5);
 
     }
 
@@ -107,6 +114,16 @@ public class HardwareMapping {
         else if(hsv[0] <= 74 && hsv[0] >= 51) return "yellow";
         else if(hsv[1] <= 10 && hsv[1] >= 0) return "white";
         return "none";
+    }
+
+    public Action launchPlane(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                planeLauncherServo.setPosition(0.1);
+                return false;
+            }
+        };
     }
 
     public class Outtake {

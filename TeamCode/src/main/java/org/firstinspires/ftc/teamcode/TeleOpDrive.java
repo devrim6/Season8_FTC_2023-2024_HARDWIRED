@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 import java.util.Objects;
 
 @TeleOp (name = "TeleOpDrive")
@@ -32,7 +34,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
      *   B         - 
-     *   A         -
+     *   A         - Rotate outtake 90 degrees
      *   Left/Right stick - Base controls
      *   DPAD left     - Lift ground
      *   DPAD down     - Lift 1st level
@@ -44,7 +46,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
      *   B         -
-     *   A         -
+     *   A         - Rotate outtake 90 degrees
      *   Left stick Y - manual slide control
      *   Left stick X - manual outtake pitch (keep 60 degree angle)
      *   DPAD left     - Lift ground
@@ -52,6 +54,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   DPAD right    - Lift 2nd level
      *   DPAD up       - Lift 3rd level
      *   LEFT/RIGHT BUMPER - Change intake angle
+     *   START         - Change movement mode
      *
      *       _=====_                               _=====_
      *      / _____ \                             / _____ \
@@ -87,16 +90,17 @@ public class TeleOpDrive extends LinearOpMode {
         robot.gamepadInit(gamepad1, gamepad2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
-
+        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto, adjust this accordingly
+        Actions.runBlocking(outtake.yaw(0));
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger;
         //TODO: transfer hook state between auto in case auto fails
-        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=false;
+        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false;
         long startTime=0;
         int intakeLevel = PoseTransfer.intakeLevel;
 
-        //Funky time
+        //Funky time/sugiuc
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             switch(currentMode){
@@ -131,6 +135,27 @@ public class TeleOpDrive extends LinearOpMode {
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
 
+            //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong
+            //todo: needs testing
+            if(gamepad1.left_stick_y>0 && robot.slideMotorRight.getCurrentPosition()<=-10){
+                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + 40);
+                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() + 40);
+                robot.slideMotorRight.setPower(1);
+                robot.slideMotorLeft.setPower(1);
+            } else if(gamepad1.left_stick_y<0){
+                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() - 40);
+                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - 40);
+                robot.slideMotorRight.setPower(1);
+                robot.slideMotorLeft.setPower(1);
+            }
+
+            //Switch between movement modes
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.START)){
+                isTeleOP=!isTeleOP;
+                if(isTeleOP) currentMode=mode.TELEOP;
+                else currentMode=mode.HEADING_LOCK;
+            }
+
             //Hook engage control
             if(gamepad2.y || gamepad1.y){ // Double tap prevention, maybe works?
                 if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
@@ -140,7 +165,14 @@ public class TeleOpDrive extends LinearOpMode {
                 }
             }
 
-            //Intake controls
+            //Outtake 90 degree rotation
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A)){
+                isOuttakeRotated=!isOuttakeRotated;
+                if(isOuttakeRotated) Actions.runBlocking(outtake.yaw(90));
+                else Actions.runBlocking(outtake.yaw(0));
+            }
+
+            //Intake power controls
             if(gamepad2.x || gamepad1.x){ // Double tap prevention, maybe works?
                 if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
                     isIntakePowered=!isIntakePowered;
@@ -151,6 +183,7 @@ public class TeleOpDrive extends LinearOpMode {
                 }
             }
 
+            //Intake level adjustment
             if(gamepad2.right_bumper || gamepad1.right_bumper){ // Double tap prevention, maybe works?
                 if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
                     intakeLevel++; if(intakeLevel>5) intakeLevel=5;
@@ -183,9 +216,13 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
             telemetry.addLine("---DEBUG---");
+            telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
+            telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("intakeManualControl: ", intakeManualControl);
             telemetry.addData("isIntakePowered: ", isIntakePowered);
             telemetry.addData("areHooksEngaged: ", areHooksEngaged);
+            telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
+            telemetry.addData("isTeleOP: ", isTeleOP);
             telemetry.update();
         }
     }
