@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.gamepad.TriggerReader;
+import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -21,6 +22,7 @@ import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+import java.util.List;
 import java.util.Objects;
 
 @TeleOp (name = "TeleOpDrive")
@@ -112,6 +114,12 @@ public class TeleOpDrive extends LinearOpMode {
         long currentTime = System.currentTimeMillis();
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
+
+        // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode) TODO: test difference between no photon, auto, off for engineering portfolio
+        List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
+        for (LynxModule hub : allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
+        }
 
 
         //Funky time/sugiuc
