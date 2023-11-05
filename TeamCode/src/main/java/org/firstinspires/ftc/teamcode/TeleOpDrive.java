@@ -1,10 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
+import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.gamepad.ButtonReader;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -13,6 +17,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.checkerframework.checker.units.qual.Angle;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
 import java.util.Objects;
@@ -33,7 +39,7 @@ public class TeleOpDrive extends LinearOpMode {
      *  DRIVER 1
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
-     *   B         - 
+     *   B         - Hanging
      *   A         - Rotate outtake 90 degrees
      *   Left/Right stick - Base controls
      *   DPAD left     - Lift ground
@@ -45,7 +51,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   DRIVER 2
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
-     *   B         -
+     *   B         - Launch plane
      *   A         - Rotate outtake 90 degrees
      *   Left stick Y - manual slide control
      *   Left stick X - manual outtake pitch (keep 60 degree angle)
@@ -54,7 +60,8 @@ public class TeleOpDrive extends LinearOpMode {
      *   DPAD right    - Lift 2nd level
      *   DPAD up       - Lift 3rd level
      *   LEFT/RIGHT BUMPER - Change intake angle
-     *   START         - Change movement mode
+     *   BACK          - Change movement mode
+     *   START         - Change HEADING_LOCK target 0/180
      *
      *       _=====_                               _=====_
      *      / _____ \                             / _____ \
@@ -74,9 +81,12 @@ public class TeleOpDrive extends LinearOpMode {
      *  \          /                              \           /
      *   \________/                                \_________/
      */
+    // Declare a PIDF Controller to regulate heading
+    private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0);
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
+        //TODO: add photonFTC
         //masurare amperaj motoare glisiera pt determinare gear ratio optim la viteza, afaik max 4a, uitate pe spec sheet la rev
         //recalibrare pozitie cu camera april tags la backboard, triunghiulare maybe? look into it, experimenteaza cate tag-uri se vad intrun frame
         //daca localizarea ii accurate la sfarsit (cat de cat) incearca sa faci o traiectorie pt locul de lansat avion daca le trebuie la driveri, si pt hanging daca nu
@@ -94,31 +104,36 @@ public class TeleOpDrive extends LinearOpMode {
         Actions.runBlocking(outtake.yaw(0));
 
         // Variables
-        double triggerSlowdown = gamepad2.right_trigger;
+        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;
         //TODO: transfer hook state between auto in case auto fails
-        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false;
+        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         long startTime=0;
-        int intakeLevel = PoseTransfer.intakeLevel;
+        int intakeLevel = 1;
+        long currentTime = System.currentTimeMillis();
+        TelemetryPacket packet = new TelemetryPacket();
+        Canvas fieldOverlay = packet.fieldOverlay();
+
 
         //Funky time/sugiuc
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             switch(currentMode){
                 case TELEOP:
-
-                    drive.setDrivePowers(new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
+                    PoseVelocity2d currentPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
                                     -gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
                             -gamepad2.right_stick_x/(1+triggerSlowdown*3)
-                    ));
+                    );
+                    drive.setDrivePowers(currentPose);
+
                     break;
                 case HEADING_LOCK:
-
+                    double outputVel = HEADING_PIDF.calculate(drive.pose.heading.log());
                     drive.setDrivePowers(new PoseVelocity2d(
                             new Vector2d(-gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
-                            Math.toRadians(90)
+                            outputVel
                     ));
                     break;
             }
@@ -130,7 +145,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(outtake.runToPosition("ground"));
+            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(outtake.yaw(0), outtake.latch("closed"), outtake.runToPosition("ground"));
             if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition("third"), outtake.pivot(0.4, -0.4));
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
@@ -150,10 +165,19 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Switch between movement modes
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.START)){
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.BACK)){
                 isTeleOP=!isTeleOP;
                 if(isTeleOP) currentMode=mode.TELEOP;
-                else currentMode=mode.HEADING_LOCK;
+                else {
+                    HEADING_PIDF.reset();
+                    currentMode=mode.HEADING_LOCK;
+                }
+            }
+            // Switch between heading targets
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.START) && currentMode==mode.HEADING_LOCK){
+                headingTarget+=180;
+                if(headingTarget>180) headingTarget=0;
+                HEADING_PIDF.setSetPoint(Math.toRadians(headingTarget));
             }
 
             //Hook engage control
@@ -168,8 +192,8 @@ public class TeleOpDrive extends LinearOpMode {
             //Outtake 90 degree rotation
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A)){
                 isOuttakeRotated=!isOuttakeRotated;
-                if(isOuttakeRotated) Actions.runBlocking(outtake.yaw(90));
-                else Actions.runBlocking(outtake.yaw(0));
+                if(isOuttakeRotated) Actions.runBlocking(outtake.yaw(90), outtake.latch("open"));
+                else Actions.runBlocking(outtake.yaw(0), outtake.latch("closed"));
             }
 
             //Intake power controls
@@ -194,6 +218,18 @@ public class TeleOpDrive extends LinearOpMode {
                 if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
                     intakeLevel--; if(intakeLevel<1) intakeLevel=1;
                     else Actions.runBlocking(intake.angle(intakeLevel));
+                }
+            }
+
+            //Plane and hanging, only works if 1min has passed since teleop started, might be a pain to troubleshoot!!!!!
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
+                if(System.currentTimeMillis() > currentTime + 60000) Actions.runBlocking(robot.launchPlane());
+            }
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
+                if(System.currentTimeMillis() > currentTime + 60000){
+                    isHangingUp=!isHangingUp;
+                    if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
+                    else Actions.runBlocking(robot.hangingEngage("hang"));
                 }
             }
 
@@ -222,6 +258,7 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("isIntakePowered: ", isIntakePowered);
             telemetry.addData("areHooksEngaged: ", areHooksEngaged);
             telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
+            telemetry.addData("isHangingUp", isHangingUp);
             telemetry.addData("isTeleOP: ", isTeleOP);
             telemetry.update();
         }

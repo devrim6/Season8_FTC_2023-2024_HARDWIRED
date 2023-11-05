@@ -125,6 +125,25 @@ public class HardwareMapping {
             }
         };
     }
+    public Action hangingEngage(String state){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch(state){
+                    case "up":
+                        hangMotor.setTargetPosition((int)(15*TICKS_PER_CM_Z));
+                        hangMotor.setPower(1);
+                        break;
+                    case "hang":
+                        hangMotor.setTargetPosition((int)(10*TICKS_PER_CM_Z));
+                        //todo: set velocity? seems like setpower() already does that in runtoposition mode
+                        hangMotor.setPower(0.3);
+                        break;
+                }
+                return false;
+            }
+        };
+    }
 
     public class Outtake {
         public Outtake() {} // The constructor
