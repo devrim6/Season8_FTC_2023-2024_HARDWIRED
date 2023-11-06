@@ -270,11 +270,12 @@ public class HardwareMapping {
             };}
         public Action reverse(){
             return new Action() {
+                final double time = System.currentTimeMillis();
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(-0.5);
                     intakeServoRoller.setPower(0.3);
-                    return false;
+                    return time < System.currentTimeMillis()+1000; //Run for a second then stop
                 }
             };}
         public Action stop(){

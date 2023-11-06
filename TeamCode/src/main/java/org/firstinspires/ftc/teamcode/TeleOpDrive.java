@@ -120,6 +120,7 @@ public class TeleOpDrive extends LinearOpMode {
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
         }
+        telemetry.setMsTransmissionInterval(50);
 
 
         //Funky time/sugiuc
@@ -242,13 +243,14 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
 
-            //If intake is running and two pixels are already in then stop the intake, lower the hooks
+            //If intake is running and two pixels are already in then reverse the intake, lower the hooks
             //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
             if(isIntakePowered && intakeManualControl){
                 if(!Objects.equals(robot.checkColorRange("upper"), "none")&& !Objects.equals(robot.checkColorRange("bottom"), "none")) {
-                    if(System.currentTimeMillis()> startTime + 1000){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                        Actions.runBlocking(intake.stop());
+                    if(System.currentTimeMillis()> startTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                        //Actions.runBlocking(intake.stop());
+                        Actions.runBlocking(intake.reverse());
                         areHooksEngaged = true;
                         isIntakePowered = false;
                         intakeManualControl = false;
@@ -259,6 +261,7 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
+            telemetry.addData("Heading target: ", headingTarget);
             telemetry.addLine("---DEBUG---");
             telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
