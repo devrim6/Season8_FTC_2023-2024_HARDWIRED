@@ -161,12 +161,14 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong
             //todo: needs testing
-            if(gamepad1.left_stick_y>0 && robot.slideMotorRight.getCurrentPosition()<=-10){
+            if(gamepad1.left_stick_y>0 && robot.slideMotorRight.getCurrentPosition()<= robot.TICKS_PER_CM_Z*25
+                    && robot.slideMotorLeft.getCurrentPosition()<=-robot.TICKS_PER_CM_Z*25){
                 robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + 40);
                 robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() + 40);
                 robot.slideMotorRight.setPower(1);
                 robot.slideMotorLeft.setPower(1);
-            } else if(gamepad1.left_stick_y<0){
+            } else if(gamepad1.left_stick_y<0 && robot.slideMotorRight.getCurrentPosition()<= 10
+                    && robot.slideMotorLeft.getCurrentPosition()<= -10){
                 robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() - 40);
                 robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - 40);
                 robot.slideMotorRight.setPower(1);
@@ -190,12 +192,10 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Hook engage control
-            if(gamepad2.y || gamepad1.y){ // Double tap prevention, maybe works?
-                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
-                    areHooksEngaged=!areHooksEngaged;
-                    if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                    else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
-                }
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
+                areHooksEngaged=!areHooksEngaged;
+                if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
             }
 
             //Outtake 90 degree rotation
@@ -206,28 +206,22 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Intake power controls
-            if(gamepad2.x || gamepad1.x){ // Double tap prevention, maybe works?
-                if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
-                    isIntakePowered=!isIntakePowered;
-                    if(isIntakePowered){
-                        Actions.runBlocking(intake.powerOn());
-                        intakeManualControl = true;
-                    } else Actions.runBlocking(intake.stop());
-                }
+            if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
+                isIntakePowered=!isIntakePowered;
+                if(isIntakePowered){
+                    Actions.runBlocking(intake.powerOn());
+                    intakeManualControl = true;
+                } else Actions.runBlocking(intake.stop());
             }
 
             //Intake level adjustment
-            if(gamepad2.right_bumper || gamepad1.right_bumper){ // Double tap prevention, maybe works?
-                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
-                    intakeLevel++; if(intakeLevel>5) intakeLevel=5;
-                    else Actions.runBlocking(intake.angle(intakeLevel));
-                }
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                intakeLevel++; if(intakeLevel>5) intakeLevel=5;
+                else Actions.runBlocking(intake.angle(intakeLevel));
             }
-            if(gamepad2.left_bumper || gamepad1.left_bumper){ // Double tap prevention, maybe works?
-                if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
-                    intakeLevel--; if(intakeLevel<1) intakeLevel=1;
-                    else Actions.runBlocking(intake.angle(intakeLevel));
-                }
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
+                intakeLevel--; if(intakeLevel<1) intakeLevel=1;
+                else Actions.runBlocking(intake.angle(intakeLevel));
             }
 
             //Plane and hanging, only works if 1min has passed since teleop started, might be a pain to troubleshoot!!!!!
