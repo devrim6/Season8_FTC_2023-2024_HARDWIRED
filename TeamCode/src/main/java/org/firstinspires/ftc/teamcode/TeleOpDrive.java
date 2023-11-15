@@ -88,7 +88,7 @@ public class TeleOpDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
-        //TODO: add photonFTC
+        //add photonFTC (done)
         //masurare amperaj motoare glisiera pt determinare gear ratio optim la viteza, afaik max 4a, uitate pe spec sheet la rev
         //recalibrare pozitie cu camera april tags la backboard, triunghiulare maybe? look into it, experimenteaza cate tag-uri se vad intrun frame
         //daca localizarea ii accurate la sfarsit (cat de cat) incearca sa faci o traiectorie pt locul de lansat avion daca le trebuie la driveri, si pt hanging daca nu
@@ -104,14 +104,18 @@ public class TeleOpDrive extends LinearOpMode {
         // Init motors/servos/etc
         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto, adjust this accordingly
         Actions.runBlocking(outtake.yaw(0));
+        robot.setLedColour("upper", PoseTransfer.upperLedState);
+        robot.setLedColour("bottom", PoseTransfer.bottomLedState);
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;
         //TODO: transfer hook state between auto in case auto fails
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+        boolean isBottomLEDenabled = true, isUpperLEDenabled = true;
         long startTime=0;
         int intakeLevel = 1;
         long currentTime = System.currentTimeMillis();
+        String bottomSensorState = null, upperSensorState = null;
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -154,10 +158,10 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(outtake.yaw(0), outtake.latch("closed"), outtake.runToPosition("ground"));
-            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition("third"), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND), outtake.yaw(0), outtake.latch("closed"));
+            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE), outtake.pivot(0.4, -0.4));
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong
             //todo: needs testing
@@ -237,10 +241,13 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
 
+
             //If intake is running and two pixels are already in then reverse the intake, lower the hooks
             //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
             if(isIntakePowered && intakeManualControl){
-                if(!Objects.equals(robot.checkColorRange("upper"), "none")&& !Objects.equals(robot.checkColorRange("bottom"), "none")) {
+                upperSensorState = robot.checkColorRange("upper");
+                bottomSensorState = robot.checkColorRange("bottom");
+                if(!upperSensorState.equals("none")&& !bottomSensorState.equals("none")) {
                     if(System.currentTimeMillis()> startTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
                         //Actions.runBlocking(intake.stop());

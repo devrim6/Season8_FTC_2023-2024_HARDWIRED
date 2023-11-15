@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -25,6 +26,20 @@ public class HardwareMapping {
     double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
+
+    enum liftHeight {
+            GROUND,
+            LOW,
+            MIDDLE,
+            HIGH
+    }
+
+    enum ledState {
+        RED,   //purple
+        GREEN, //green
+        AMBER, //yellow
+        OFF    //none
+    }
 
     public Servo intakeServoLeft, intakeServoRight;
     public CRServo intakeServoRoller;
@@ -41,6 +56,8 @@ public class HardwareMapping {
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
     public SensorColor bottomHookSensor, upperHookSensor;
+
+    private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
     public HardwareMapping(){}
     public void init(HardwareMap ahwMap){
@@ -78,7 +95,15 @@ public class HardwareMapping {
         upperHookSensor = ahwMap.get(SensorColor.class, "upperHookSensor");
         bottomHookSensor = ahwMap.get(SensorColor.class, "bottomHookSensor");
 
+        /* LEDs */ //Fiecare digital channel vine in perechi, n, n+1
+        bottomLEDgreen = hwMap.get(DigitalChannel.class, "bottomLEDgreen");
+        bottomLEDred = hwMap.get(DigitalChannel.class, "bottomLEDred");
+        upperLEDgreen = hwMap.get(DigitalChannel.class, "upperLEDgreen");
+        upperLEDred = hwMap.get(DigitalChannel.class, "upperLEDred");
+
+
         planeLauncherServo.setPosition(0.5);
+
 
     }
 
@@ -114,6 +139,37 @@ public class HardwareMapping {
         else if(hsv[0] <= 74 && hsv[0] >= 51) return "yellow";
         else if(hsv[1] <= 10 && hsv[1] >= 0) return "white";
         return "none";
+    }
+    public void setLedColour(String led, ledState colour){
+        DigitalChannel led1 = null, led2 = null;
+        if (led.equals("upper")) {
+            led1 = upperLEDred;
+            led2 = upperLEDgreen;
+        } else if (led.equals("bottom")) {
+            led1 = bottomLEDred;
+            led2 = upperLEDgreen;
+        }
+        ledColourDriver(colour, led1, led2);
+    }
+    public void ledColourDriver(ledState colour, DigitalChannel led1, DigitalChannel led2){
+        switch (colour) {
+            case OFF:
+                led1.setState(false);                       //led1 is red
+                led2.setState(false);                       //led2 is green
+                break;
+            case RED:
+                led1.setState(true);
+                led2.setState(false);
+                break;
+            case AMBER:
+                led1.setState(true);
+                led1.setState(true);
+                break;
+            case GREEN:
+                led1.setState(false);
+                led2.setState(true);
+                break;
+        }
     }
 
     public Action launchPlane(){
@@ -217,33 +273,33 @@ public class HardwareMapping {
                         }
                         return false;}
                 };}
-        public Action runToPosition(String direction){
+        public Action runToPosition(liftHeight direction){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch(direction){
-                        case "third":
+                        case HIGH:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(24*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(24*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "second":
+                        case MIDDLE:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(10*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(10*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "first":
+                        case LOW:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(5*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(5*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "ground":
+                        case GROUND:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(0*TICKS_PER_CM_Z));
