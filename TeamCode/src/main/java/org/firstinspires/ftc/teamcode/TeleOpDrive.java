@@ -22,6 +22,7 @@ import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,18 +105,17 @@ public class TeleOpDrive extends LinearOpMode {
         // Init motors/servos/etc
         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto, adjust this accordingly
         Actions.runBlocking(outtake.yaw(0));
-        robot.setLedColour("upper", PoseTransfer.upperLedState);
-        robot.setLedColour("bottom", PoseTransfer.bottomLedState);
+        Actions.runBlocking(robot.setLedColour("upper", PoseTransfer.upperLedState),
+                            robot.setLedColour("bottom", PoseTransfer.bottomLedState));
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;
         //TODO: transfer hook state between auto in case auto fails
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
-        boolean isBottomLEDenabled = true, isUpperLEDenabled = true;
         long startTime=0;
         int intakeLevel = 1;
         long currentTime = System.currentTimeMillis();
-        String bottomSensorState = null, upperSensorState = null;
+        HardwareMapping.ledState bottomSensorState, upperSensorState;
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -158,10 +158,14 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND), outtake.yaw(0), outtake.latch("closed"));
-            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND),
+                    outtake.yaw(0), outtake.latch("closed"));
+            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
+                    outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                    outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
+                    outtake.pivot(0.4, -0.4));
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong
             //todo: needs testing
@@ -196,10 +200,17 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Hook engage control
+            // If button is pressed, engage hooks and update LEDs to OFF or the colour of the locked pixel
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                 areHooksEngaged=!areHooksEngaged;
-                if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
+                if(areHooksEngaged) {
+                    upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
+                    bottomSensorState = robot.checkColorRange("bottom");
+                    Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"),
+                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState));
+                }
+                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"),
+                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF));
             }
 
             //Outtake 90 degree rotation
@@ -228,12 +239,12 @@ public class TeleOpDrive extends LinearOpMode {
                 else Actions.runBlocking(intake.angle(intakeLevel));
             }
 
-            //Plane and hanging, only works if 1min has passed since teleop started, might be a pain to troubleshoot!!!!!
+            //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > currentTime + 60000) Actions.runBlocking(robot.launchPlane());
+                if(System.currentTimeMillis() > currentTime + 50000) Actions.runBlocking(robot.launchPlane());
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > currentTime + 60000){
+                if(System.currentTimeMillis() > currentTime + 50000){
                     isHangingUp=!isHangingUp;
                     if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
                     else Actions.runBlocking(robot.hangingEngage("hang"));
@@ -242,16 +253,15 @@ public class TeleOpDrive extends LinearOpMode {
 
 
 
-            //If intake is running and two pixels are already in then reverse the intake, lower the hooks
+            //If intake is running and two pixels are already in then reverse the intake and lower the hooks
             //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
             if(isIntakePowered && intakeManualControl){
                 upperSensorState = robot.checkColorRange("upper");
                 bottomSensorState = robot.checkColorRange("bottom");
-                if(!upperSensorState.equals("none")&& !bottomSensorState.equals("none")) {
+                if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
                     if(System.currentTimeMillis()> startTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                        //Actions.runBlocking(intake.stop());
-                        Actions.runBlocking(intake.reverse());
+                        Actions.runBlocking(intake.reverse());                  // Reverse intake to filter out potential third pixel, todo: implement beam break
                         areHooksEngaged = true;
                         isIntakePowered = false;
                         intakeManualControl = false;
