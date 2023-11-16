@@ -85,7 +85,8 @@ public class TeleOpDrive extends LinearOpMode {
      *   \________/                                \_________/
      */
     // Declare a PIDF Controller to regulate heading
-    private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0);
+    private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
+                                                                                           //standard way
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
@@ -98,28 +99,29 @@ public class TeleOpDrive extends LinearOpMode {
         //led-uri pe cuva/text pe consola sa zica ce tip de pixel ii in care parte a robotului, gen culoare sau daca exista
         //implementare senzori pt pixeli in cuva, daca sunt 2 in cuva driver 1/2 numai reverse poate da la intake motors/roller
         //centrare pe april tag la backboard in teleop, depinde daca ne ajuta sau nu
-        //al trilea senzor/da reverse la intake in caz de 3rd pixel, cel mai probabil senzor dar nu imi dau seama cum sa implementez sau ce senzor, maybe sub totul, in rampa?
+        //detectare de nr de pixeli pe stack, ajustare intake level in functie de. dat switch intro o camera frontala si una in spate
+        //al trilea senzor/da reverse la intake in caz de 3rd pixel, bream break 100% (adafruit amazon.de)
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
-        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto, adjust this accordingly
+        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto,
+                                                                                                   // adjust this accordingly
         Actions.runBlocking(outtake.yaw(0));
         Actions.runBlocking(robot.setLedColour("upper", PoseTransfer.upperLedState),
                             robot.setLedColour("bottom", PoseTransfer.bottomLedState));
 
         // Variables
-        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;
-        //TODO: transfer hook state between auto in case auto fails
+        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         long startTime=0;
         int intakeLevel = 1;
         long currentTime = System.currentTimeMillis();
-        HardwareMapping.ledState bottomSensorState, upperSensorState;
+        HardwareMapping.ledState bottomSensorState = HardwareMapping.ledState.OFF, upperSensorState = HardwareMapping.ledState.OFF;
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
-        // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode) TODO: test difference between no photon, auto, off for engineering portfolio
+        // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode)      TODO: test difference between no photon, auto, off for engineering portfolio
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -273,7 +275,8 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
             telemetry.addData("Heading target: ", headingTarget);
-            telemetry.addLine("---DEBUG---");
+            telemetry.addData("Pixel upper: ", upperSensorState.toString(), "\nPixel bottom: ", bottomSensorState.toString());
+            telemetry.addLine("\n---DEBUG---\n");
             telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("intakeManualControl: ", intakeManualControl);

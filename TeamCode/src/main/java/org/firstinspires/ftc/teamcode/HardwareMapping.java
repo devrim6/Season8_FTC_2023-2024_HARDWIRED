@@ -22,14 +22,14 @@ public class HardwareMapping {
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
 
-    enum liftHeight {
+    public enum liftHeight {
         GROUND,
         LOW,
         MIDDLE,
         HIGH
     }
 
-    enum ledState {
+    public enum ledState {
         PURPLE,   //red
         GREEN,    //green
         YELLOW,   //amber
@@ -97,7 +97,7 @@ public class HardwareMapping {
         upperLEDgreen = hwMap.get(DigitalChannel.class, "upperLEDgreen");
         upperLEDred = hwMap.get(DigitalChannel.class, "upperLEDred");
 
-
+        //Plane armed position
         planeLauncherServo.setPosition(0.5);
 
 
@@ -196,7 +196,7 @@ public class HardwareMapping {
                 if(whichLEDwhite){
                     led1.setState(true);
                     led2.setState(false);               //todo: implement a proper timer, rn its spammy and seizure inducing, red card 110%
-                    whichLEDwhite=false;
+                    whichLEDwhite=false;                //todo: he he he haw de ce este asa de cacat codul acesta - Raul 12B
                 } else {
                     led1.setState(false);
                     led2.setState(true);
