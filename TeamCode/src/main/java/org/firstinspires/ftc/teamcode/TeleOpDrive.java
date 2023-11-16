@@ -172,6 +172,7 @@ public class TeleOpDrive extends LinearOpMode {
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing
             float gp1LeftStickY = gamepad1.left_stick_y;
+            float gp1LeftStickX = gamepad1.left_stick_x;
             if(gp1LeftStickY>0 && robot.slideMotorRight.getCurrentPosition()<= robot.TICKS_PER_CM_Z*25
                     && robot.slideMotorLeft.getCurrentPosition()<=-robot.TICKS_PER_CM_Z*25){
                 robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + (int)(40 * gp1LeftStickY));
@@ -184,6 +185,9 @@ public class TeleOpDrive extends LinearOpMode {
                 robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - (int)(40 * gp1LeftStickY));
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
+            }
+            if(gp1LeftStickX > 0){
+                Actions.runBlocking(); //do outtake stuff here, todo: look into ftclib angle servo methods
             }
 
             //Switch between movement modes
