@@ -159,20 +159,21 @@ public class TeleOpDrive extends LinearOpMode {
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
 
-            //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong
+            //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing
-            if(gamepad1.left_stick_y>0 && robot.slideMotorRight.getCurrentPosition()<= robot.TICKS_PER_CM_Z*25
+            float gp1LeftStickY = gamepad1.left_stick_y;
+            if(gp1LeftStickY>0 && robot.slideMotorRight.getCurrentPosition()<= robot.TICKS_PER_CM_Z*25
                     && robot.slideMotorLeft.getCurrentPosition()<=-robot.TICKS_PER_CM_Z*25){
-                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + 40);
-                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() + 40);
-                robot.slideMotorRight.setPower(1);
-                robot.slideMotorLeft.setPower(1);
-            } else if(gamepad1.left_stick_y<0 && robot.slideMotorRight.getCurrentPosition()<= 10
+                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + (int)(40 * gp1LeftStickY));
+                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() + (int)(40 * gp1LeftStickY));
+                robot.slideMotorRight.setPower(0.7);
+                robot.slideMotorLeft.setPower(0.7);
+            } else if(gp1LeftStickY<0 && robot.slideMotorRight.getCurrentPosition()<= 10
                     && robot.slideMotorLeft.getCurrentPosition()<= -10){
-                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() - 40);
-                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - 40);
-                robot.slideMotorRight.setPower(1);
-                robot.slideMotorLeft.setPower(1);
+                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() - (int)(40 * gp1LeftStickY));
+                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - (int)(40 * gp1LeftStickY));
+                robot.slideMotorRight.setPower(0.7);
+                robot.slideMotorLeft.setPower(0.7);
             }
 
             //Switch between movement modes
