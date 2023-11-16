@@ -22,6 +22,7 @@ import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,11 +85,12 @@ public class TeleOpDrive extends LinearOpMode {
      *   \________/                                \_________/
      */
     // Declare a PIDF Controller to regulate heading
-    private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0);
+    private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
+                                                                                           //standard way
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
-        //TODO: add photonFTC
+        //add photonFTC (done)
         //masurare amperaj motoare glisiera pt determinare gear ratio optim la viteza, afaik max 4a, uitate pe spec sheet la rev
         //recalibrare pozitie cu camera april tags la backboard, triunghiulare maybe? look into it, experimenteaza cate tag-uri se vad intrun frame
         //daca localizarea ii accurate la sfarsit (cat de cat) incearca sa faci o traiectorie pt locul de lansat avion daca le trebuie la driveri, si pt hanging daca nu
@@ -97,25 +99,29 @@ public class TeleOpDrive extends LinearOpMode {
         //led-uri pe cuva/text pe consola sa zica ce tip de pixel ii in care parte a robotului, gen culoare sau daca exista
         //implementare senzori pt pixeli in cuva, daca sunt 2 in cuva driver 1/2 numai reverse poate da la intake motors/roller
         //centrare pe april tag la backboard in teleop, depinde daca ne ajuta sau nu
-        //al trilea senzor/da reverse la intake in caz de 3rd pixel, cel mai probabil senzor dar nu imi dau seama cum sa implementez sau ce senzor, maybe sub totul, in rampa?
+        //detectare de nr de pixeli pe stack, ajustare intake level in functie de. dat switch intro o camera frontala si una in spate
+        //al trilea senzor/da reverse la intake in caz de 3rd pixel, bream break 100% (adafruit amazon.de)
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
-        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto, adjust this accordingly
+        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto,
+                                                                                                   // adjust this accordingly
         Actions.runBlocking(outtake.yaw(0));
+        Actions.runBlocking(robot.setLedColour("upper", PoseTransfer.upperLedState),
+                            robot.setLedColour("bottom", PoseTransfer.bottomLedState));
 
         // Variables
-        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;
-        //TODO: transfer hook state between auto in case auto fails
+        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         long startTime=0;
         int intakeLevel = 1;
         long currentTime = System.currentTimeMillis();
+        HardwareMapping.ledState bottomSensorState = HardwareMapping.ledState.OFF, upperSensorState = HardwareMapping.ledState.OFF;
         TelemetryPacket packet = new TelemetryPacket();
         Canvas fieldOverlay = packet.fieldOverlay();
 
-        // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode) TODO: test difference between no photon, auto, off for engineering portfolio
+        // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode)      TODO: test difference between no photon, auto, off for engineering portfolio
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);
         for (LynxModule hub : allHubs) {
             hub.setBulkCachingMode(LynxModule.BulkCachingMode.AUTO);
@@ -154,10 +160,14 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(outtake.yaw(0), outtake.latch("closed"), outtake.runToPosition("ground"));
-            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition("third"), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition("first"), outtake.pivot(0.4, -0.4));
-            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition("second"), outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND),
+                    outtake.yaw(0), outtake.latch("closed"));
+            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
+                    outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                    outtake.pivot(0.4, -0.4));
+            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
+                    outtake.pivot(0.4, -0.4));
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing
@@ -193,10 +203,17 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Hook engage control
+            // If button is pressed, engage hooks and update LEDs to OFF or the colour of the locked pixel
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                 areHooksEngaged=!areHooksEngaged;
-                if(areHooksEngaged) Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"));
+                if(areHooksEngaged) {
+                    upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
+                    bottomSensorState = robot.checkColorRange("bottom");
+                    Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"),
+                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState));
+                }
+                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"),
+                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF));
             }
 
             //Outtake 90 degree rotation
@@ -225,12 +242,12 @@ public class TeleOpDrive extends LinearOpMode {
                 else Actions.runBlocking(intake.angle(intakeLevel));
             }
 
-            //Plane and hanging, only works if 1min has passed since teleop started, might be a pain to troubleshoot!!!!!
+            //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > currentTime + 60000) Actions.runBlocking(robot.launchPlane());
+                if(System.currentTimeMillis() > currentTime + 50000) Actions.runBlocking(robot.launchPlane());
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > currentTime + 60000){
+                if(System.currentTimeMillis() > currentTime + 50000){
                     isHangingUp=!isHangingUp;
                     if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
                     else Actions.runBlocking(robot.hangingEngage("hang"));
@@ -238,14 +255,16 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
 
-            //If intake is running and two pixels are already in then reverse the intake, lower the hooks
+
+            //If intake is running and two pixels are already in then reverse the intake and lower the hooks
             //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
             if(isIntakePowered && intakeManualControl){
-                if(!Objects.equals(robot.checkColorRange("upper"), "none")&& !Objects.equals(robot.checkColorRange("bottom"), "none")) {
+                upperSensorState = robot.checkColorRange("upper");
+                bottomSensorState = robot.checkColorRange("bottom");
+                if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
                     if(System.currentTimeMillis()> startTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                         Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
-                        //Actions.runBlocking(intake.stop());
-                        Actions.runBlocking(intake.reverse());
+                        Actions.runBlocking(intake.reverse());                  // Reverse intake to filter out potential third pixel, todo: implement beam break
                         areHooksEngaged = true;
                         isIntakePowered = false;
                         intakeManualControl = false;
@@ -257,7 +276,8 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
             telemetry.addData("Heading target: ", headingTarget);
-            telemetry.addLine("---DEBUG---");
+            telemetry.addData("Pixel upper: ", upperSensorState.toString(), "\nPixel bottom: ", bottomSensorState.toString());
+            telemetry.addLine("\n---DEBUG---\n");
             telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("intakeManualControl: ", intakeManualControl);

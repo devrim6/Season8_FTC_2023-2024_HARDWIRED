@@ -4,27 +4,38 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.arcrobotics.ftclib.gamepad.ButtonReader;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
 
-import org.checkerframework.checker.units.qual.A;
-
 public class HardwareMapping {
-    private double pivotAngle;
 
     double PI = 3.1415;
     double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
+
+    public enum liftHeight {
+        GROUND,
+        LOW,
+        MIDDLE,
+        HIGH
+    }
+
+    public enum ledState {
+        PURPLE,   //red
+        GREEN,    //green
+        YELLOW,   //amber
+        WHITE,    //blinking between red and green
+        OFF       //none
+    }
 
     public Servo intakeServoLeft, intakeServoRight;
     public CRServo intakeServoRoller;
@@ -41,6 +52,8 @@ public class HardwareMapping {
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
     public SensorColor bottomHookSensor, upperHookSensor;
+
+    private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
     public HardwareMapping(){}
     public void init(HardwareMap ahwMap){
@@ -78,7 +91,15 @@ public class HardwareMapping {
         upperHookSensor = ahwMap.get(SensorColor.class, "upperHookSensor");
         bottomHookSensor = ahwMap.get(SensorColor.class, "bottomHookSensor");
 
+        /* LEDs */ //Fiecare digital channel vine in perechi, n, n+1
+        bottomLEDgreen = hwMap.get(DigitalChannel.class, "bottomLEDgreen");
+        bottomLEDred = hwMap.get(DigitalChannel.class, "bottomLEDred");
+        upperLEDgreen = hwMap.get(DigitalChannel.class, "upperLEDgreen");
+        upperLEDred = hwMap.get(DigitalChannel.class, "upperLEDred");
+
+        //Plane armed position
         planeLauncherServo.setPosition(0.5);
+
 
     }
 
@@ -92,28 +113,98 @@ public class HardwareMapping {
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
-    public Object[] getColorSensorHSV(){
-        float[] hsv1= new float[3];
-        float[] hsv2= new float[3];
-        upperHookSensor.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv1);
-        bottomHookSensor.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv2);
-        return new Object[]{hsv1, hsv2};
-    }
-    public String checkColorRange(String sensor){
+    public ledState checkColorRange(String sensor){
         float[] hsv = new float[3];
         switch (sensor){
             case "upper":
-                hsv = (float[])getColorSensorHSV()[0];
+                hsv = upperHookSensor.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
                 break;
             case "bottom":
-                hsv = (float[])getColorSensorHSV()[1];
+                hsv = bottomHookSensor.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
                 break;
         }
-        if(hsv[0] <= 320 && hsv[0] >= 280) return "purple";
-        else if(hsv[0] <= 130 && hsv[0] >= 110) return "green";
-        else if(hsv[0] <= 74 && hsv[0] >= 51) return "yellow";
-        else if(hsv[1] <= 10 && hsv[1] >= 0) return "white";
-        return "none";
+        if(hsv[0] <= 320 && hsv[0] >= 280) {
+            Actions.runBlocking(setLedColour(sensor, ledState.PURPLE));
+            return ledState.PURPLE;
+        }
+        else if(hsv[0] <= 130 && hsv[0] >= 110){
+            Actions.runBlocking(setLedColour(sensor, ledState.GREEN));
+            return ledState.GREEN;
+        }
+        else if(hsv[0] <= 74 && hsv[0] >= 51){
+            Actions.runBlocking(setLedColour(sensor, ledState.YELLOW));
+            return ledState.YELLOW;
+        }
+        else if(hsv[1] <= 10 && hsv[1] >= 0){
+            Actions.runBlocking(setLedColour(sensor, ledState.WHITE));
+            return ledState.WHITE;
+        }
+        Actions.runBlocking(setLedColour(sensor, ledState.OFF));
+        return ledState.OFF;
+    }
+    public Action setLedColour(String led, ledState colour){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                DigitalChannel led1 = null, led2 = null;
+                if (led.equals("upper")) {
+                    led1 = upperLEDred;                     //Fiecare digital channel vine in perechi: n, n+1
+                    led2 = upperLEDgreen;
+                } else if (led.equals("bottom")) {
+                    led1 = bottomLEDred;
+                    led2 = bottomLEDgreen;
+                }
+                ledColourDriver(colour, led1, led2);
+                return false;
+            }
+        };
+    }
+    private boolean stopBlinking=false;
+    public void ledColourDriver(ledState colour, DigitalChannel led1, DigitalChannel led2){
+        switch (colour) {
+            case OFF:
+                stopBlinking=false;                         //stop white blinking
+                led1.setState(false);                       //led1 is red
+                led2.setState(false);                       //led2 is green
+                break;
+            case PURPLE:
+                stopBlinking=false;
+                led1.setState(true);
+                led2.setState(false);
+                break;
+            case YELLOW:
+                stopBlinking=false;
+                led1.setState(true);
+                led1.setState(true);
+                break;
+            case GREEN:
+                stopBlinking=false;
+                led1.setState(false);
+                led2.setState(true);
+                break;
+            case WHITE:
+                stopBlinking=true;                                          //start white blinking
+                Actions.runBlocking(whitePixelBlink(led1, led2));           //separate thread, needs to run continously
+                break;
+        }
+    }
+    boolean whichLEDwhite=false;
+    public Action whitePixelBlink(DigitalChannel led1, DigitalChannel led2){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if(whichLEDwhite){
+                    led1.setState(true);
+                    led2.setState(false);               //todo: implement a proper timer, rn its spammy and seizure inducing, red card 110%
+                    whichLEDwhite=false;                //todo: he he he haw de ce este asa de cacat codul acesta - Raul 12B
+                } else {
+                    led1.setState(false);
+                    led2.setState(true);
+                    whichLEDwhite=true;
+                }
+                return stopBlinking;
+            }
+        };
     }
 
     public Action launchPlane(){
@@ -146,7 +237,7 @@ public class HardwareMapping {
     }
 
     public class Outtake {
-        public Outtake() {} // The constructor
+        public Outtake() {}                 // The constructor
 
         public Action pivot(double angle, double angle2){
             return new Action() {
@@ -217,33 +308,33 @@ public class HardwareMapping {
                         }
                         return false;}
                 };}
-        public Action runToPosition(String direction){
+        public Action runToPosition(liftHeight direction){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch(direction){
-                        case "third":
+                        case HIGH:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(24*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(24*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "second":
+                        case MIDDLE:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(10*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(10*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "first":
+                        case LOW:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(5*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(5*TICKS_PER_CM_Z));
                             slideMotorRight.setPower(1);
                             slideMotorLeft.setPower(1);
-                        case "ground":
+                        case GROUND:
                             slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(0*TICKS_PER_CM_Z));
@@ -275,7 +366,7 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(-0.5);
                     intakeServoRoller.setPower(0.3);
-                    return time < System.currentTimeMillis()+1000; //Run for a second then stop
+                    return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
                 }
             };}
         public Action stop(){
@@ -313,7 +404,8 @@ public class HardwareMapping {
                             intakeServoRight.setPosition(-0.8);
                             break;
                     }
-                    return false;
+                    return false;           // setPosition is async, action can be stopped immediately since
+                                            // it will run in another thread
                 }
             };}
     }
