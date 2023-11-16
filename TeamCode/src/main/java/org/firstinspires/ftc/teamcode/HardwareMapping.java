@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -41,8 +43,8 @@ public class HardwareMapping {
     public CRServo intakeServoRoller;
     public Servo planeLauncherServo;
 
-    public Servo outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight,
-            outtakeLatch, outtakeClawUpper, outtakeClawBottom;
+    public Servo outtakeLatch, outtakeClawUpper, outtakeClawBottom;
+    public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
 
     public DcMotorEx intakeMotor;
     public DcMotorEx hangMotor;
@@ -64,11 +66,11 @@ public class HardwareMapping {
         intakeServoLeft = hwMap.get(Servo.class, "intakeServoLeft");
         intakeServoRight = hwMap.get(Servo.class, "intakeServoRight");
         intakeServoRoller = hwMap.get(CRServo.class, "intakeServoRoller");
-        outtakePitchLeft = hwMap.get(Servo.class, "outtakePitchLeft");
-        outtakePitchRight = hwMap.get(Servo.class, "outtakePitchRight");
-        outtakeYaw = hwMap.get(Servo.class, "outtakeYaw");
-        outtakeRollLeft = hwMap.get(Servo.class, "outtakeRollLeft");
-        outtakeRollRight = hwMap.get(Servo.class, "outtakeRollRight");
+        outtakePitchLeft = new SimpleServo(hwMap, "outtakePitchLeft", Math.toRadians(0), Math.toRadians(350));
+        outtakePitchRight = new SimpleServo(hwMap, "outtakePitchRight", Math.toRadians(0), Math.toRadians(350));
+        outtakeYaw = new SimpleServo(hwMap, "outtakeYaw", Math.toRadians(0), Math.toRadians(90));
+        outtakeRollLeft = new SimpleServo(hwMap, "outtakeRollLeft", Math.toRadians(0), Math.toRadians(350));
+        outtakeRollRight = new SimpleServo(hwMap, "outtakeRollRight", Math.toRadians(0), Math.toRadians(350));
         outtakeLatch = hwMap.get(Servo.class, "outtakeLatch");
         outtakeClawBottom = hwMap.get(Servo.class, "outtakeClawBottom");
         outtakeClawUpper = hwMap.get(Servo.class, "outtakeClawUpper");
@@ -202,7 +204,7 @@ public class HardwareMapping {
                     led2.setState(true);
                     whichLEDwhite=true;
                 }
-                return stopBlinking;
+                return stopBlinking;                    //if true then continue. if false then stop
             }
         };
     }
@@ -243,8 +245,8 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakePitchLeft.setPosition(angle);
-                    outtakePitchRight.setPosition(angle2);
+                    outtakePitchLeft.turnToAngle(angle);
+                    outtakePitchRight.turnToAngle(angle2);
                     return false;
                 }
             };}

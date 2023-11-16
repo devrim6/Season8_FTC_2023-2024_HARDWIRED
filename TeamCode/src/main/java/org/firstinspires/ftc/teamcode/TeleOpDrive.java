@@ -186,8 +186,12 @@ public class TeleOpDrive extends LinearOpMode {
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
             }
-            if(gp1LeftStickX > 0){
-                Actions.runBlocking(); //do outtake stuff here, todo: look into ftclib angle servo methods
+            if(gp1LeftStickX > 0){                                          //todo: maybe works, most likely broken, needs tons of testing
+                Actions.runBlocking(outtake.pivot(robot.outtakePitchLeft.getAngle()+gp1LeftStickX*5,
+                        robot.outtakePitchRight.getAngle()+gp1LeftStickX*5));
+            } else if(gp1LeftStickY < 0){                                   //todo: add thing that keeps outtake at 60 degrees while doing the above
+                Actions.runBlocking(outtake.pivot(robot.outtakePitchLeft.getAngle()-gp1LeftStickX*5,
+                        robot.outtakePitchRight.getAngle()-gp1LeftStickX*5));
             }
 
             //Switch between movement modes
