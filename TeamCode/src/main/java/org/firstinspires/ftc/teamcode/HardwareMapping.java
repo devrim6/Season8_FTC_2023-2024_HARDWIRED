@@ -18,7 +18,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
 
 public class HardwareMapping {
-
+    /**
+     * TICKS_PER_CM_Z converts a specified amount of cm when multiplied with another value to motor ticks.
+     */
     double PI = 3.1415;
     double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
     double WHEEL_DIAMETER_CM = 3.565;
@@ -58,6 +60,12 @@ public class HardwareMapping {
     private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
     public HardwareMapping(){}
+
+    /**
+     * Takes ahwMap from call and then initializes each and every robot component while also
+     * setting up some basic values that will be used in both Autonomous and TeleOp
+     * @param ahwMap
+     */
     public void init(HardwareMap ahwMap){
         hwMap = ahwMap;
 
@@ -102,7 +110,6 @@ public class HardwareMapping {
         //Plane armed position
         planeLauncherServo.setPosition(0.5);
 
-
     }
 
     public void gamepadInit(Gamepad gmpd1, Gamepad gmpd2){
@@ -115,6 +122,13 @@ public class HardwareMapping {
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
+    /**
+     * Takes sensor position, converts RGB to HSV then compares with predetermined values to see
+     * which colour the pixel is, or if there is one at all, then passes the data along to the
+     * call AND switches the LED lights
+     * @param sensor
+     * @return ledState
+     */
     public ledState checkColorRange(String sensor){
         float[] hsv = new float[3];
         switch (sensor){
@@ -144,6 +158,14 @@ public class HardwareMapping {
         Actions.runBlocking(setLedColour(sensor, ledState.OFF));
         return ledState.OFF;
     }
+
+    /**
+     *  Takes the position of the led and the colour it needs to be set at then passes it along
+     *  to ledColourDriver
+     * @param led
+     * @param colour
+     * @return End the Action
+     */
     public Action setLedColour(String led, ledState colour){
         return new Action() {
             @Override
@@ -162,6 +184,14 @@ public class HardwareMapping {
         };
     }
     private boolean stopBlinking=false;
+
+    /**
+     * Takes the colour and led position then sets the colour accordingly. White calls upon the
+     * whitePixelBlink Action asynchroniously to flash the leds on and off in order
+     * @param colour
+     * @param led1
+     * @param led2
+     */
     public void ledColourDriver(ledState colour, DigitalChannel led1, DigitalChannel led2){
         switch (colour) {
             case OFF:
@@ -191,6 +221,14 @@ public class HardwareMapping {
         }
     }
     boolean whichLEDwhite=false;
+
+    /**
+     * Takes the led positions then flashes red and green in sequence to signify that a white pixel is
+     * in that place.
+     * @param led1
+     * @param led2
+     * @return false
+     */
     public Action whitePixelBlink(DigitalChannel led1, DigitalChannel led2){
         return new Action() {
             @Override
@@ -245,8 +283,27 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakePitchLeft.turnToAngle(angle);
+                    outtakePitchLeft.turnToAngle(-angle);
                     outtakePitchRight.turnToAngle(angle2);
+                    return false;
+                }
+            };}
+
+        /**
+         * Takes the specified value and rotates the outtake relative to the previous angle using rotateBy().
+         * Keeps the outtake box angle at 60 degrees, but the method needs to be called when the box is already
+         * at 60 degrees in order for that to work
+         * @param angle
+         * @return false
+         */
+        public Action pivotFixedRoll(double angle){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    outtakePitchLeft.rotateBy(-angle);              //Should only be called when outtake is at 60degrees already
+                    outtakePitchRight.rotateBy(angle);             //todo: try to think of a better way
+                    outtakeRollLeft.rotateBy(-angle);               //naive implementation
+                    outtakeRollRight.rotateBy(angle);
                     return false;
                 }
             };}
@@ -254,7 +311,7 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakeYaw.setPosition(angle);
+                    outtakeYaw.turnToAngle(angle);
                     return false;
                 }
             };}
@@ -262,8 +319,8 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakeRollLeft.setPosition(angle);
-                    outtakeRollRight.setPosition(angle2);
+                    outtakeRollLeft.turnToAngle(-angle);
+                    outtakeRollRight.turnToAngle(angle2);
                     return false;
                 }
             };}
@@ -310,6 +367,13 @@ public class HardwareMapping {
                         }
                         return false;}
                 };}
+
+        /**
+         * Takes the required height of the lift from the call and sets the slide to that position.
+         * Ticks are calculated using TICKS_PER_CM_Z, which converts cm to motor ticks.
+         * @param direction
+         * @return false
+         */
         public Action runToPosition(liftHeight direction){
             return new Action() {
                 @Override
@@ -361,6 +425,10 @@ public class HardwareMapping {
                     return false;
                 }
             };}
+
+        /**
+         * Reverses the intake for 1.5s to filter out a possible third pixel.
+         */
         public Action reverse(){
             return new Action() {
                 final double time = System.currentTimeMillis();
@@ -380,6 +448,13 @@ public class HardwareMapping {
                     return false;
                 }
             };}
+
+        /**
+         * Takes the required level from the call and sets the intake to that specified angle. The angles
+         * are relative to a 5 pixel stack height, level 5 being enough to only touch the last pixel on a
+         * full stack.
+         * @param level
+         */
         public Action angle(int level){
             return new Action() {
                 @Override
