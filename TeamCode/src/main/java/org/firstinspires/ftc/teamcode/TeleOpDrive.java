@@ -3,8 +3,16 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.DisplacementTrajectory;
+import com.acmerobotics.roadrunner.HolonomicController;
+import com.acmerobotics.roadrunner.MecanumKinematics;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Time;
+import com.acmerobotics.roadrunner.Trajectory;
+import com.acmerobotics.roadrunner.Twist2d;
+import com.acmerobotics.roadrunner.Twist2dDual;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -164,11 +172,11 @@ public class TeleOpDrive extends LinearOpMode {
             if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND),
                     outtake.yaw(0), outtake.latch("closed"));
             if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
-                    outtake.pivot(0.4, -0.4));
+                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                    outtake.pivot(0.4, -0.4));
+                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
-                    outtake.pivot(0.4, -0.4));
+                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing

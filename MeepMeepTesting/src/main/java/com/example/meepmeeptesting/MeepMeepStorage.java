@@ -86,7 +86,7 @@ public class MeepMeepStorage {
 
 
                             //LEFT
-//                            .lineToLinearHeading(new Pose2d(-43 + 2*24, -33, Math.toRadians(110)))
+//                            .lineToLinearHeading(new Pose2d(-43.5 + 2*24, -33, Math.toRadians(110)))
 //                            .setReversed(true)
 //                            .splineToLinearHeading(new Pose2d(49, -36, Math.toRadians(0)), Math.toRadians(0))
 
