@@ -15,17 +15,17 @@ public class MeepMeepStorage {
                     driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
 
                             //RIGHT
-//                            .lineToLinearHeading(new Pose2d(-30, -33, Math.toRadians(60)))
-//                            .setReversed(true)
-//                            .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
-
-                            //MIDDLE
-                            .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(90))
+                            .splineToLinearHeading(new Pose2d(-30, -33, Math.toRadians(60)), Math.toRadians(60))
                             .setReversed(true)
                             .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
 
+                            //MIDDLE
+//                            .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(90))
+//                            .setReversed(true)
+//                            .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
+
                             //LEFT
-//                            .lineToLinearHeading(new Pose2d(-43, -33, Math.toRadians(110)))
+//                            .splineToLinearHeading(new Pose2d(-43, -33, Math.toRadians(110)), Math.toRadians(120))
 //                            .setReversed(true)
 //                            .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
 
