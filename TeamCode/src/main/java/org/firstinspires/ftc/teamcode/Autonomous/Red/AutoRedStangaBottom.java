@@ -73,7 +73,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 ))
                 .build();
 
-        Action TRAJ4_MiddleBackboardToStack = drive.actionBuilder(drive.pose)
+        Action TRAJ4_MiddleBackboardToStack = drive.actionBuilder(middleBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
@@ -109,7 +109,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 ))
                 .build();
 
-        Action TRAJ7_ParkRight = drive.actionBuilder(drive.pose)
+        Action TRAJ7_ParkRight = drive.actionBuilder(rightBackboardPose)
                 .setReversed(false)
                 .setTangent(Math.toRadians(-90))
                 .splineToLinearHeading(new Pose2d(49, -55, Math.toRadians(0)), Math.toRadians(-90))
