@@ -43,19 +43,19 @@ public class MeepMeepStorage {
                             .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(180))
-                            //stackToLeft
+                            //stackToRight
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(49, -42, Math.toRadians(0)), Math.toRadians(0))
-                            //leftToStack
+                            //rightToStack
                             .setReversed(true)
                             .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(180))
-                            //stackToLeft
+                            //stackToRight
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))

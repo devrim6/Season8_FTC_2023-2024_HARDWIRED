@@ -6,9 +6,11 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.DisplacementTrajectory;
 import com.acmerobotics.roadrunner.HolonomicController;
 import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.Twist2d;
@@ -169,14 +171,35 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking( outtake.runToPosition(HardwareMapping.liftHeight.GROUND),
-                    outtake.yaw(0), outtake.latch("closed"));
-            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
-                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
-            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
-            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
-                    outtake.pivot(0.4, -0.4), outtake.yaw(90), outtake.latch("open"));
+            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(new SequentialAction(
+                    outtake.yaw(0),
+                    outtake.latch("closed"),
+                    outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+            ));
+            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(new SequentialAction(
+                    outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
+                    new ParallelAction(
+                            outtake.pivot(0.4, -0.4),
+                            outtake.yaw(90),
+                            outtake.latch("open")
+                    )
+            ));
+            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(new SequentialAction(
+                    outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                    new ParallelAction(
+                            outtake.pivot(0.4, -0.4),
+                            outtake.yaw(90),
+                            outtake.latch("open")
+                    )
+            ));
+            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(new SequentialAction(
+                    outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
+                    new ParallelAction(
+                            outtake.pivot(0.4, -0.4),
+                            outtake.yaw(90),
+                            outtake.latch("open")
+                    )
+            ));
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing
@@ -224,18 +247,26 @@ public class TeleOpDrive extends LinearOpMode {
                 if(areHooksEngaged) {
                     upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
                     bottomSensorState = robot.checkColorRange("bottom");
-                    Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"),
-                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState));
+                    Actions.runBlocking(new ParallelAction(
+                            outtake.bottomHook("closed"), outtake.upperHook("closed"),
+                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState)
+                    ));
                 }
-                else Actions.runBlocking(outtake.bottomHook("open"), outtake.upperHook("open"),
-                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF));
+                else Actions.runBlocking(new ParallelAction(
+                        outtake.bottomHook("open"), outtake.upperHook("open"),
+                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF)
+                ));
             }
 
             //Outtake 90 degree rotation
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A)){
                 isOuttakeRotated=!isOuttakeRotated;
-                if(isOuttakeRotated) Actions.runBlocking(outtake.yaw(90), outtake.latch("open"));
-                else Actions.runBlocking(outtake.yaw(0), outtake.latch("closed"));
+                if(isOuttakeRotated) Actions.runBlocking(new ParallelAction(
+                        outtake.yaw(90), outtake.latch("open")
+                ));
+                else Actions.runBlocking(new ParallelAction(
+                        outtake.yaw(0), outtake.latch("closed")
+                ));
             }
 
             //Intake power controls
@@ -278,7 +309,10 @@ public class TeleOpDrive extends LinearOpMode {
                 bottomSensorState = robot.checkColorRange("bottom");
                 if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
                     if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed"));
+                        Actions.runBlocking(new ParallelAction(
+                                outtake.bottomHook("closed"),
+                                outtake.upperHook("closed")
+                        ));
                         Actions.runBlocking(intake.reverse());                  // Reverse intake to filter out potential third pixel
                         areHooksEngaged = true;                                 // todo: implement beam break
                         isIntakePowered = false;
