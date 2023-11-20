@@ -301,7 +301,7 @@ public class HardwareMapping {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     outtakePitchLeft.rotateBy(-angle);              //Should only be called when outtake is at 60degrees already
-                    outtakePitchRight.rotateBy(angle);             //todo: try to think of a better way
+                    outtakePitchRight.rotateBy(angle);              //todo: try to think of a better way
                     outtakeRollLeft.rotateBy(-angle);               //naive implementation
                     outtakeRollRight.rotateBy(angle);
                     return false;

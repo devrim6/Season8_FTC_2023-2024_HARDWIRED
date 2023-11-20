@@ -20,7 +20,7 @@ public class MeepMeepStorage {
 //                            .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
 
                             //MIDDLE
-                            .lineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)))
+                            .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(90))
                             .setReversed(true)
                             .splineTo(new Vector2d(-57, -36), Math.toRadians(180))
 

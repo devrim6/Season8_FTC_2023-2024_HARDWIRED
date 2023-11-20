@@ -104,6 +104,8 @@ public final class MecanumDrive {
 
     private final LinkedList<Pose2d> poseHistory = new LinkedList<>();
 
+    public boolean isInTraj = false;
+
     public class DriveLocalizer implements Localizer {
         public final Encoder leftFront, leftRear, rightRear, rightFront;
 
@@ -214,6 +216,10 @@ public final class MecanumDrive {
         rightFront.setPower(wheelVels.rightFront.get(0) / maxPowerMag);
     }
 
+    public boolean isBusy(){
+        return isInTraj;
+    }
+
     public final class FollowTrajectoryAction implements Action {
         public final TimeTrajectory timeTrajectory;
         private double beginTs = -1;
@@ -238,6 +244,7 @@ public final class MecanumDrive {
         @Override
         public boolean run(@NonNull TelemetryPacket p) {
             double t;
+            isInTraj = true;
             if (beginTs < 0) {
                 beginTs = Actions.now();
                 t = 0;
@@ -251,6 +258,7 @@ public final class MecanumDrive {
                 rightBack.setPower(0);
                 rightFront.setPower(0);
 
+                isInTraj = false;
                 return false;
             }
 
