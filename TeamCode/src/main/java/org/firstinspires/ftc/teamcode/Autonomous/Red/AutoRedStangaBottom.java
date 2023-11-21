@@ -67,7 +67,11 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .splineToLinearHeading(middleBackboardPose, Math.toRadians(0))
                 .afterDisp(10, new ParallelAction(
                         new SequentialAction(
-                                outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                new ParallelAction(
+                                        outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                        outtake.pivot(60, 60),
+                                        outtake.roll(60, 60)
+                                ),
                                 outtake.yaw(90)
                         ),
                         intake.sensingOff()
@@ -98,11 +102,13 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                .afterDisp(10, new ParallelAction(
-                        new SequentialAction(
+                .afterDisp(10, new SequentialAction(
+                        new ParallelAction(
                                 outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                                outtake.yaw(90)
+                                outtake.pivot(60, 60),
+                                outtake.roll(60, 60)
                         ),
+                        outtake.yaw(90),
                         intake.sensingOff()
                 ))
                 .build();
