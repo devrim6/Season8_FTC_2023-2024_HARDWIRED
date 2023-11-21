@@ -230,18 +230,17 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     break;
             }
 
-
-
             /* Transfer last pose to TeleOP */
-            PoseTransfer.currentPose = drive.pose;
+            Pose2d currentPose = drive.pose;
+            PoseTransfer.currentPose = currentPose;
             PoseTransfer.glisieraTicks1 = robot.slideMotorRight.getCurrentPosition();
             PoseTransfer.glisieraTicks2 = robot.slideMotorLeft.getCurrentPosition();
 
             drive.updatePoseEstimate();
 
-            telemetry.addData("x", drive.pose.position.x);
-            telemetry.addData("y", drive.pose.position.y);
-            telemetry.addData("heading", drive.pose.heading);
+            telemetry.addData("x", currentPose.position.x);
+            telemetry.addData("y", currentPose.position.y);
+            telemetry.addData("heading", currentPose.heading);
             telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
         }
     }
