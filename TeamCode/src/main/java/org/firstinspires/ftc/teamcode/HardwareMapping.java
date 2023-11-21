@@ -493,6 +493,12 @@ public class HardwareMapping {
         double currentTime = System.currentTimeMillis();
         final Outtake outtake = new Outtake();
 
+        /**
+         * Starts the pixel sensing system. If it detects two pixels inside the outtake box for x amount of seconds
+         * it closes the hooks and reverses the intake for y seconds to filter out a potential third pixel.
+         * This is an action because we want to save on loop times by asynchronously running it in a trajectory.
+         * @return isSensingOnline status
+         */
         public Action sensingOn(){
             isIntakePowered = false;
             ledState upperSensorState, bottomSensorState;
@@ -517,11 +523,14 @@ public class HardwareMapping {
             };
         }
 
+        /**
+         * Turns off the pixel sensing system.
+         */
         public Action sensingOff(){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    isIntakePowered=true;
+                    isIntakePowered=true;                   // This is an action because we need to use it inside a trajectory
                     return false;
                 }
             };
