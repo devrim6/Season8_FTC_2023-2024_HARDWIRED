@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -16,6 +17,8 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
+
+import org.checkerframework.checker.units.qual.A;
 
 public class HardwareMapping {
     /**
@@ -485,5 +488,45 @@ public class HardwareMapping {
                                             // it will run in another thread
                 }
             };}
+
+        boolean isIntakePowered=false;
+        double currentTime = System.currentTimeMillis();
+        final Outtake outtake = new Outtake();
+
+        public Action sensingOn(){
+            isIntakePowered = false;
+            ledState upperSensorState, bottomSensorState;
+            upperSensorState = checkColorRange("upper");
+            bottomSensorState = checkColorRange("bottom");
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
+                        if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
+                            Actions.runBlocking(new ParallelAction(
+                                    outtake.bottomHook("closed"),
+                                    outtake.upperHook("closed"),
+                                    reverse()
+                            ));                                                     // Reverse intake to filter out
+                            isIntakePowered = true;                                 // potential third pixel
+                            return false;                                           // todo: implement beam break
+                        }
+                    } else currentTime = System.currentTimeMillis();
+                    return !isIntakePowered;
+                }
+            };
+        }
+
+        public Action sensingOff(){
+            return new Action() {
+                @Override
+                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    isIntakePowered=true;
+                    return false;
+                }
+            };
+        }
+
+        public boolean isSensingOnline() {return !isIntakePowered;}
     }
 }

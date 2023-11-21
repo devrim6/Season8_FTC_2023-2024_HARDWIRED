@@ -38,10 +38,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
            middleBackboardPose = new Pose2d(49, -36, Math.toRadians(0)),
            rightBackboardPose = new Pose2d(49, -42, Math.toRadians(0));
 
-    boolean isIntakePowered=false, areHooksEngaged=true, intakeManualControl=true;
-    HardwareMapping.ledState bottomSensorState = HardwareMapping.ledState.OFF, upperSensorState = HardwareMapping.ledState.OFF;
-    long currentTime = System.currentTimeMillis();
-    double traj5Counter = 0;
+    double cycleCounter = 0;
 
     String elementPosition = "middle";
     traj currentTraj = traj.TRAJ1_StartToLine;
@@ -64,48 +61,66 @@ public class AutoRedStangaBottom extends LinearOpMode {
         Action TRAJ3_StackToMiddleBackboard = drive.actionBuilder(stackPose)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .afterDisp(3, intake.angle(5))              // Higher intake to not get pixels
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(middleBackboardPose, Math.toRadians(0))
-                .afterDisp(10, new SequentialAction(
-                        outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                        outtake.yaw(90)
+                .afterDisp(10, new ParallelAction(
+                        new SequentialAction(
+                                outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                outtake.yaw(90)
+                        ),
+                        intake.sensingOff()
                 ))
                 .build();
 
         Action TRAJ4_MiddleBackboardToStack = drive.actionBuilder(middleBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new SequentialAction(
+                        outtake.yaw(0),
+                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                ))
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
                         intake.powerOn(),
-                        intake.angle(3)     // Take two pixels. Remaining after: 2
+                        intake.angle(3),     // Take two pixels. Remaining after: 2
+                        intake.sensingOn()
                 ))
                 .build();
 
         Action TRAJ5_StackToRightBackboard = drive.actionBuilder(stackPose)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .afterDisp(3, intake.angle(5))          // Higher intake to not get pixels
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                .afterDisp(10, new SequentialAction(
-                        outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                        outtake.yaw(90)
+                .afterDisp(10, new ParallelAction(
+                        new SequentialAction(
+                                outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                outtake.yaw(90)
+                        ),
+                        intake.sensingOff()
                 ))
                 .build();
 
         Action TRAJ6_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new SequentialAction(
+                        outtake.yaw(0),
+                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                ))
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
                         intake.powerOn(),
-                        intake.angle(1)     // Take two pixels. Remaining after: 0
+                        intake.angle(1),     // Take two pixels. Remaining after: 0
+                        intake.sensingOn()
                 ))
                 .build();
 
@@ -117,7 +132,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         new ParallelAction(
                                 outtake.yaw(0),
                                 outtake.bottomHook("open"),
-                                outtake.upperHook("open")
+                                outtake.upperHook("open"),
+                                intake.sensingOff()
                         ),
                         outtake.runToPosition(HardwareMapping.liftHeight.LOW)
                 ))
@@ -150,7 +166,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .splineTo(stackPose.position, Math.toRadians(180))
                 .afterDisp(1, new ParallelAction(
                         intake.powerOn(),
-                        intake.angle(5)     // Take one pixel. Remaining after: 4
+                        intake.angle(5),          // Take one pixel. Remaining after: 4
+                        intake.sensingOn()
                 ))
                 .build();
 
@@ -161,7 +178,6 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     if(!drive.isBusy()){
                         currentTraj = traj.TRAJ2_MiddleLineToStack;
                         Actions.runBlocking(TRAJ2_MiddleLineToStack);
-                        isIntakePowered = true;
                     }
                     break;
                 case TRAJ2_MiddleLineToStack:
@@ -173,7 +189,6 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 case TRAJ3_StackToMiddleBackboard:
                     if(!drive.isBusy()){
                         currentTraj = traj.TRAJ4_MiddleBackboardToStack;
-                        isIntakePowered=true;
                         Actions.runBlocking(new ParallelAction(
                                 TRAJ4_MiddleBackboardToStack,       // Just in case, stop the intake
                                 intake.stop()                       // then start it again in the trajectory
@@ -181,6 +196,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     }
                     break;
                 case TRAJ4_MiddleBackboardToStack:
+                case TRAJ6_RightBackboardToStack:
                     if(!drive.isBusy()){
                         currentTraj = traj.TRAJ5_StackToRightBackboard;
                         Actions.runBlocking(TRAJ5_StackToRightBackboard);
@@ -188,9 +204,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     break;
                 case TRAJ5_StackToRightBackboard:
                     if(!drive.isBusy()){
-                        isIntakePowered=true;
-                        traj5Counter++;
-                        if(traj5Counter == 1) {                        // If on the first cycle of right
+                        cycleCounter++;
+                        if(cycleCounter == 1) {                        // If on the first cycle of right
                             currentTraj = traj.TRAJ6_RightBackboardToStack;
                             Actions.runBlocking(
                                     TRAJ6_RightBackboardToStack,       // Just in case, stop the intake
@@ -200,21 +215,14 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         else {                                         // If on the 2nd cycle of right
                             currentTraj = traj.TRAJ7_ParkRight;
                             Actions.runBlocking(
-                                    TRAJ7_ParkRight,                   // Just in case, stop the intake
-                                    intake.stop()                      // then start it again in the trajectory
+                                    TRAJ7_ParkRight,
+                                    intake.stop()
                             );
                         }
                     }
                     break;
-                case TRAJ6_RightBackboardToStack:
-                    if(!drive.isBusy()){
-                        currentTraj = traj.TRAJ7_ParkRight;
-                        Actions.runBlocking(TRAJ7_ParkRight);
-                    }
-                    break;
                 case TRAJ7_ParkRight:
                     if(!drive.isBusy()){
-                        isIntakePowered = false;
                         currentTraj = traj.IDLE;
                     }
                     break;
@@ -222,24 +230,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     break;
             }
 
-            //If intake is running and two pixels are already in then reverse the intake and lower the hooks
-            //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
-            if(isIntakePowered){
-                upperSensorState = robot.checkColorRange("upper");
-                bottomSensorState = robot.checkColorRange("bottom");
-                if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
-                    if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                        Actions.runBlocking(new ParallelAction(
-                                outtake.bottomHook("closed"),
-                                outtake.upperHook("closed"),
-                                intake.reverse()
-                        ));                                                     // Reverse intake to filter out potential third pixel
-                        areHooksEngaged = true;                                 // todo: implement beam break
-                        isIntakePowered = false;
-                        intakeManualControl = false;
-                    }
-                } else currentTime = System.currentTimeMillis();
-            }
+
 
             /* Transfer last pose to TeleOP */
             PoseTransfer.currentPose = drive.pose;
@@ -251,6 +242,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
             telemetry.addData("x", drive.pose.position.x);
             telemetry.addData("y", drive.pose.position.y);
             telemetry.addData("heading", drive.pose.heading);
+            telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
         }
     }
 }
