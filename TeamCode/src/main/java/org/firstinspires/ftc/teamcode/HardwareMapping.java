@@ -18,7 +18,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
 
-import org.checkerframework.checker.units.qual.A;
 
 public class HardwareMapping {
     /**
@@ -417,7 +416,7 @@ public class HardwareMapping {
     }
 
     public class Intake {
-        public Intake() {} // The constructor
+        public Intake() {}      // The constructor
 
         public Action powerOn(){
             return new Action() {
@@ -433,8 +432,8 @@ public class HardwareMapping {
          * Reverses the intake for 1.5s to filter out a possible third pixel.
          */
         public Action reverse(){
+            final double time = System.currentTimeMillis();
             return new Action() {
-                final double time = System.currentTimeMillis();
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(-0.5);
@@ -456,6 +455,8 @@ public class HardwareMapping {
          * Takes the required level from the call and sets the intake to that specified angle. The angles
          * are relative to a 5 pixel stack height, level 5 being enough to only touch the last pixel on a
          * full stack.
+         *
+         * 6 is 90 degrees perpendicular or something to that extent, to make intake go up up up up up
          * @param level
          */
         public Action angle(int level){
@@ -483,15 +484,18 @@ public class HardwareMapping {
                             intakeServoLeft.setPosition(0.8);
                             intakeServoRight.setPosition(-0.8);
                             break;
-                    }
-                    return false;           // setPosition is async, action can be stopped immediately since
-                                            // it will run in another thread
+                        case 6:             // is for auto init, goes up to 90 degrees perpendicular
+                            intakeServoLeft.setPosition(1);
+                            intakeServoRight.setPosition(-1);
+                            break;
+                    }                       // setPosition is async, action can be stopped immediately since
+                    return false;           // it will run in another thread
                 }
             };}
 
         boolean isIntakePowered=false;
         double currentTime = System.currentTimeMillis();
-        final Outtake outtake = new Outtake();
+        Outtake outtake = new Outtake();
 
         /**
          * Starts the pixel sensing system. If it detects two pixels inside the outtake box for x amount of seconds
@@ -501,12 +505,12 @@ public class HardwareMapping {
          */
         public Action sensingOn(){
             isIntakePowered = false;
-            ledState upperSensorState, bottomSensorState;
-            upperSensorState = checkColorRange("upper");
-            bottomSensorState = checkColorRange("bottom");
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    ledState upperSensorState, bottomSensorState;
+                    upperSensorState = checkColorRange("upper");
+                    bottomSensorState = checkColorRange("bottom");
                     if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
                         if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                             Actions.runBlocking(new ParallelAction(

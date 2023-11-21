@@ -61,7 +61,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
         Action TRAJ3_StackToMiddleBackboard = drive.actionBuilder(stackPose)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
-                .afterDisp(3, intake.angle(5))              // Higher intake to not get pixels
+                .afterDisp(3, intake.angle(6))              // Higher intake to not get pixels
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(middleBackboardPose, Math.toRadians(0))
@@ -98,7 +98,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
         Action TRAJ5_StackToRightBackboard = drive.actionBuilder(stackPose)
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
-                .afterDisp(3, intake.angle(5))          // Higher intake to not get pixels
+                .afterDisp(3, intake.angle(6))          // Higher intake to not get pixels
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
@@ -196,8 +196,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     if(!drive.isBusy()){
                         currentTraj = traj.TRAJ4_MiddleBackboardToStack;
                         Actions.runBlocking(new ParallelAction(
-                                TRAJ4_MiddleBackboardToStack,       // Just in case, stop the intake
-                                intake.stop()                       // then start it again in the trajectory
+                                TRAJ4_MiddleBackboardToStack,      // Just in case, stop the intake
+                                intake.stop()                      // then start it again in the trajectory
                         ));
                     }
                     break;
@@ -213,17 +213,17 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         cycleCounter++;
                         if(cycleCounter == 1) {                        // If on the first cycle of right
                             currentTraj = traj.TRAJ6_RightBackboardToStack;
-                            Actions.runBlocking(
+                            Actions.runBlocking(new ParallelAction(
                                     TRAJ6_RightBackboardToStack,       // Just in case, stop the intake
                                     intake.stop()                      // then start it again in the trajectory
-                            );
+                            ));
                         }
                         else {                                         // If on the 2nd cycle of right
                             currentTraj = traj.TRAJ7_ParkRight;
-                            Actions.runBlocking(
+                            Actions.runBlocking(new ParallelAction(
                                     TRAJ7_ParkRight,
                                     intake.stop()
-                            );
+                            ));
                         }
                     }
                     break;
