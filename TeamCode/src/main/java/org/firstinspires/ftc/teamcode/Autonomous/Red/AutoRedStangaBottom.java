@@ -21,17 +21,23 @@ public class AutoRedStangaBottom extends LinearOpMode {
     HardwareMapping.Intake intake = robot.new Intake();
     HardwareMapping.Outtake outtake = robot.new Outtake();
     enum traj {
-        TRAJ1_StartToLine,
-        TRAJ2_MiddleLineToStack,
+        TRAJ1_StartToLine("TRAJ1_StartToLine"),
+        TRAJ2_MiddleLineToStack("TRAJ2_MiddleLineToStack"),
 
-        TRAJ3_StackToMiddleBackboard,
-        TRAJ4_MiddleBackboardToStack,
+        TRAJ3_StackToMiddleBackboard("TRAJ3_StackToMiddleBackboard"),
+        TRAJ4_MiddleBackboardToStack("TRAJ4_MiddleBackboardToStack"),
 
-        TRAJ5_StackToRightBackboard,
-        TRAJ6_RightBackboardToStack,
+        TRAJ5_StackToRightBackboard("TRAJ5_StackToRightBackboard"),
+        TRAJ6_RightBackboardToStack("TRAJ6_RightBackboardToStack"),
 
-        TRAJ7_ParkRight,
-        IDLE
+        TRAJ7_ParkRight("TRAJ7_ParkRight"),
+        IDLE("IDLE");
+
+        public final String trajName;
+
+        traj(String trajName){
+            this.trajName = trajName;
+        }
     }
 
     Pose2d stackPose = new Pose2d(-57, -36, Math.toRadians(180)),
