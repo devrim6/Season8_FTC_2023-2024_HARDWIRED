@@ -126,7 +126,7 @@ public class TeleOpDrive extends LinearOpMode {
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         int intakeLevel = 1;
-        long startTime = System.currentTimeMillis(), currentTime = startTime;
+        long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = HardwareMapping.ledState.OFF, upperSensorState = HardwareMapping.ledState.OFF;
         //TelemetryPacket packet = new TelemetryPacket();
         //Canvas fieldOverlay = packet.fieldOverlay();
