@@ -153,7 +153,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                                 intake.sensingOff(),
                                 intake.angle(1)
                         ),
-                        outtake.runToPosition(HardwareMapping.liftHeight.LOW)
+                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
                 .splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
                 .build();
