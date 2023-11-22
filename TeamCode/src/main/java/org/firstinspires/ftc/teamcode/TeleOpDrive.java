@@ -100,7 +100,7 @@ public class TeleOpDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
-        //add photonFTC (done)
+        //add photonFTC (NOT UPDATED, DONT IMPLEMENT YET)
         //masurare amperaj motoare glisiera pt determinare gear ratio optim la viteza, afaik max 4a, uitate pe spec sheet la rev
         //recalibrare pozitie cu camera april tags la backboard, triunghiulare maybe? look into it, experimenteaza cate tag-uri se vad intrun frame
         //daca localizarea ii accurate la sfarsit (cat de cat) incearca sa faci o traiectorie pt locul de lansat avion daca le trebuie la driveri, si pt hanging daca nu
