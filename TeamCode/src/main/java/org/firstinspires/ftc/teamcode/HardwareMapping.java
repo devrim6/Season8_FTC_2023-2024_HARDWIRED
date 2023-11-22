@@ -353,7 +353,8 @@ public class HardwareMapping {
                                 outtakeClawUpper.setPosition(0);
                                 break;
                         }
-                        return false;}
+                        return false;
+                    }
                 };}
             public Action bottomHook(String state){
                 return new Action() {
@@ -367,7 +368,8 @@ public class HardwareMapping {
                                 outtakeClawBottom.setPosition(0);
                                 break;
                         }
-                        return false;}
+                        return false;
+                    }
                 };}
 
         /**
@@ -511,7 +513,7 @@ public class HardwareMapping {
                     ledState upperSensorState, bottomSensorState;
                     upperSensorState = checkColorRange("upper");
                     bottomSensorState = checkColorRange("bottom");
-                    if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
+                    if(!upperSensorState.equals(ledState.OFF) && !bottomSensorState.equals(ledState.OFF)) {
                         if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                             Actions.runBlocking(new ParallelAction(
                                     outtake.bottomHook("closed"),

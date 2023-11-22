@@ -72,7 +72,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                                         outtake.pivot(60, 60),
                                         outtake.roll(60, 60)
                                 ),
-                                outtake.yaw(90)
+                                outtake.yaw(90),
+                                outtake.latch("open")
                         ),
                         intake.sensingOff()
                 ))
@@ -82,6 +83,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new SequentialAction(
+                        outtake.latch("closed"),
                         outtake.yaw(0),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
@@ -106,7 +108,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         new ParallelAction(
                                 outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                                 outtake.pivot(60, 60),
-                                outtake.roll(60, 60)
+                                outtake.roll(60, 60),
+                                outtake.latch("open")
                         ),
                         outtake.yaw(90),
                         intake.sensingOff()
@@ -118,6 +121,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new SequentialAction(
                         outtake.yaw(0),
+                        outtake.latch("closed"),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
@@ -137,21 +141,22 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
                                 outtake.yaw(0),
+                                outtake.latch("closed"),
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open"),
-                                intake.sensingOff()
+                                intake.sensingOff(),
+                                intake.angle(1)
                         ),
                         outtake.runToPosition(HardwareMapping.liftHeight.LOW)
                 ))
                 .splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
-        Pose2d nextPose;
-
         waitForStart();
 
         if(isStopRequested()) return;
 
+        Pose2d nextPose;
         switch (elementPosition) {
             case "left":
                 Actions.runBlocking(TRAJ1_LeftLine);
@@ -196,6 +201,11 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     if(!drive.isBusy()){
                         currentTraj = traj.TRAJ4_MiddleBackboardToStack;
                         Actions.runBlocking(new ParallelAction(
+                                outtake.bottomHook("open"),
+                                outtake.upperHook("open")
+                        ));
+                        sleep(200);
+                        Actions.runBlocking(new ParallelAction(
                                 TRAJ4_MiddleBackboardToStack,      // Just in case, stop the intake
                                 intake.stop()                      // then start it again in the trajectory
                         ));
@@ -211,6 +221,11 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 case TRAJ5_StackToRightBackboard:
                     if(!drive.isBusy()){
                         cycleCounter++;
+                        Actions.runBlocking(new ParallelAction(
+                                outtake.bottomHook("open"),
+                                outtake.upperHook("open")
+                        ));
+                        sleep(200);
                         if(cycleCounter == 1) {                        // If on the first cycle of right
                             currentTraj = traj.TRAJ6_RightBackboardToStack;
                             Actions.runBlocking(new ParallelAction(

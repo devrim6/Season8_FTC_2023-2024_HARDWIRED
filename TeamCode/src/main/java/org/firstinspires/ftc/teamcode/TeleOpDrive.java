@@ -142,7 +142,7 @@ public class TeleOpDrive extends LinearOpMode {
         //Funky time/sugiuc
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
-            Pose2d currentPose = drive.pose;                            // memory management, don't call drive pose too much
+            Pose2d currentPose = drive.pose;                            // Memory management, don't call drive pose too much
             switch(currentMode){
                 case TELEOP:
                     PoseVelocity2d currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
@@ -249,12 +249,14 @@ public class TeleOpDrive extends LinearOpMode {
                     bottomSensorState = robot.checkColorRange("bottom");
                     Actions.runBlocking(new ParallelAction(
                             outtake.bottomHook("closed"), outtake.upperHook("closed"),
-                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState)
+                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState),
+                            intake.sensingOff()
                     ));
                 }
                 else Actions.runBlocking(new ParallelAction(
                         outtake.bottomHook("open"), outtake.upperHook("open"),
-                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF)
+                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF),
+                        intake.sensingOn()
                 ));
             }
 
@@ -273,9 +275,15 @@ public class TeleOpDrive extends LinearOpMode {
             if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
                 isIntakePowered=!isIntakePowered;
                 if(isIntakePowered){
-                    Actions.runBlocking(intake.powerOn());
+                    Actions.runBlocking(new ParallelAction(
+                            intake.powerOn(),
+                            intake.sensingOn()
+                    ));
                     intakeManualControl = true;
-                } else Actions.runBlocking(intake.stop());
+                } else Actions.runBlocking(new ParallelAction(
+                        intake.stop(),
+                        intake.sensingOff()
+                ));
             }
 
             //Intake level adjustment
@@ -298,27 +306,6 @@ public class TeleOpDrive extends LinearOpMode {
                     if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
                     else Actions.runBlocking(robot.hangingEngage("hang"));
                 }
-            }
-
-
-
-            //If intake is running and two pixels are already in then reverse the intake and lower the hooks
-            //TODO: implement independent closing in case if one hook is engaged and the other is not, priority is the closed hook
-            if(isIntakePowered && intakeManualControl){
-                upperSensorState = robot.checkColorRange("upper");
-                bottomSensorState = robot.checkColorRange("bottom");
-                if(!upperSensorState.equals(HardwareMapping.ledState.OFF) && !bottomSensorState.equals(HardwareMapping.ledState.OFF)) {
-                    if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                        Actions.runBlocking(new ParallelAction(
-                                outtake.bottomHook("closed"),
-                                outtake.upperHook("closed")
-                        ));
-                        Actions.runBlocking(intake.reverse());                  // Reverse intake to filter out potential third pixel
-                        areHooksEngaged = true;                                 // todo: implement beam break
-                        isIntakePowered = false;
-                        intakeManualControl = false;
-                    }
-                } else currentTime = System.currentTimeMillis();
             }
 
             robot.gamepad1Ex.readButtons();                 // Bulk reads the gamepad
