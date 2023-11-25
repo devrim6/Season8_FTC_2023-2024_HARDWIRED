@@ -54,7 +54,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
         robot.resetEncoder();
 
         Action TRAJ1_MiddleLine = drive.actionBuilder(drive.pose)
-                .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(80))
                 //displacement markers and all that stuff
                 .build();
         Action TRAJ1_LeftLine = drive.actionBuilder(drive.pose)

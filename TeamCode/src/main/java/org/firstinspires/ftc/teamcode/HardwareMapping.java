@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -382,36 +383,24 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                    slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     switch(direction){
                         case HIGH:
-                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(24*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(24*TICKS_PER_CM_Z));
-                            slideMotorRight.setPower(1);
-                            slideMotorLeft.setPower(1);
                         case MIDDLE:
-                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(10*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(10*TICKS_PER_CM_Z));
-                            slideMotorRight.setPower(1);
-                            slideMotorLeft.setPower(1);
                         case LOW:
-                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(5*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(5*TICKS_PER_CM_Z));
-                            slideMotorRight.setPower(1);
-                            slideMotorLeft.setPower(1);
                         case GROUND:
-                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                             slideMotorLeft.setTargetPosition((int)(0*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(0*TICKS_PER_CM_Z));
-                            slideMotorRight.setPower(1);
-                            slideMotorLeft.setPower(1);
                     }
+                    slideMotorRight.setPower(1);
+                    slideMotorLeft.setPower(1);
                     return false;
                 }
             };}
@@ -515,9 +504,11 @@ public class HardwareMapping {
                     bottomSensorState = checkColorRange("bottom");
                     if(!upperSensorState.equals(ledState.OFF) && !bottomSensorState.equals(ledState.OFF)) {
                         if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                            Actions.runBlocking(new ParallelAction(
-                                    outtake.bottomHook("closed"),
-                                    outtake.upperHook("closed"),
+                            Actions.runBlocking(new SequentialAction(
+                                    new ParallelAction(
+                                            outtake.bottomHook("closed"),
+                                            outtake.upperHook("closed")
+                                    ),
                                     reverse()
                             ));                                                     // Reverse intake to filter out
                             isIntakePowered = true;                                 // potential third pixel

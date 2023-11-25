@@ -13,7 +13,10 @@ public class MeepMeepTesting {
         robot.meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(robot.AutoStangaRedBottom)
+                //.addEntity(robot.AutoDreaptaRedBottom)
+                //.addEntity(robot.AutoStangaRedBottom)
+                .addEntity(robot.AutoStangaRedUpper)
+                .setAxesInterval(10)
                 .start();
     }
 }

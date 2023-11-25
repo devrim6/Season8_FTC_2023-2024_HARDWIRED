@@ -116,11 +116,15 @@ public class TeleOpDrive extends LinearOpMode {
         robot.gamepadInit(gamepad1, gamepad2);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
-        Actions.runBlocking(outtake.bottomHook("closed"), outtake.upperHook("closed")); //todo: test if you have pixels at the end of auto,
+        Actions.runBlocking(new ParallelAction(
+                outtake.bottomHook("open"), outtake.upperHook("open")
+        )); //todo: test if you have pixels at the end of auto,
                                                                                                    // adjust this accordingly
         Actions.runBlocking(outtake.yaw(0));
-        Actions.runBlocking(robot.setLedColour("upper", PoseTransfer.upperLedState),
-                            robot.setLedColour("bottom", PoseTransfer.bottomLedState));
+        Actions.runBlocking(new ParallelAction(
+                robot.setLedColour("upper", PoseTransfer.upperLedState),
+                robot.setLedColour("bottom", PoseTransfer.bottomLedState)
+        ));
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
