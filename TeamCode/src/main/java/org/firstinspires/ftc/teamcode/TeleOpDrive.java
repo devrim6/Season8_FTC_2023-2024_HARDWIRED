@@ -128,8 +128,8 @@ public class TeleOpDrive extends LinearOpMode {
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
-        boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
-        int intakeLevel = 1;
+        boolean isIntakePowered = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+        int intakeLevel = PoseTransfer.intakeLevel;
         long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
         //TelemetryPacket packet = new TelemetryPacket();
@@ -292,7 +292,6 @@ public class TeleOpDrive extends LinearOpMode {
                             intake.powerOn(),
                             intake.sensingOn()
                     ));
-                    intakeManualControl = true;
                 } else Actions.runBlocking(new ParallelAction(
                         intake.stop(),
                         intake.sensingOff()
@@ -329,11 +328,11 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("pitch: ", pitch);
             telemetry.addData("heading", currentPose.heading);
             telemetry.addData("Heading target: ", headingTarget);
-            telemetry.addData("Pixel upper: ", upperSensorState.toString(), "\nPixel bottom: ", bottomSensorState.toString());
+            telemetry.addData("Pixel upper: ", upperSensorState.toString());
+            telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
             telemetry.addLine("\n---DEBUG---\n");
             telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("intakeManualControl: ", intakeManualControl);
             telemetry.addData("isIntakePowered: ", isIntakePowered);
             telemetry.addData("areHooksEngaged: ", areHooksEngaged);
             telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);

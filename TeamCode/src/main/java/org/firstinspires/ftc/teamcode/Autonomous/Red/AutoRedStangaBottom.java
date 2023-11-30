@@ -52,7 +52,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(58, -34.5, Math.toRadians(270)));
         robot.init(hardwareMap);
-        robot.resetEncoder();
+        robot.resetEncoderAuto();
 
         Action TRAJ1_MiddleLine = drive.actionBuilder(drive.pose)
                 .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(80))

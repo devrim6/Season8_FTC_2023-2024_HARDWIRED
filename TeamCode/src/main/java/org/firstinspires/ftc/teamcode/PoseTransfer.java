@@ -9,5 +9,6 @@ public class PoseTransfer {
     public static double glisieraTicks2 = 0;
     public static ledState bottomLedState = HardwareMapping.ledState.OFF;
     public static ledState upperLedState = HardwareMapping.ledState.OFF;
+    public static int intakeLevel = 1;
     public PoseTransfer() {}
 }
