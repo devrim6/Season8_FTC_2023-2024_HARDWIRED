@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -121,7 +122,7 @@ public class TeleOpDrive extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 robot.setLedColour("upper", PoseTransfer.upperLedState),
                 robot.setLedColour("bottom", PoseTransfer.bottomLedState),
-                outtake.yaw(0),
+                outtake.yaw(DefVal.yaw0),
                 outtake.bottomHook("open"), outtake.upperHook("open")
         ));
 
@@ -179,31 +180,36 @@ public class TeleOpDrive extends LinearOpMode {
             //Slide controls
             //Driver 1 and 2
             if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(new SequentialAction(
-                    outtake.yaw(0),
+                    outtake.yaw(DefVal.yaw0),
                     outtake.latch("closed"),
+                    outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
+                    outtake.roll(DefVal.roll0_1, DefVal.roll0_2),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             ));
             if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
                     new ParallelAction(
-                            outtake.pivot(0.4, -0.4),
-                            outtake.yaw(90),
+                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
+                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
             if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                     new ParallelAction(
-                            outtake.pivot(0.4, -0.4),
-                            outtake.yaw(90),
+                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
+                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
             if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                     new ParallelAction(
-                            outtake.pivot(0.4, -0.4),
-                            outtake.yaw(90),
+                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
+                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
@@ -271,10 +277,10 @@ public class TeleOpDrive extends LinearOpMode {
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A)){
                 isOuttakeRotated=!isOuttakeRotated;
                 if(isOuttakeRotated) Actions.runBlocking(new ParallelAction(
-                        outtake.yaw(90), outtake.latch("open")
+                        outtake.yaw(DefVal.yaw90), outtake.latch("open")
                 ));
                 else Actions.runBlocking(new ParallelAction(
-                        outtake.yaw(0), outtake.latch("closed")
+                        outtake.yaw(DefVal.yaw0), outtake.latch("closed")
                 ));
             }
 

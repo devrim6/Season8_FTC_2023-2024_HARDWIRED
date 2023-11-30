@@ -23,6 +23,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 
 public class HardwareMapping {
@@ -116,7 +117,7 @@ public class HardwareMapping {
         upperLEDred = hwMap.get(DigitalChannel.class, "upperLEDred");
 
         //Plane armed position
-        planeLauncherServo.setPosition(0.5);
+        planeLauncherServo.setPosition(DefVal.planeOff);
 
     }
 
@@ -259,7 +260,7 @@ public class HardwareMapping {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                planeLauncherServo.setPosition(0.1);
+                planeLauncherServo.setPosition(DefVal.planeOn);
                 return false;
             }
         };
@@ -270,11 +271,11 @@ public class HardwareMapping {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch(state){
                     case "up":
-                        hangMotor.setTargetPosition((int)(15*TICKS_PER_CM_Z));
+                        hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
                         hangMotor.setPower(1);
                         break;
                     case "hang":
-                        hangMotor.setTargetPosition((int)(10*TICKS_PER_CM_Z));
+                        hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
                         //todo: set velocity? seems like setpower() already does that in runtoposition mode
                         hangMotor.setPower(0.3);
                         break;
@@ -338,10 +339,10 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch(state){
                         case "open":
-                            outtakeLatch.setPosition(0.5);
+                            outtakeLatch.setPosition(DefVal.latchOpen);
                             break;
                         case "closed" :
-                            outtakeLatch.setPosition(0);
+                            outtakeLatch.setPosition(DefVal.latchClosed);
                             break;
                     }
                     return false;
@@ -353,10 +354,10 @@ public class HardwareMapping {
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         switch(state){
                             case "open":
-                                outtakeClawUpper.setPosition(0.5);
+                                outtakeClawUpper.setPosition(DefVal.upperHookOpen);
                                 break;
                             case "closed" :
-                                outtakeClawUpper.setPosition(0);
+                                outtakeClawUpper.setPosition(DefVal.upperHookClosed);
                                 break;
                         }
                         return false;
@@ -368,10 +369,10 @@ public class HardwareMapping {
                     public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                         switch(state){
                             case "open":
-                                outtakeClawBottom.setPosition(0.5);
+                                outtakeClawBottom.setPosition(DefVal.bottomHookOpen);
                                 break;
                             case "closed" :
-                                outtakeClawBottom.setPosition(0);
+                                outtakeClawBottom.setPosition(DefVal.bottomHookClosed);
                                 break;
                         }
                         return false;
@@ -392,17 +393,17 @@ public class HardwareMapping {
                     slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     switch(direction){
                         case HIGH:
-                            slideMotorLeft.setTargetPosition((int)(24*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition(-(int)(24*TICKS_PER_CM_Z));
+                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
                         case MIDDLE:
-                            slideMotorLeft.setTargetPosition((int)(10*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition(-(int)(10*TICKS_PER_CM_Z));
+                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                         case LOW:
-                            slideMotorLeft.setTargetPosition((int)(5*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition(-(int)(5*TICKS_PER_CM_Z));
+                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
                         case GROUND:
-                            slideMotorLeft.setTargetPosition((int)(0*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition(-(int)(0*TICKS_PER_CM_Z));
+                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
+                            slideMotorRight.setTargetPosition(-(int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
                     }
                     slideMotorRight.setPower(1);
                     slideMotorLeft.setPower(1);
@@ -418,8 +419,8 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intakeMotor.setPower(0.5);
-                    intakeServoRoller.setPower(-0.3);
+                    intakeMotor.setPower(DefVal.intakeMotorPower);
+                    intakeServoRoller.setPower(-DefVal.intakeRollerPower);
                     return false;
                 }
             };}
@@ -432,8 +433,8 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intakeMotor.setPower(-0.5);
-                    intakeServoRoller.setPower(0.3);
+                    intakeMotor.setPower(-DefVal.intakeMotorPower);
+                    intakeServoRoller.setPower(DefVal.LiftHIGH);
                     return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
                 }
             };}
@@ -461,28 +462,28 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch (level){
                         case 1:
-                            intakeServoLeft.setPosition(0);
-                            intakeServoRight.setPosition(0);
+                            intakeServoLeft.setPosition(DefVal.iLevel1_1);
+                            intakeServoRight.setPosition(DefVal.iLevel1_2);
                             break;
                         case 2:
-                            intakeServoLeft.setPosition(0.2);
-                            intakeServoRight.setPosition(-0.2);
+                            intakeServoLeft.setPosition(DefVal.iLevel2_1);
+                            intakeServoRight.setPosition(-DefVal.iLevel2_2);
                             break;
                         case 3:
-                            intakeServoLeft.setPosition(0.4);
-                            intakeServoRight.setPosition(-0.4);
+                            intakeServoLeft.setPosition(DefVal.iLevel3_1);
+                            intakeServoRight.setPosition(-DefVal.iLevel3_2);
                             break;
                         case 4:
-                            intakeServoLeft.setPosition(0.6);
-                            intakeServoRight.setPosition(-0.6);
+                            intakeServoLeft.setPosition(DefVal.iLevel4_1);
+                            intakeServoRight.setPosition(-DefVal.iLevel4_2);
                             break;
                         case 5:
-                            intakeServoLeft.setPosition(0.8);
-                            intakeServoRight.setPosition(-0.8);
+                            intakeServoLeft.setPosition(DefVal.iLevel5_1);
+                            intakeServoRight.setPosition(-DefVal.iLevel5_2);
                             break;
                         case 6:             // is for auto init, goes up to 90 degrees perpendicular
-                            intakeServoLeft.setPosition(1);
-                            intakeServoRight.setPosition(-1);
+                            intakeServoLeft.setPosition(DefVal.iLevel6_1);
+                            intakeServoRight.setPosition(-DefVal.iLevel6_2);
                             break;
                     }                       // setPosition is async, action can be stopped immediately since
                     return false;           // it will run in another thread

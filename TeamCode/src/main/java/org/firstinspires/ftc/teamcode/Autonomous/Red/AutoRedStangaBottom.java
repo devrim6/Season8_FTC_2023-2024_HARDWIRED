@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.HardwareMapping;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
+import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 @Autonomous(name = "AutoRedStangaBottom")
 public class AutoRedStangaBottom extends LinearOpMode {
@@ -75,10 +76,10 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         new SequentialAction(
                                 new ParallelAction(
                                         outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                                        outtake.pivot(60, 60),
-                                        outtake.roll(60, 60)
+                                        outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
+                                        outtake.roll(DefVal.roll60_1, DefVal.roll60_2)
                                 ),
-                                outtake.yaw(90),
+                                outtake.yaw(DefVal.yaw90),
                                 outtake.latch("open")
                         ),
                         intake.sensingOff()
@@ -89,8 +90,14 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new SequentialAction(
-                        outtake.latch("closed"),
-                        outtake.yaw(0),
+                        new ParallelAction(
+                                outtake.latch("closed"),
+                                outtake.yaw(DefVal.yaw0)
+                        ),
+                        new ParallelAction(
+                                outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
+                                outtake.roll(DefVal.roll0_1, DefVal.roll0_2)
+                        ),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
@@ -110,14 +117,16 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                .afterDisp(10, new SequentialAction(
-                        new ParallelAction(
-                                outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                                outtake.pivot(60, 60),
-                                outtake.roll(60, 60),
+                .afterDisp(10, new ParallelAction(
+                        new SequentialAction(
+                                new ParallelAction(
+                                        outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                        outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
+                                        outtake.roll(DefVal.roll60_1, DefVal.roll60_2)
+                                ),
+                                outtake.yaw(DefVal.yaw90),
                                 outtake.latch("open")
                         ),
-                        outtake.yaw(90),
                         intake.sensingOff()
                 ))
                 .build();
@@ -126,7 +135,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new SequentialAction(
-                        outtake.yaw(0),
+                        outtake.yaw(DefVal.yaw0),
                         outtake.latch("closed"),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
@@ -153,6 +162,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                                 intake.sensingOff(),
                                 intake.angle(1)
                         ),
+                        outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
+                        outtake.roll(DefVal.roll0_1, DefVal.roll0_2),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
                 .splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
