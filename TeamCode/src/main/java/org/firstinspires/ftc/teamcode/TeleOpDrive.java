@@ -55,6 +55,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   B         - Hanging
      *   A         - Rotate outtake 90 degrees
      *   Left/Right stick - Base controls
+     *   Right stick press down - Launch plane
      *   DPAD left     - Lift ground
      *   DPAD down     - Lift 1st level
      *   DPAD right    - Lift 2nd level
@@ -64,10 +65,11 @@ public class TeleOpDrive extends LinearOpMode {
      *   DRIVER 2
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
-     *   B         - Launch plane
+     *   B         -
      *   A         - Rotate outtake 90 degrees
      *   Left stick Y - manual slide control
      *   Left stick X - manual outtake pitch (keep 60 degree angle (in progress))
+     *   Right stick press down - Launch plane
      *   DPAD left     - Lift ground
      *   DPAD down     - Lift 1st level
      *   DPAD right    - Lift 2nd level
@@ -117,13 +119,10 @@ public class TeleOpDrive extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
-                outtake.bottomHook("open"), outtake.upperHook("open")
-        )); //todo: test if you have pixels at the end of auto,
-                                                                                                   // adjust this accordingly
-        Actions.runBlocking(outtake.yaw(0));
-        Actions.runBlocking(new ParallelAction(
                 robot.setLedColour("upper", PoseTransfer.upperLedState),
-                robot.setLedColour("bottom", PoseTransfer.bottomLedState)
+                robot.setLedColour("bottom", PoseTransfer.bottomLedState),
+                outtake.yaw(0),
+                outtake.bottomHook("open"), outtake.upperHook("open")
         ));
 
         // Variables
@@ -131,7 +130,7 @@ public class TeleOpDrive extends LinearOpMode {
         boolean isIntakePowered = false, intakeManualControl = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         int intakeLevel = 1;
         long startTime = System.currentTimeMillis();
-        HardwareMapping.ledState bottomSensorState = HardwareMapping.ledState.OFF, upperSensorState = HardwareMapping.ledState.OFF;
+        HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
         //TelemetryPacket packet = new TelemetryPacket();
         //Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -147,27 +146,31 @@ public class TeleOpDrive extends LinearOpMode {
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             Pose2d currentPose = drive.pose;                            // Memory management, don't call drive pose too much
-            switch(currentMode){
+            double pitch = drive.imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES);
+            double TILT_POWER = 1;
+            PoseVelocity2d currentVelPose = null;
+
+            if(pitch > 10) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
+            else if (pitch < -15) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
+            else switch(currentMode){
                 case TELEOP:
-                    PoseVelocity2d currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
+                    currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
                                     -gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
                             -gamepad2.right_stick_x/(1+triggerSlowdown*3)
                     );
-                    drive.setDrivePowers(currentVelPose);
-
                     break;
                 case HEADING_LOCK:
                     double outputVel = HEADING_PIDF.calculate(currentPose.heading.log());
-                    drive.setDrivePowers(new PoseVelocity2d(
+                    currentVelPose = new PoseVelocity2d(
                             new Vector2d(-gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
                             outputVel
-                    ));
+                    );
                     break;
             }
-
+            drive.setDrivePowers(currentVelPose);
             drive.updatePoseEstimate();
 
 
@@ -301,7 +304,7 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                 if(System.currentTimeMillis() > startTime + 50000) Actions.runBlocking(robot.launchPlane());
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
@@ -317,6 +320,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
+            telemetry.addData("pitch: ", pitch);
             telemetry.addData("heading", currentPose.heading);
             telemetry.addData("Heading target: ", headingTarget);
             telemetry.addData("Pixel upper: ", upperSensorState.toString(), "\nPixel bottom: ", bottomSensorState.toString());

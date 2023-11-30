@@ -5,7 +5,9 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -16,8 +18,11 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
 public class HardwareMapping {
@@ -437,7 +442,7 @@ public class HardwareMapping {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(0);
-                    intakeServoRoller.setPower(0);
+                    intakeServoRoller.setPower(0); //todo: see if you should put intake at lvl6
                     return false;
                 }
             };}
@@ -485,7 +490,7 @@ public class HardwareMapping {
             };}
 
         boolean isIntakePowered=false;
-        double currentTime = System.currentTimeMillis();
+        double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
         /**
@@ -502,19 +507,33 @@ public class HardwareMapping {
                     ledState upperSensorState, bottomSensorState;
                     upperSensorState = checkColorRange("upper");
                     bottomSensorState = checkColorRange("bottom");
-                    if(!upperSensorState.equals(ledState.OFF) && !bottomSensorState.equals(ledState.OFF)) {
-                        if(System.currentTimeMillis()> currentTime + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                            Actions.runBlocking(new SequentialAction(
-                                    new ParallelAction(
-                                            outtake.bottomHook("closed"),
-                                            outtake.upperHook("closed")
-                                    ),
-                                    reverse()
-                            ));                                                     // Reverse intake to filter out
-                            isIntakePowered = true;                                 // potential third pixel
-                            return false;                                           // todo: implement beam break
+                    boolean upper = upperSensorState.equals(ledState.OFF), bottom = bottomSensorState.equals(ledState.OFF);
+
+                    if(!upper) {
+                        if(System.currentTimeMillis()> currentTime1 + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
+                            Actions.runBlocking(outtake.upperHook("closed"));                                                     // Reverse intake to filter out
                         }
-                    } else currentTime = System.currentTimeMillis();
+                    } else currentTime1 = System.currentTimeMillis();
+
+                    if(!bottom) {
+                        if(System.currentTimeMillis()> currentTime2 + 500){
+                            Actions.runBlocking(outtake.bottomHook("closed"));
+                        }
+                    } else currentTime2 = System.currentTimeMillis();
+
+                    if(!upper && !bottom){
+                        Actions.runBlocking(new SequentialAction(
+                                new ParallelAction(
+                                        outtake.bottomHook("closed"),
+                                        outtake.upperHook("closed")
+                                ),
+                                reverse(),
+                                stop()
+                        ));                                                     // Reverse intake to filter out
+                        isIntakePowered = true;                                 // potential third pixel
+                        return false;                                           // todo: implement beam break
+                    }
+
                     return !isIntakePowered;
                 }
             };
