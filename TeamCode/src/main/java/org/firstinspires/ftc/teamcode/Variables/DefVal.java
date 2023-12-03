@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.Variables;
 
 public class DefVal {
+    //in ms
+    public static int endgameTime = 50000;
+
     public static double planeOff = 0.5;
     public static double planeOn = 0.1;
 

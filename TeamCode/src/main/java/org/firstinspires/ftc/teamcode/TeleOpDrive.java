@@ -327,10 +327,10 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
-                if(System.currentTimeMillis() > startTime + 50000) Actions.runBlocking(robot.launchPlane());
+                if(System.currentTimeMillis() > startTime + DefVal.endgameTime) Actions.runBlocking(robot.launchPlane());
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > startTime + 50000){
+                if(System.currentTimeMillis() > startTime + DefVal.endgameTime){
                     isHangingUp=!isHangingUp;
                     if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
                     else Actions.runBlocking(robot.hangingEngage("hang"));
