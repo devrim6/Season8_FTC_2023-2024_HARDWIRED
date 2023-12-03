@@ -424,6 +424,8 @@ public class HardwareMapping {
             };}
     }
 
+    public static boolean a=false;
+
     public class Intake {
         public Intake() {}      // The constructor
 
@@ -502,7 +504,7 @@ public class HardwareMapping {
                 }
             };}
 
-        boolean isIntakePowered=false, isOneHookClosed=false;
+        boolean isIntakePowered=false;
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
@@ -525,14 +527,14 @@ public class HardwareMapping {
                     if(!upper) {
                         if(System.currentTimeMillis()> currentTime1 + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
                             Actions.runBlocking(outtake.upperHook("closed"));
-                            isOneHookClosed=true;                                   // Reverse intake to filter out
+                            a=true;                                         // Reverse intake to filter out
                         }
                     } else currentTime1 = System.currentTimeMillis();
 
                     if(!bottom) {
                         if(System.currentTimeMillis()> currentTime2 + 500){
                             Actions.runBlocking(outtake.bottomHook("closed"));
-                            isOneHookClosed=true;
+                            a=true;
                         }
                     } else currentTime2 = System.currentTimeMillis();
 
@@ -546,7 +548,7 @@ public class HardwareMapping {
                                 stop()
                         ));                                                     // Reverse intake to filter out
                         isIntakePowered = true;
-                        isOneHookClosed=true;                                   // potential third pixel
+                        a = true;                                               // potential third pixel
                         return false;                                           // todo: implement beam break
                     }
 
@@ -568,8 +570,8 @@ public class HardwareMapping {
             };
         }
 
-        public void setCurrentHook(boolean a){
-            this.isOneHookClosed=a;
+        public void setCurrentHook(boolean aa){
+            a=aa;
         }
 
         public boolean isSensingOnline() {return !isIntakePowered;}

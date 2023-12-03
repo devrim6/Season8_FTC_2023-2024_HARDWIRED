@@ -261,7 +261,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Hook engage control
             // If button is pressed, engage hooks and update LEDs to OFF or the colour of the locked pixel
-            boolean isHook = intake.isOneHookClosed;
+            boolean isHook = HardwareMapping.a;
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                 intake.setCurrentHook(!isHook);
                 if(isHook) {
