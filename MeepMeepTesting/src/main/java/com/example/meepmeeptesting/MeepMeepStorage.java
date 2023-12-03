@@ -7,7 +7,7 @@ import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepStorage {
-    MeepMeep meepMeep = new MeepMeep(800);
+    MeepMeep meepMeep = new MeepMeep(600);
     RoadRunnerBotEntity AutoStangaRedBottom = new DefaultBotBuilder(meepMeep)
             // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
             .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
