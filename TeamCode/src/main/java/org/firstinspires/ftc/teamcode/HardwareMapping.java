@@ -25,6 +25,8 @@ import com.arcrobotics.ftclib.hardware.SensorColor;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+
 
 public class HardwareMapping {
     /**
@@ -387,6 +389,7 @@ public class HardwareMapping {
                     }
                 };}
 
+        liftHeight currentHeight = liftHeight.LOW;
         /**
          * Takes the required height of the lift from the call and sets the slide to that position.
          * Ticks are calculated using TICKS_PER_CM_Z, which converts cm to motor ticks.
@@ -394,6 +397,7 @@ public class HardwareMapping {
          * @return false
          */
         public Action runToPosition(liftHeight direction){
+            this.currentHeight = direction;
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -498,7 +502,7 @@ public class HardwareMapping {
                 }
             };}
 
-        boolean isIntakePowered=false;
+        boolean isIntakePowered=false, isOneHookClosed=false;
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
@@ -520,13 +524,15 @@ public class HardwareMapping {
 
                     if(!upper) {
                         if(System.currentTimeMillis()> currentTime1 + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
-                            Actions.runBlocking(outtake.upperHook("closed"));                                                     // Reverse intake to filter out
+                            Actions.runBlocking(outtake.upperHook("closed"));
+                            isOneHookClosed=true;                                   // Reverse intake to filter out
                         }
                     } else currentTime1 = System.currentTimeMillis();
 
                     if(!bottom) {
                         if(System.currentTimeMillis()> currentTime2 + 500){
                             Actions.runBlocking(outtake.bottomHook("closed"));
+                            isOneHookClosed=true;
                         }
                     } else currentTime2 = System.currentTimeMillis();
 
@@ -539,7 +545,8 @@ public class HardwareMapping {
                                 reverse(),
                                 stop()
                         ));                                                     // Reverse intake to filter out
-                        isIntakePowered = true;                                 // potential third pixel
+                        isIntakePowered = true;
+                        isOneHookClosed=true;                                   // potential third pixel
                         return false;                                           // todo: implement beam break
                     }
 
@@ -561,6 +568,11 @@ public class HardwareMapping {
             };
         }
 
+        public void setCurrentHook(boolean a){
+            this.isOneHookClosed=a;
+        }
+
         public boolean isSensingOnline() {return !isIntakePowered;}
+
     }
 }

@@ -150,7 +150,7 @@ public class MeepMeepStorage {
                             //MIDDLE
                             .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(80))
                             .setReversed(true)
-                            .splineTo(new Vector2d(-40, -36), Math.toRadians(180))
+                            .splineTo(new Vector2d(-40, -38), Math.toRadians(180))
                             .splineToConstantHeading(new Vector2d(-57, -25), Math.toRadians(180))
 
                             //LEFT
@@ -163,7 +163,7 @@ public class MeepMeepStorage {
 
                             //stackToMiddle
                             .setReversed(false)
-                            .setTangent(Math.toRadians(50))
+                            .setTangent(Math.toRadians(70))
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToSplineHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))

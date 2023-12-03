@@ -66,7 +66,7 @@ public class TeleOpDrive extends LinearOpMode {
      *   DRIVER 2
      *   X         - Power on/off INTAKE
      *   Y         - Engage hooks on/off
-     *   B         -
+     *   B         - Reverse intake
      *   A         - Rotate outtake 90 degrees
      *   Left stick Y - manual slide control
      *   Left stick X - manual outtake pitch (keep 60 degree angle (in progress))
@@ -128,7 +128,7 @@ public class TeleOpDrive extends LinearOpMode {
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
-        boolean isIntakePowered = false, areHooksEngaged=true, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+        boolean isIntakePowered = false, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
         int intakeLevel = PoseTransfer.intakeLevel;
         long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
@@ -180,10 +180,14 @@ public class TeleOpDrive extends LinearOpMode {
             //Slide controls
             //Driver 1 and 2
             if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(new SequentialAction(
-                    outtake.yaw(DefVal.yaw0),
-                    outtake.latch("closed"),
-                    outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
-                    outtake.roll(DefVal.roll0_1, DefVal.roll0_2),
+                    new ParallelAction(
+                            outtake.yaw(DefVal.yaw0),
+                            outtake.latch("closed")
+                    ),
+                    new ParallelAction(
+                            outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
+                            outtake.roll(DefVal.roll0_1, DefVal.roll0_2)
+                    ),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             ));
             if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(new SequentialAction(
@@ -218,16 +222,18 @@ public class TeleOpDrive extends LinearOpMode {
             //todo: needs testing
             float gp1LeftStickY = gamepad1.left_stick_y;
             float gp1LeftStickX = gamepad1.left_stick_x;
-            if(gp1LeftStickY>0 && robot.slideMotorRight.getCurrentPosition()<= robot.TICKS_PER_CM_Z*25
-                    && robot.slideMotorLeft.getCurrentPosition()<=-robot.TICKS_PER_CM_Z*25){
-                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() + (int)(40 * gp1LeftStickY));
-                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() + (int)(40 * gp1LeftStickY));
+            int motorRightTicks = robot.slideMotorRight.getCurrentPosition(),
+                    motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
+            if(gp1LeftStickY>0 && motorRightTicks<= robot.TICKS_PER_CM_Z*25
+                    && motorLeftTicks<=-robot.TICKS_PER_CM_Z*25){
+                robot.slideMotorRight.setTargetPosition(motorRightTicks + (int)(40 * gp1LeftStickY));
+                robot.slideMotorLeft.setTargetPosition(motorLeftTicks + (int)(40 * gp1LeftStickY));
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
-            } else if(gp1LeftStickY<0 && robot.slideMotorRight.getCurrentPosition()<= 10
-                    && robot.slideMotorLeft.getCurrentPosition()<= -10){
-                robot.slideMotorRight.setTargetPosition(robot.slideMotorRight.getCurrentPosition() - (int)(40 * gp1LeftStickY));
-                robot.slideMotorLeft.setTargetPosition(robot.slideMotorLeft.getCurrentPosition() - (int)(40 * gp1LeftStickY));
+            } else if(gp1LeftStickY<0 && motorRightTicks<= 10
+                    && motorLeftTicks<= -10){
+                robot.slideMotorRight.setTargetPosition(motorRightTicks - (int)(40 * gp1LeftStickY));
+                robot.slideMotorLeft.setTargetPosition(motorLeftTicks - (int)(40 * gp1LeftStickY));
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
             }
@@ -255,9 +261,10 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Hook engage control
             // If button is pressed, engage hooks and update LEDs to OFF or the colour of the locked pixel
+            boolean isHook = intake.isOneHookClosed;
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
-                areHooksEngaged=!areHooksEngaged;
-                if(areHooksEngaged) {
+                intake.setCurrentHook(!isHook);
+                if(isHook) {
                     upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
                     bottomSensorState = robot.checkColorRange("bottom");
                     Actions.runBlocking(new ParallelAction(
@@ -274,13 +281,16 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Outtake 90 degree rotation
-            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A)){
+            if((robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
+                && !outtake.currentHeight.equals(HardwareMapping.liftHeight.LOW)){
                 isOuttakeRotated=!isOuttakeRotated;
                 if(isOuttakeRotated) Actions.runBlocking(new ParallelAction(
-                        outtake.yaw(DefVal.yaw90), outtake.latch("open")
+                        outtake.yaw(DefVal.yaw90),
+                        outtake.latch("open")
                 ));
                 else Actions.runBlocking(new ParallelAction(
-                        outtake.yaw(DefVal.yaw0), outtake.latch("closed")
+                        outtake.yaw(DefVal.yaw0),
+                        outtake.latch("closed")
                 ));
             }
 
@@ -297,6 +307,13 @@ public class TeleOpDrive extends LinearOpMode {
                         intake.sensingOff()
                 ));
             }
+            //Intake reverse control
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)) Actions.runBlocking(
+                    new SequentialAction(
+                            intake.reverse(),
+                            intake.stop()
+                    )
+            );
 
             //Intake level adjustment
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
@@ -331,10 +348,12 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
             telemetry.addLine("\n---DEBUG---\n");
+            telemetry.addData("slideLeft ticks: ", motorLeftTicks);
+            telemetry.addData("slideRight ticks: ", motorRightTicks);
             telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
             telemetry.addData("isIntakePowered: ", isIntakePowered);
-            telemetry.addData("areHooksEngaged: ", areHooksEngaged);
+            telemetry.addData("areHooksEngaged: ", isHook);
             telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
             telemetry.addData("isHangingUp", isHangingUp);
             telemetry.addData("isTeleOP: ", isTeleOP);
