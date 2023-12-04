@@ -493,23 +493,23 @@ public class HardwareMapping {
                             break;
                         case 2:
                             intakeServoLeft.setPosition(DefVal.iLevel2_1);
-                            intakeServoRight.setPosition(-DefVal.iLevel2_2);
+                            intakeServoRight.setPosition(DefVal.iLevel2_2);
                             break;
                         case 3:
                             intakeServoLeft.setPosition(DefVal.iLevel3_1);
-                            intakeServoRight.setPosition(-DefVal.iLevel3_2);
+                            intakeServoRight.setPosition(DefVal.iLevel3_2);
                             break;
                         case 4:
                             intakeServoLeft.setPosition(DefVal.iLevel4_1);
-                            intakeServoRight.setPosition(-DefVal.iLevel4_2);
+                            intakeServoRight.setPosition(DefVal.iLevel4_2);
                             break;
                         case 5:
                             intakeServoLeft.setPosition(DefVal.iLevel5_1);
-                            intakeServoRight.setPosition(-DefVal.iLevel5_2);
+                            intakeServoRight.setPosition(DefVal.iLevel5_2);
                             break;
                         case 6:             // is for auto init, goes up to 90 degrees perpendicular
                             intakeServoLeft.setPosition(DefVal.iLevel6_1);
-                            intakeServoRight.setPosition(-DefVal.iLevel6_2);
+                            intakeServoRight.setPosition(DefVal.iLevel6_2);
                             break;
                     }                       // setPosition is async, action can be stopped immediately since
                     return false;           // it will run in another thread
