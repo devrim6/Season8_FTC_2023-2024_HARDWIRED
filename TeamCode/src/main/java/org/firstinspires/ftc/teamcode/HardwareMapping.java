@@ -13,6 +13,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -66,7 +67,8 @@ public class HardwareMapping {
 
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
-    public SensorColor bottomHookSensor, upperHookSensor;
+    public ColorSensor bottomHookSensor, upperHookSensor;
+    public SensorColor sensorLibrary;
 
     private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
@@ -109,8 +111,8 @@ public class HardwareMapping {
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         /* Sensors */
-        upperHookSensor = ahwMap.get(SensorColor.class, "upperHookSensor");
-        bottomHookSensor = ahwMap.get(SensorColor.class, "bottomHookSensor");
+        upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
+        bottomHookSensor = ahwMap.get(ColorSensor.class, "bottomHookSensor");
 
         /* LEDs */ //Fiecare digital channel vine in perechi, n, n+1
         bottomLEDgreen = hwMap.get(DigitalChannel.class, "bottomLEDgreen");
@@ -152,10 +154,12 @@ public class HardwareMapping {
         float[] hsv = new float[3];
         switch (sensor){
             case "upper":
-                hsv = upperHookSensor.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
+                hsv = sensorLibrary.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
+                upperHookSensor.enableLed(true);
                 break;
             case "bottom":
-                hsv = bottomHookSensor.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
+                hsv = sensorLibrary.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
+                bottomHookSensor.enableLed(true);
                 break;
         }
         if(hsv[0] <= 320 && hsv[0] >= 280) {
@@ -298,11 +302,14 @@ public class HardwareMapping {
     public class Outtake {
         public Outtake() {}                 // The constructor
 
+        /**
+         * Uses the outtake arms, not the box
+         */
         public Action pivot(double angle, double angle2){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakePitchLeft.turnToAngle(-angle);
+                    outtakePitchLeft.turnToAngle(angle);
                     outtakePitchRight.turnToAngle(angle2);
                     return false;
                 }
@@ -313,7 +320,6 @@ public class HardwareMapping {
          * Keeps the outtake box angle at 60 degrees, but the method needs to be called when the box is already
          * at 60 degrees in order for that to work
          * @param angle
-         * @return false
          */
         public Action pivotFixedRoll(double angle){
             return new Action() {
@@ -326,6 +332,9 @@ public class HardwareMapping {
                     return false;
                 }
             };}
+        /**
+         * Rotates outtake box 0 or 90 degrees
+         */
         public Action yaw(double angle){
             return new Action() {
                 @Override
@@ -334,11 +343,14 @@ public class HardwareMapping {
                     return false;
                 }
             };}
+        /**
+         * Uses the outtake box, not arms
+         */
         public Action roll(double angle, double angle2){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakeRollLeft.turnToAngle(-angle);
+                    outtakeRollLeft.turnToAngle(angle);
                     outtakeRollRight.turnToAngle(angle2);
                     return false;
                 }
@@ -556,7 +568,6 @@ public class HardwareMapping {
                 }
             };
         }
-
         /**
          * Turns off the pixel sensing system.
          */
@@ -565,6 +576,8 @@ public class HardwareMapping {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     isIntakePowered=true;                   // This is an action because we need to use it inside a trajectory
+                    upperHookSensor.enableLed(false);
+                    bottomHookSensor.enableLed(false);
                     return false;
                 }
             };

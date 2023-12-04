@@ -100,6 +100,8 @@ public class TeleOpDrive extends LinearOpMode {
     // Declare a PIDF Controller to regulate heading
     private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
                                                                                            //standard way
+    int motorRightTicks, motorLeftTicks, intakeLevel;
+    boolean isHook, isIntakePowered = false, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
@@ -128,10 +130,10 @@ public class TeleOpDrive extends LinearOpMode {
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
-        boolean isIntakePowered = false, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
-        int intakeLevel = PoseTransfer.intakeLevel;
+        intakeLevel = PoseTransfer.intakeLevel;
         long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
+        PoseVelocity2d currentVelPose = new PoseVelocity2d(new Vector2d(0,0),0);
         //TelemetryPacket packet = new TelemetryPacket();
         //Canvas fieldOverlay = packet.fieldOverlay();
 
@@ -148,11 +150,10 @@ public class TeleOpDrive extends LinearOpMode {
         while(opModeIsActive() && !isStopRequested()){
             Pose2d currentPose = drive.pose;                            // Memory management, don't call drive pose too much
             double pitch = drive.imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES);
-            double TILT_POWER = 1;
-            PoseVelocity2d currentVelPose = null;
+            double TILT_POWER = DefVal.TILT_POWER;
 
-            if(pitch > 10) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
-            else if (pitch < -15) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
+            if(pitch > DefVal.pitchPositive) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
+            else if (pitch < DefVal.pitchNegative) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
             else switch(currentMode){
                 case TELEOP:
                     currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
@@ -222,8 +223,8 @@ public class TeleOpDrive extends LinearOpMode {
             //todo: needs testing
             float gp1LeftStickY = gamepad1.left_stick_y;
             float gp1LeftStickX = gamepad1.left_stick_x;
-            int motorRightTicks = robot.slideMotorRight.getCurrentPosition(),
-                    motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
+            motorRightTicks = robot.slideMotorRight.getCurrentPosition();
+            motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
             if(gp1LeftStickY>0 && motorRightTicks<= robot.TICKS_PER_CM_Z*25
                     && motorLeftTicks<=-robot.TICKS_PER_CM_Z*25){
                 robot.slideMotorRight.setTargetPosition(motorRightTicks + (int)(40 * gp1LeftStickY));
@@ -261,7 +262,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Hook engage control
             // If button is pressed, engage hooks and update LEDs to OFF or the colour of the locked pixel
-            boolean isHook = HardwareMapping.a;
+            isHook = HardwareMapping.a;
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                 intake.setCurrentHook(!isHook);
                 if(isHook) {
@@ -347,17 +348,21 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("Heading target: ", headingTarget);
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
-            telemetry.addLine("\n---DEBUG---\n");
-            telemetry.addData("slideLeft ticks: ", motorLeftTicks);
-            telemetry.addData("slideRight ticks: ", motorRightTicks);
-            telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
-            telemetry.addData("isIntakePowered: ", isIntakePowered);
-            telemetry.addData("areHooksEngaged: ", isHook);
-            telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
-            telemetry.addData("isHangingUp", isHangingUp);
-            telemetry.addData("isTeleOP: ", isTeleOP);
+            debuggingTelemetry();
             telemetry.update();
         }
+    }
+    public void debuggingTelemetry(){
+        telemetry.addLine("\n---DEBUG---\n");
+        telemetry.addData("intake level: ", intakeLevel);
+        telemetry.addData("slideLeft ticks: ", motorLeftTicks);
+        telemetry.addData("slideRight ticks: ", motorRightTicks);
+        telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
+        telemetry.addData("isIntakePowered: ", isIntakePowered);
+        telemetry.addData("areHooksEngaged: ", isHook);
+        telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
+        telemetry.addData("isHangingUp", isHangingUp);
+        telemetry.addData("isTeleOP: ", isTeleOP);
     }
 }

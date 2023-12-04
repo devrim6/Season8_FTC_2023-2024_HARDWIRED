@@ -43,13 +43,17 @@ public class DefVal {
     public static double yaw0 = 0;
     public static double yaw90 = 90;
 
-    public static double pivot60_1 = 60;
+    public static double pivot60_1 = -60;
     public static double pivot60_2 = 60;
     public static double pivot0_1 = 0;
     public static double pivot0_2 = 0;
 
-    public static double roll60_1 = 60;
+    public static double roll60_1 = -60;
     public static double roll60_2 = 60;
     public static double roll0_1 = 0;
     public static double roll0_2 = 0;
+
+    public static double pitchPositive = 10;
+    public static double pitchNegative = -15;
+    public static double TILT_POWER = 1;
 }
