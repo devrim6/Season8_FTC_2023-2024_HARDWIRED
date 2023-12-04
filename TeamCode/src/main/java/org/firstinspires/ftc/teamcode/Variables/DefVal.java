@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.Variables;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class DefVal {
     //in ms
     public static int endgameTime = 50000;
