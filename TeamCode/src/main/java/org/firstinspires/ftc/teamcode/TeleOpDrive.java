@@ -237,7 +237,7 @@ public class TeleOpDrive extends LinearOpMode {
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
             }
-            if(gp1LeftStickX > 0){                                          //todo: maybe works, most likely broken, needs tons of testing
+            if(gp1LeftStickX > 0){   //todo: maybe works, most likely broken, needs tons of testing
                 Actions.runBlocking(outtake.pivotFixedRoll(gp1LeftStickX*5));
             } else if(gp1LeftStickY < 0){
                 Actions.runBlocking(outtake.pivotFixedRoll(-gp1LeftStickX*5));
@@ -308,7 +308,7 @@ public class TeleOpDrive extends LinearOpMode {
                 ));
             }
             //Intake reverse control
-            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)) Actions.runBlocking(
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)) Actions.runBlocking(
                     new SequentialAction(
                             intake.reverse(),
                             intake.stop()
