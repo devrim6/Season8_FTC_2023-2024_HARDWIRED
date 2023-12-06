@@ -409,7 +409,7 @@ public class HardwareMapping {
          * @return false
          */
         public Action runToPosition(liftHeight direction){
-            this.currentHeight = direction;
+            currentHeight = direction;
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {

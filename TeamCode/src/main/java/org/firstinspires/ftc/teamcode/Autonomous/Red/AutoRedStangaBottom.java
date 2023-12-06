@@ -251,7 +251,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         Actions.runBlocking(new SequentialAction(
                                 TRAJ5_StackToRightBackboard,
                                 isTrajEnd()
-                        )); //a
+                        ));
                     }
                     break;
                 case TRAJ5_StackToRightBackboard:
