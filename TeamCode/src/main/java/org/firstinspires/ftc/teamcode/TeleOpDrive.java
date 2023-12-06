@@ -343,8 +343,8 @@ public class TeleOpDrive extends LinearOpMode {
 
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
-            telemetry.addData("pitch: ", pitch);
             telemetry.addData("heading", currentPose.heading);
+            telemetry.addData("pitch: ", pitch);
             telemetry.addData("Heading target: ", headingTarget);
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
