@@ -27,6 +27,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
     HardwareMapping robot = new HardwareMapping();
     HardwareMapping.Intake intake = robot.new Intake();
     HardwareMapping.Outtake outtake = robot.new Outtake();
+    HardwareMapping.Auto auto = robot.new Auto();
     enum traj {
         TRAJ1_StartToLine("TRAJ1_StartToLine"),
         TRAJ2_MiddleLineToStack("TRAJ2_MiddleLineToStack"),
@@ -56,7 +57,6 @@ public class AutoRedStangaBottom extends LinearOpMode {
     String elementPosition = "middle";
     traj currentTraj = traj.TRAJ1_StartToLine;
 
-    boolean isTrajGoing = false, repeatTraj = false;
     public void runOpMode() throws InterruptedException{
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(58, -34.5, Math.toRadians(270)));
         robot.init(hardwareMap);
@@ -180,19 +180,18 @@ public class AutoRedStangaBottom extends LinearOpMode {
         Pose2d nextPose;
         switch (elementPosition) {
             case "left":
-                Actions.runBlocking(TRAJ1_LeftLine);
+                Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ1_LeftLine));
                 nextPose = new Pose2d(-43, -33, Math.toRadians(110));
                 break;
-            case "right":
-                Actions.runBlocking(TRAJ1_RightLine);
-                nextPose = new Pose2d(-30, -33, Math.toRadians(60));
-                break;
-            default:
-                Actions.runBlocking(TRAJ1_MiddleLine);
+            case "middle":
+                Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ1_MiddleLine));
                 nextPose = new Pose2d(-32.5, -33, Math.toRadians(80));
                 break;
+            default:
+                Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ1_RightLine));
+                nextPose = new Pose2d(-30, -33, Math.toRadians(60));
+                break;
         }
-        isTrajGoing=true;
 
         Action TRAJ2_MiddleLineToStack = drive.actionBuilder(nextPose)
                 .setReversed(true)
@@ -208,28 +207,19 @@ public class AutoRedStangaBottom extends LinearOpMode {
             // Finite state
             switch (currentTraj){
                 case TRAJ1_StartToLine:
-                    if(!isTrajGoing){
-                        isTrajGoing=true;
+                    if(!auto.isTrajGoing){
                         currentTraj = traj.TRAJ2_MiddleLineToStack;
-                        Actions.runBlocking(new SequentialAction(
-                                TRAJ2_MiddleLineToStack,
-                                isTrajEnd()
-                        ));
+                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ2_MiddleLineToStack));
                     }
                     break;
                 case TRAJ2_MiddleLineToStack:
-                    if(!isTrajGoing){
-                        isTrajGoing=true;
+                    if(!auto.isTrajGoing){
                         currentTraj = traj.TRAJ3_StackToMiddleBackboard;
-                        Actions.runBlocking(new SequentialAction(
-                                TRAJ3_StackToMiddleBackboard,
-                                isTrajEnd()
-                        ));
+                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ3_StackToMiddleBackboard));
                     }
                     break;
                 case TRAJ3_StackToMiddleBackboard:
-                    if(!isTrajGoing){
-                        isTrajGoing=true;
+                    if(!auto.isTrajGoing){
                         currentTraj = traj.TRAJ4_MiddleBackboardToStack;
                         Actions.runBlocking(new ParallelAction(
                                 outtake.bottomHook("open"),
@@ -237,26 +227,20 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         ));
                         sleep(200);
                         Actions.runBlocking(new ParallelAction(
-                                TRAJ4_MiddleBackboardToStack,
-                                isTrajEnd(),                       // Just in case, stop the intake
+                                auto.followTrajectoryAndStop(TRAJ4_MiddleBackboardToStack),// Just in case, stop the intake
                                 intake.stop()                      // then start it again in the trajectory
                         ));
                     }
                     break;
                 case TRAJ4_MiddleBackboardToStack:
                 case TRAJ6_RightBackboardToStack:
-                    if(!isTrajGoing){
-                        isTrajGoing=true;
+                    if(!auto.isTrajGoing){
                         currentTraj = traj.TRAJ5_StackToRightBackboard;
-                        Actions.runBlocking(new SequentialAction(
-                                TRAJ5_StackToRightBackboard,
-                                isTrajEnd()
-                        ));
+                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ5_StackToRightBackboard));
                     }
                     break;
                 case TRAJ5_StackToRightBackboard:
-                    if(!isTrajGoing){
-                        isTrajGoing=true;
+                    if(!auto.isTrajGoing){
                         cycleCounter++;
                         Actions.runBlocking(new ParallelAction(
                                 outtake.bottomHook("open"),
@@ -266,23 +250,21 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         if(cycleCounter == 1) {                        // If on the first cycle of right
                             currentTraj = traj.TRAJ6_RightBackboardToStack;
                             Actions.runBlocking(new ParallelAction(
-                                    TRAJ6_RightBackboardToStack,
-                                    isTrajEnd(),                       // Just in case, stop the intake
+                                    auto.followTrajectoryAndStop(TRAJ6_RightBackboardToStack),// Just in case, stop the intake
                                     intake.stop()                      // then start it again in the trajectory
                             ));
                         }
                         else {                                         // If on the 2nd cycle of right
                             currentTraj = traj.TRAJ7_ParkRight;
                             Actions.runBlocking(new ParallelAction(
-                                    TRAJ7_ParkRight,
-                                    isTrajEnd(),
+                                    auto.followTrajectoryAndStop(TRAJ7_ParkRight),
                                     intake.stop()
                             ));
                         }
                     }
                     break;
                 case TRAJ7_ParkRight:
-                    if(!isTrajGoing){
+                    if(!auto.isTrajGoing){
                         currentTraj = traj.IDLE;
                     }
                     break;
@@ -302,20 +284,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
             telemetry.addData("y", currentPose.position.y);
             telemetry.addData("heading", currentPose.heading);
             telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
-            telemetry.addData("isTrajGoing: ", isTrajGoing);
+            telemetry.addData("isTrajGoing: ", auto.isTrajGoing);
         }
-    }
-
-    /**
-     * Tracks when a trajectory has ended (or any action really). Is used with SequentialAction.
-     */
-    public Action isTrajEnd(){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                isTrajGoing=false;
-                return false;
-            }
-        };
     }
 }

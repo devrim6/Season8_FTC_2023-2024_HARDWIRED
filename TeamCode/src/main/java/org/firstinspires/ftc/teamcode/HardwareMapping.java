@@ -590,4 +590,31 @@ public class HardwareMapping {
         public boolean isSensingOnline() {return !isIntakePowered;}
 
     }
+
+    public class Auto{
+        public boolean isTrajGoing;
+        public Auto(){
+            isTrajGoing=false;
+        }
+
+        /**
+         * Tracks when a trajectory has ended (or any action really). Is used with SequentialAction.
+         */
+        public Action trajEnd(){
+            return telemetryPacket -> {
+                isTrajGoing=false;
+                return false;
+            };
+        }
+        public Action trajStart(){
+            return telemetryPacket -> {
+                isTrajGoing=true;
+                return false;
+            };
+        }
+        public SequentialAction followTrajectoryAndStop(Action traj){
+            return new SequentialAction(trajStart(), traj, trajEnd());
+        }
+
+    }
 }
