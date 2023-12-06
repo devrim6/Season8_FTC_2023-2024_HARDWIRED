@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.cameraSstuff;
+package org.firstinspires.ftc.teamcode.cameraStuff;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 

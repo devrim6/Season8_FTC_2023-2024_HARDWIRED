@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -68,7 +70,6 @@ public class HardwareMapping {
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
     public ColorSensor bottomHookSensor, upperHookSensor;
-    public SensorColor sensorLibrary;
 
     private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
@@ -79,7 +80,7 @@ public class HardwareMapping {
      * setting up some basic values that will be used in both Autonomous and TeleOp
      * @param ahwMap
      */
-    public void init(HardwareMap ahwMap){
+    public void init(@NonNull HardwareMap ahwMap){
         hwMap = ahwMap;
 
         /* Motoare baza sunt in MecanumDrive */
@@ -154,12 +155,12 @@ public class HardwareMapping {
         float[] hsv = new float[3];
         switch (sensor){
             case "upper":
-                hsv = sensorLibrary.RGBtoHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
                 upperHookSensor.enableLed(true);
+                Color.RGBToHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
                 break;
             case "bottom":
-                hsv = sensorLibrary.RGBtoHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
                 bottomHookSensor.enableLed(true);
+                Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
                 break;
         }
         if(hsv[0] <= 320 && hsv[0] >= 280) {
@@ -243,7 +244,7 @@ public class HardwareMapping {
                 break;
         }
     }
-    boolean whichLEDwhite=false;
+    private boolean whichLEDwhite=false;
 
     /**
      * Takes the led positions then flashes red and green in sequence to signify that a white pixel is
@@ -537,7 +538,7 @@ public class HardwareMapping {
                     boolean upper = upperSensorState.equals(ledState.OFF), bottom = bottomSensorState.equals(ledState.OFF);
 
                     if(!upper) {
-                        if(System.currentTimeMillis()> currentTime1 + 500){ //Timer so that the bot is sure there are two pixels inside and doesn't have false positives
+                        if(System.currentTimeMillis()> currentTime1 + 500){ // No false positives (maybe)
                             Actions.runBlocking(outtake.upperHook("closed"));
                             a=true;                                         // Reverse intake to filter out
                         }
@@ -588,6 +589,39 @@ public class HardwareMapping {
         }
 
         public boolean isSensingOnline() {return !isIntakePowered;}
+
+    }
+
+    public class Auto{
+        public boolean isTrajGoing;
+        public Auto(){
+            isTrajGoing=false;
+        }
+
+        /**
+         * Tracks when a trajectory has ended (or any action really). Is used with SequentialAction.
+         */
+        public Action trajEnd(){
+            return telemetryPacket -> {
+                isTrajGoing=false;
+                return false;
+            };
+        }
+        public Action trajStart(){
+            return telemetryPacket -> {
+                isTrajGoing=true;
+                return false;
+            };
+        }
+
+        /**
+         * Takes an action (in most cases a trajectory action) and keeps track of when it starts and ends. Can be used
+         * for finite state systems.
+         * @param traj
+         */
+        public SequentialAction followTrajectoryAndStop(Action traj){
+            return new SequentialAction(trajStart(), traj, trajEnd());
+        }
 
     }
 }
