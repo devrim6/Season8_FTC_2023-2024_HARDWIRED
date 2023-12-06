@@ -180,7 +180,8 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            if(gamepad2.dpad_left || gamepad1.dpad_left) Actions.runBlocking(new SequentialAction(
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) Actions.runBlocking(new SequentialAction(
                     new ParallelAction(
                             outtake.yaw(DefVal.yaw0),
                             outtake.latch("closed")
@@ -191,7 +192,8 @@ public class TeleOpDrive extends LinearOpMode {
                     ),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             ));
-            if(gamepad2.dpad_up || gamepad1.dpad_up) Actions.runBlocking(new SequentialAction(
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP)
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
@@ -200,7 +202,8 @@ public class TeleOpDrive extends LinearOpMode {
                             outtake.latch("open")
                     )
             ));
-            if(gamepad2.dpad_down || gamepad1.dpad_down) Actions.runBlocking(new SequentialAction(
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
@@ -209,7 +212,8 @@ public class TeleOpDrive extends LinearOpMode {
                             outtake.latch("open")
                     )
             ));
-            if(gamepad2.dpad_right || gamepad1.dpad_right) Actions.runBlocking(new SequentialAction(
+            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
