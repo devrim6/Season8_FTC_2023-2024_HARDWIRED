@@ -517,7 +517,7 @@ public class HardwareMapping {
                 }
             };}
 
-        boolean isIntakePowered=false;
+        boolean isIntakePowered=false,upperClosed=false,bottomClosed=false;
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
@@ -529,6 +529,7 @@ public class HardwareMapping {
          */
         public Action sensingOn(){
             isIntakePowered = false;
+            bottomClosed=false; upperClosed=false;
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -540,18 +541,26 @@ public class HardwareMapping {
                     if(!upper) {
                         if(System.currentTimeMillis()> currentTime1 + 500){ // No false positives (maybe)
                             Actions.runBlocking(outtake.upperHook("closed"));
-                            a=true;                                         // Reverse intake to filter out
+                            a = true;
+                            upperClosed=true;
                         }
-                    } else currentTime1 = System.currentTimeMillis();
+                    } else{
+                        currentTime1 = System.currentTimeMillis();
+                        upperClosed = false;
+                    }
 
                     if(!bottom) {
                         if(System.currentTimeMillis()> currentTime2 + 500){
                             Actions.runBlocking(outtake.bottomHook("closed"));
-                            a=true;
+                            a = true;
+                            bottomClosed = true;
                         }
-                    } else currentTime2 = System.currentTimeMillis();
+                    } else{
+                        currentTime2 = System.currentTimeMillis();
+                        bottomClosed = false;
+                    }
 
-                    if(!upper && !bottom){
+                    if(bottomClosed && upperClosed){
                         Actions.runBlocking(new SequentialAction(
                                 new ParallelAction(
                                         outtake.bottomHook("closed"),
