@@ -152,7 +152,7 @@ public class HardwareMapping {
      * @param sensor
      * @return ledState
      */
-    public ledState checkColorRange(String sensor){
+    public ledState checkColorRange(@NonNull String sensor){
         float[] hsv = new float[3];
         switch (sensor){
             case "upper":
@@ -479,7 +479,7 @@ public class HardwareMapping {
         public SequentialAction reverse(){
             return new SequentialAction(reverseBase(),stop());
         }
-        public Action reverseBase(){
+        private Action reverseBase(){
             final double time = System.currentTimeMillis();
             return new Action() {
                 @Override
@@ -489,6 +489,7 @@ public class HardwareMapping {
                     return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
                 }
             };}
+
         public Action stop(){
             return new Action() {
                 @Override

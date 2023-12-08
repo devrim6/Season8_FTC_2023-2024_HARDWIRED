@@ -123,11 +123,11 @@ public class TeleOpDrive extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
-                robot.setLedColour("upper", PoseTransfer.upperLedState),
-                robot.setLedColour("bottom", PoseTransfer.bottomLedState),
                 outtake.yaw(DefVal.yaw0),
                 outtake.bottomHook("open"), outtake.upperHook("open")
         ));
+        robot.checkColorRange("upper");
+        robot.checkColorRange("bottom");
 
         // Variables
         double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
@@ -298,7 +298,7 @@ public class TeleOpDrive extends LinearOpMode {
                 ));
             }
 
-            //Intake power controls
+            //Intake power controls - reverse also stops the intake
             if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
                 isIntakePowered=!isIntakePowered;
                 if(isIntakePowered){
