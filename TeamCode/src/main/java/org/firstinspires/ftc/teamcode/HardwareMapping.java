@@ -476,7 +476,10 @@ public class HardwareMapping {
         /**
          * Reverses the intake for 1.5s to filter out a possible third pixel.
          */
-        public Action reverse(){
+        public SequentialAction reverse(){
+            return new SequentialAction(reverseBase(),stop());
+        }
+        public Action reverseBase(){
             final double time = System.currentTimeMillis();
             return new Action() {
                 @Override
@@ -552,6 +555,7 @@ public class HardwareMapping {
         public Action sensingOn(){
             isIntakePowered = false;
             bottomClosed=false; upperClosed=false;
+            //currentTime1=currentTime2=System.currentTimeMillis();
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -588,8 +592,7 @@ public class HardwareMapping {
                                         outtake.bottomHook("closed"),
                                         outtake.upperHook("closed")
                                 ),
-                                reverse(),
-                                stop()
+                                reverse()
                         ));                                                     // Reverse intake to filter out
                         isIntakePowered = true;                                 // potential third pixel
                         TeleOpDrive.isIntakePowered=false;

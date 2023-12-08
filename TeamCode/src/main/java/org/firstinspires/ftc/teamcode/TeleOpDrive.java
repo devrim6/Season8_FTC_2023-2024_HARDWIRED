@@ -308,21 +308,16 @@ public class TeleOpDrive extends LinearOpMode {
                     ));
                 } else Actions.runBlocking(new SequentialAction(
                         intake.reverse(),
-                        new ParallelAction(
-                                intake.stop(),
-                                intake.sensingOff()
-                        )
+                        intake.sensingOff()
                 ));
             }
             //Intake reverse control manual
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
                 isIntakePowered=false;
-                Actions.runBlocking(
-                        new SequentialAction(
-                                intake.reverse(),
-                                intake.stop()
-                        )
-                );
+                Actions.runBlocking(new SequentialAction(
+                        intake.reverse(),
+                        intake.sensingOff()
+                ));
             }
 
             //Intake level adjustment
