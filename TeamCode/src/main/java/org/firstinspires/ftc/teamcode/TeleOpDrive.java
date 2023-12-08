@@ -339,7 +339,10 @@ public class TeleOpDrive extends LinearOpMode {
                     hangingCounter++; if(hangingCounter>3) hangingCounter=0;
                     if(hangingCounter==1) Actions.runBlocking(robot.hangingEngage("up"));
                     else if(hangingCounter==2) Actions.runBlocking(robot.hangingEngage("hang"));
-                    else if(hangingCounter==3) Actions.runBlocking(robot.hangingEngage("normal"));
+                    else if(hangingCounter==3){
+                        Actions.runBlocking(robot.hangingEngage("normal"));
+                        hangingCounter=0;
+                    };
                 }
             }
 
