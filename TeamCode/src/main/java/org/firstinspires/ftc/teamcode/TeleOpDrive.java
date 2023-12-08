@@ -101,7 +101,8 @@ public class TeleOpDrive extends LinearOpMode {
     private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
                                                                                            //standard way
     int motorRightTicks, motorLeftTicks, intakeLevel;
-    boolean isHook, isIntakePowered = false, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+    boolean isHook, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+    static boolean isIntakePowered = false;
     @Override
     public void runOpMode() throws InterruptedException {
         //TODO: the to do list
@@ -305,18 +306,24 @@ public class TeleOpDrive extends LinearOpMode {
                             intake.powerOn(),
                             intake.sensingOn()
                     ));
-                } else Actions.runBlocking(new ParallelAction(
-                        intake.stop(),
-                        intake.sensingOff()
+                } else Actions.runBlocking(new SequentialAction(
+                        intake.reverse(),
+                        new ParallelAction(
+                                intake.stop(),
+                                intake.sensingOff()
+                        )
                 ));
             }
-            //Intake reverse control
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)) Actions.runBlocking(
-                    new SequentialAction(
-                            intake.reverse(),
-                            intake.stop()
-                    )
-            );
+            //Intake reverse control manual
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
+                isIntakePowered=false;
+                Actions.runBlocking(
+                        new SequentialAction(
+                                intake.reverse(),
+                                intake.stop()
+                        )
+                );
+            }
 
             //Intake level adjustment
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){

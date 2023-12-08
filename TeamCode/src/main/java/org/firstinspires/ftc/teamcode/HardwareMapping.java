@@ -70,7 +70,7 @@ public class HardwareMapping {
 
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
-    public ColorSensor bottomHookSensor, upperHookSensor;
+    private ColorSensor bottomHookSensor, upperHookSensor;
 
     private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
@@ -538,7 +538,8 @@ public class HardwareMapping {
                 }
             };}
 
-        boolean isIntakePowered=false,upperClosed=false,bottomClosed=false;
+        public boolean isIntakePowered=false;
+        boolean upperClosed=false,bottomClosed=false;
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
@@ -590,8 +591,9 @@ public class HardwareMapping {
                                 reverse(),
                                 stop()
                         ));                                                     // Reverse intake to filter out
-                        isIntakePowered = true;
-                        a = true;                                               // potential third pixel
+                        isIntakePowered = true;                                 // potential third pixel
+                        TeleOpDrive.isIntakePowered=false;
+                        a = true;
                         return false;                                           // todo: implement beam break
                     }
 
