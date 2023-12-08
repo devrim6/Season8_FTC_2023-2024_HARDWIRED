@@ -221,7 +221,6 @@ public class MeepMeepStorage {
 //                            .setReversed(true)
 //                            .splineToLinearHeading(new Pose2d(49, -36, Math.toRadians(0)), Math.toRadians(0))
 
-
                                     .waitSeconds(0) //wait half  a sec!! (maybe?)
                                     //middleToStack
                                     .setReversed(true)

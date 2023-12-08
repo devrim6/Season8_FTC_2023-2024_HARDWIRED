@@ -1,6 +1,7 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
@@ -46,12 +47,14 @@ public class MeepMeepStorage1 {
             );
 
     RoadRunnerBotEntity Autonomie2LessOK = new DefaultBotBuilder(meepMeep)
-            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .setConstraints(20, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
             .followTrajectorySequence(driveShim ->
                     driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
 
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-34.5, -36, Math.toRadians(90)), Math.toRadians(90))
+                            //.lineToLinearHeading(new Pose2d(-34.5, -36))
+
                             .setReversed(false)
                             .waitSeconds(0.2) //pune pixelul jos
                             .splineToLinearHeading(new Pose2d(-53,-36,Math.toRadians(0)),Math.toRadians(0))
@@ -82,5 +85,16 @@ public class MeepMeepStorage1 {
                             .splineToLinearHeading(new Pose2d(50, -12.02,Math.toRadians(0)), Math.toRadians(90))
                             .build()
             );
-
+    RoadRunnerBotEntity AutoDreaptaBlueBottom=new DefaultBotBuilder(meepMeep)
+            .setConstraints(20, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, 58 , Math.toRadians(270)))
+                            .splineToLinearHeading(new Pose2d(-34.5, 36, Math.toRadians(270)),Math.toRadians(270))
+                            .splineToLinearHeading(new Pose2d(-34.5,41.5,Math.toRadians(270)),Math.toRadians(270))
+                            //.waitSeconds(0.7)
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-52, 11,Math.toRadians(0)),Math.toRadians(270))
+                            .waitSeconds(0.7)
+                            .build()
+            );
 }
