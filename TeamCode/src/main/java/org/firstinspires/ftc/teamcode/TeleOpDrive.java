@@ -134,8 +134,6 @@ public class TeleOpDrive extends LinearOpMode {
         long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
         PoseVelocity2d currentVelPose = new PoseVelocity2d(new Vector2d(0,0),0);
-        //TelemetryPacket packet = new TelemetryPacket();
-        //Canvas fieldOverlay = packet.fieldOverlay();
 
         // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode)      TODO: test difference between no photon, auto, off for engineering portfolio
         List<LynxModule> allHubs = hardwareMap.getAll(LynxModule.class);

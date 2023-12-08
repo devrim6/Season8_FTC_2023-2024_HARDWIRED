@@ -29,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
+import org.opencv.core.Scalar;
 
 
 public class HardwareMapping {
@@ -163,23 +164,43 @@ public class HardwareMapping {
                 Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
                 break;
         }
-        if(hsv[0] <= 320 && hsv[0] >= 280) {
-            Actions.runBlocking(setLedColour(sensor, ledState.PURPLE));
-            return ledState.PURPLE;
-        }
-        else if(hsv[0] <= 130 && hsv[0] >= 110){
-            Actions.runBlocking(setLedColour(sensor, ledState.GREEN));
-            return ledState.GREEN;
-        }
-        else if(hsv[0] <= 74 && hsv[0] >= 51){
-            Actions.runBlocking(setLedColour(sensor, ledState.YELLOW));
-            return ledState.YELLOW;
-        }
-        else if(hsv[1] <= 10 && hsv[1] >= 0){
-            Actions.runBlocking(setLedColour(sensor, ledState.WHITE));
-            return ledState.WHITE;
-        }
-        Actions.runBlocking(setLedColour(sensor, ledState.OFF));
+
+        ledState state = isInBounds(hsv);
+        Actions.runBlocking(setLedColour(sensor, state));
+
+        return state;
+    }
+
+    /**
+     * Checks what colour (if any) the inputed hsv belongs to.
+     * @param a
+     */
+    public ledState isInBounds(@NonNull float[] a){
+        int[] whiteLower = {75,0,99};
+        int[] whiteUpper = {179,62,255};
+
+        int[] greenLower = {40,40,40};
+        int[] greenUpper = {70,255,255};
+
+        int[] yellowLower = {30,125,150};
+        int[] yellowUpper = {30,255,150};
+
+        int[] purpleLower = {140,50,70};
+        int[] purpleUpper = {160,250,250};
+
+        if((a[0]>=whiteLower[0] && a[0]<=whiteUpper[0])
+            && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])
+            && (a[2]>=whiteLower[2] && a[2]<=whiteUpper[2])) return ledState.WHITE;
+        else if((a[0]>=greenLower[0] && a[0]<=greenUpper[0])
+                && (a[1]>=greenLower[1] && a[1]<=greenUpper[1])
+                && (a[2]>=greenLower[2] && a[2]<=greenUpper[2])) return ledState.GREEN;
+        else if((a[0]>=yellowLower[0] && a[0]<=yellowUpper[0])
+                && (a[1]>=yellowLower[1] && a[1]<=yellowUpper[1])
+                && (a[2]>=yellowLower[2] && a[2]<=yellowUpper[2])) return ledState.YELLOW;
+        else if((a[0]>=purpleLower[0] && a[0]<=purpleUpper[0])
+                && (a[1]>=purpleLower[1] && a[1]<=purpleUpper[1])
+                && (a[2]>=purpleLower[2] && a[2]<=purpleUpper[2])) return ledState.PURPLE;
+
         return ledState.OFF;
     }
 
