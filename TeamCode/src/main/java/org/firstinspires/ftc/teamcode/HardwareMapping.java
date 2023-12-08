@@ -337,12 +337,12 @@ public class HardwareMapping {
         /**
          * Uses the outtake arms, not the box
          */
-        public Action pivot(double angle, double angle2){
+        public Action pivot(double angle){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     outtakePitchLeft.turnToAngle(angle);
-                    outtakePitchRight.turnToAngle(angle2);
+                    outtakePitchRight.turnToAngle(angle);
                     return false;
                 }
             };}
@@ -378,12 +378,12 @@ public class HardwareMapping {
         /**
          * Uses the outtake box, not arms
          */
-        public Action roll(double angle, double angle2){
+        public Action roll(double angle){
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     outtakeRollLeft.turnToAngle(angle);
-                    outtakeRollRight.turnToAngle(angle2);
+                    outtakeRollRight.turnToAngle(angle);
                     return false;
                 }
             };}

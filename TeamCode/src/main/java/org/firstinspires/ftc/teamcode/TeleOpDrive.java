@@ -186,8 +186,8 @@ public class TeleOpDrive extends LinearOpMode {
                             outtake.latch("closed")
                     ),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot0, DefVal.pivot0),
-                            outtake.roll(DefVal.roll0, DefVal.roll0)
+                            outtake.pivot(DefVal.pivot0),
+                            outtake.roll(DefVal.roll0)
                     ),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             ));
@@ -195,8 +195,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
-                            outtake.roll(DefVal.roll60, DefVal.roll60),
+                            outtake.pivot(DefVal.pivot60),
+                            outtake.roll(DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
@@ -205,8 +205,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
-                            outtake.roll(DefVal.roll60, DefVal.roll60),
+                            outtake.pivot(DefVal.pivot60),
+                            outtake.roll(DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
@@ -215,8 +215,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
-                            outtake.roll(DefVal.roll60, DefVal.roll60),
+                            outtake.pivot(DefVal.pivot60),
+                            outtake.roll(DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )

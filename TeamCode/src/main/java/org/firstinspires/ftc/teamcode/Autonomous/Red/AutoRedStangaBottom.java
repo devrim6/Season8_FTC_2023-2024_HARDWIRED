@@ -85,8 +85,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         new SequentialAction(
                                 new ParallelAction(
                                         outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                                        outtake.pivot(DefVal.pivot60, DefVal.pivot60),
-                                        outtake.roll(DefVal.roll60, DefVal.roll60)
+                                        outtake.pivot(DefVal.pivot60),
+                                        outtake.roll(DefVal.roll60)
                                 ),
                                 outtake.yaw(DefVal.yaw90),
                                 outtake.latch("open")
@@ -104,8 +104,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                                 outtake.yaw(DefVal.yaw0)
                         ),
                         new ParallelAction(
-                                outtake.pivot(DefVal.pivot0, DefVal.pivot0),
-                                outtake.roll(DefVal.roll0, DefVal.roll0)
+                                outtake.pivot(DefVal.pivot0),
+                                outtake.roll(DefVal.roll0)
                         ),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
@@ -128,8 +128,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         new SequentialAction(
                                 new ParallelAction(
                                         outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                                        outtake.pivot(DefVal.pivot60, DefVal.pivot60),
-                                        outtake.roll(DefVal.roll60, DefVal.roll60)
+                                        outtake.pivot(DefVal.pivot60),
+                                        outtake.roll(DefVal.roll60)
                                 ),
                                 outtake.yaw(DefVal.yaw90),
                                 outtake.latch("open")
@@ -168,8 +168,8 @@ public class AutoRedStangaBottom extends LinearOpMode {
                                 intake.sensingOff(),
                                 intake.angle(1)
                         ),
-                        outtake.pivot(DefVal.pivot0, DefVal.pivot0),
-                        outtake.roll(DefVal.roll0, DefVal.roll0),
+                        outtake.pivot(DefVal.pivot0),
+                        outtake.roll(DefVal.roll0),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
                 .splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
@@ -285,6 +285,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
             telemetry.addData("heading", currentPose.heading);
+            telemetry.addData("current traj: ", currentTraj.trajName);
             telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
             telemetry.addData("isTrajGoing: ", auto.isTrajGoing);
         }
