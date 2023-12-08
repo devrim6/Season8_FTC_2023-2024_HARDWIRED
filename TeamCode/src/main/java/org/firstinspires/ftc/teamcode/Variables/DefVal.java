@@ -30,31 +30,21 @@ public class DefVal {
     public static double intakeMotorPower = 0.5;
     public static double intakeRollerPower = 0.3;
 
-    public static double iLevel1_1 = 0;
-    public static double iLevel1_2 = 0;
-    public static double iLevel2_1 = 0.2;
-    public static double iLevel2_2 = -0.2;
-    public static double iLevel3_1 = 0.4;
-    public static double iLevel3_2 = -0.4;
-    public static double iLevel4_1 = 0.6;
-    public static double iLevel4_2 = -0.6;
-    public static double iLevel5_1 = 0.8;
-    public static double iLevel5_2 = -0.8;
-    public static double iLevel6_1 = 1;
-    public static double iLevel6_2 = -1;
+    public static double iLevel1 = 0;
+    public static double iLevel2 = 0.2;
+    public static double iLevel3 = 0.4;
+    public static double iLevel4 = 0.6;
+    public static double iLevel5 = 0.8;
+    public static double iLevel6 = 1;
 
     public static double yaw0 = 0;
     public static double yaw90 = 90;
 
-    public static double pivot60_1 = -60;
-    public static double pivot60_2 = 60;
-    public static double pivot0_1 = 0;
-    public static double pivot0_2 = 0;
+    public static double pivot60 = 60;
+    public static double pivot0 = 0;
 
-    public static double roll60_1 = -60;
-    public static double roll60_2 = 60;
-    public static double roll0_1 = 0;
-    public static double roll0_2 = 0;
+    public static double roll60 = 60;
+    public static double roll0 = 0;
 
     public static double pitchPositive = 10;
     public static double pitchNegative = -15;

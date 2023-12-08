@@ -100,8 +100,8 @@ public class TeleOpDrive extends LinearOpMode {
     // Declare a PIDF Controller to regulate heading
     private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
                                                                                            //standard way
-    int motorRightTicks, motorLeftTicks, intakeLevel;
-    boolean isHook, isTeleOP=true, isOuttakeRotated=false, isHangingUp=false;
+    int motorRightTicks, motorLeftTicks, intakeLevel,hangingCounter = 0;
+    boolean isHook, isTeleOP=true, isOuttakeRotated=false;
     static boolean isIntakePowered = false;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -186,8 +186,8 @@ public class TeleOpDrive extends LinearOpMode {
                             outtake.latch("closed")
                     ),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot0_1, DefVal.pivot0_2),
-                            outtake.roll(DefVal.roll0_1, DefVal.roll0_2)
+                            outtake.pivot(DefVal.pivot0, DefVal.pivot0),
+                            outtake.roll(DefVal.roll0, DefVal.roll0)
                     ),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             ));
@@ -195,8 +195,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
-                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
+                            outtake.roll(DefVal.roll60, DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
@@ -205,8 +205,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
-                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
+                            outtake.roll(DefVal.roll60, DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
@@ -215,8 +215,8 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) Actions.runBlocking(new SequentialAction(
                     outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                     new ParallelAction(
-                            outtake.pivot(DefVal.pivot60_1, DefVal.pivot60_2),
-                            outtake.roll(DefVal.roll60_1, DefVal.roll60_2),
+                            outtake.pivot(DefVal.pivot60, DefVal.pivot60),
+                            outtake.roll(DefVal.roll60, DefVal.roll60),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
@@ -336,9 +336,10 @@ public class TeleOpDrive extends LinearOpMode {
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
                 if(System.currentTimeMillis() > startTime + DefVal.endgameTime){
-                    isHangingUp=!isHangingUp;
-                    if(isHangingUp) Actions.runBlocking(robot.hangingEngage("up"));
-                    else Actions.runBlocking(robot.hangingEngage("hang"));
+                    hangingCounter++; if(hangingCounter>3) hangingCounter=0;
+                    if(hangingCounter==1) Actions.runBlocking(robot.hangingEngage("up"));
+                    else if(hangingCounter==2) Actions.runBlocking(robot.hangingEngage("hang"));
+                    else if(hangingCounter==3) Actions.runBlocking(robot.hangingEngage("normal"));
                 }
             }
 
@@ -366,7 +367,7 @@ public class TeleOpDrive extends LinearOpMode {
         telemetry.addData("isIntakePowered: ", isIntakePowered);
         telemetry.addData("areHooksEngaged: ", isHook);
         telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
-        telemetry.addData("isHangingUp", isHangingUp);
+        telemetry.addData("hangingStage: ", hangingCounter);
         telemetry.addData("isTeleOP: ", isTeleOP);
     }
 }

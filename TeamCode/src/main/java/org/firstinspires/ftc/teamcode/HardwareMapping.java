@@ -99,6 +99,10 @@ public class HardwareMapping {
         outtakeClawUpper = hwMap.get(Servo.class, "outtakeClawUpper");
         planeLauncherServo = hwMap.get(Servo.class, "planeLauncherServo");
 
+        outtakePitchLeft.setInverted(true);
+        outtakeRollLeft.setInverted(true);
+        intakeServoRight.setDirection(Servo.Direction.REVERSE);
+
         /* Motors */
         intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
         hangMotor = hwMap.get(DcMotorEx.class, "hangMotor");
@@ -110,7 +114,7 @@ public class HardwareMapping {
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         /* Sensors */
         upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
@@ -307,13 +311,19 @@ public class HardwareMapping {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch(state){
                     case "up":
+                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                         hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
                         hangMotor.setPower(1);
                         break;
                     case "hang":
+                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                         hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
-                        //todo: set velocity? seems like setpower() already does that in runtoposition mode
                         hangMotor.setPower(0.3);
+                        break;
+                    case "normal":
+                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                        hangMotor.setTargetPosition(0);
+                        hangMotor.setPower(0.6);
                         break;
                 }
                 return false;
@@ -347,9 +357,9 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakePitchLeft.rotateBy(-angle);              //Should only be called when outtake is at 60degrees already
-                    outtakePitchRight.rotateBy(angle);              //todo: try to think of a better way
-                    outtakeRollLeft.rotateBy(-angle);               //naive implementation
+                    outtakePitchLeft.rotateBy(angle);              //Should only be called when outtake is at 60degrees already
+                    outtakePitchRight.rotateBy(angle);             //todo: try to think of a better way
+                    outtakeRollLeft.rotateBy(angle);               //naive implementation
                     outtakeRollRight.rotateBy(angle);
                     return false;
                 }
@@ -514,28 +524,28 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch (level){
                         case 1:
-                            intakeServoLeft.setPosition(DefVal.iLevel1_1);
-                            intakeServoRight.setPosition(DefVal.iLevel1_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel1);
+                            intakeServoRight.setPosition(DefVal.iLevel1);
                             break;
                         case 2:
-                            intakeServoLeft.setPosition(DefVal.iLevel2_1);
-                            intakeServoRight.setPosition(DefVal.iLevel2_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel2);
+                            intakeServoRight.setPosition(DefVal.iLevel2);
                             break;
                         case 3:
-                            intakeServoLeft.setPosition(DefVal.iLevel3_1);
-                            intakeServoRight.setPosition(DefVal.iLevel3_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel3);
+                            intakeServoRight.setPosition(DefVal.iLevel3);
                             break;
                         case 4:
-                            intakeServoLeft.setPosition(DefVal.iLevel4_1);
-                            intakeServoRight.setPosition(DefVal.iLevel4_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel4);
+                            intakeServoRight.setPosition(DefVal.iLevel4);
                             break;
                         case 5:
-                            intakeServoLeft.setPosition(DefVal.iLevel5_1);
-                            intakeServoRight.setPosition(DefVal.iLevel5_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel5);
+                            intakeServoRight.setPosition(DefVal.iLevel5);
                             break;
                         case 6:             // is for auto init, goes up to 90 degrees perpendicular
-                            intakeServoLeft.setPosition(DefVal.iLevel6_1);
-                            intakeServoRight.setPosition(DefVal.iLevel6_2);
+                            intakeServoLeft.setPosition(DefVal.iLevel6);
+                            intakeServoRight.setPosition(DefVal.iLevel6);
                             break;
                     }                       // setPosition is async, action can be stopped immediately since
                     return false;           // it will run in another thread
