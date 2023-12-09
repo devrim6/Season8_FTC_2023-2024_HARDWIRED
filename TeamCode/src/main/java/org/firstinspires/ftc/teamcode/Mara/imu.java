@@ -17,7 +17,6 @@ public class imu {
     public imu(IMU imu) {
         this.imu = imu;
     }
-
     DcMotor leftFront=hardwareMap.get(DcMotor.class,"LF");
     DcMotor leftBack=hardwareMap.get(DcMotor.class,"LB");
     DcMotor rightFront=hardwareMap.get(DcMotor.class,"RF");

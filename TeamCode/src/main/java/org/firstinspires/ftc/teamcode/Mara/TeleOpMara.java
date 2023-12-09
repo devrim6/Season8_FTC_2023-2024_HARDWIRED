@@ -55,6 +55,9 @@ public class TeleOpMara extends LinearOpMode {
             if(gamepad2.x) {
                 Actions.runBlocking(intake.reverse());
             }
+            if(gamepad1.b){
+
+            }
         }
 
     }

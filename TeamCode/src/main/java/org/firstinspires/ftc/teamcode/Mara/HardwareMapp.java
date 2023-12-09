@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -18,17 +20,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.opencv.core.Scalar;
 
 public class HardwareMapp {
 
-    /*public enum LEDColor{
+    public enum LEDColor{
         Purple,
         Green,
         Yellow,
         White,
         None
-    }*/
-    public DcMotorEx hangMotor;  //motor pentru rificat robotul in hang
+    }
+    public DcMotorEx hangMotor;  //motor pentru ridicat robotul in hang
     public DcMotorEx misumMotorLeft;  //motor pentru misum-ul stang
     public DcMotorEx misumMotorRight;  //motor pentru misum-ul drept
     public DcMotorEx intakeMotor;  //motor pentru maturice           //motoare
@@ -37,13 +40,13 @@ public class HardwareMapp {
     public Servo outakeServo;  //servo pentru deschis outake-ul
     public Servo planeServo; //servo pentru avion               //servo-uri
 
-    public SensorColor firstHook;  //senzor pentru primul pixel
-    public SensorColor secondHook;  //senzor pentru al doilea pixel
+    public SensorColor SensorfirstHook;  //senzor pentru primul pixel
+    public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
 
-    //public LEDColor LEDdowngreen;
-    //public LEDColor LEDupgreen;
-    //public LEDColor LEDdownred;
-    //public LEDColor LEDupred;
+    public LEDColor LEDdowngreen;
+    public LEDColor LEDupgreen;
+    public LEDColor LEDdownred;
+    public LEDColor LEDupred;
 
     BNO055IMU imu;
     HardwareMap HW=null;
@@ -62,15 +65,15 @@ public class HardwareMapp {
         outakeServo=HW.get(Servo.class,"outakeServo");
         planeServo=HW.get(Servo.class,"planeServo");
 
-        firstHook=HW.get(SensorColor.class,"firstHookPixel");
-        secondHook=HW.get(SensorColor.class,"secondHookPixel");
+        SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
+        SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
 
-        /*LEDdowngreen=HW.get(LEDColor.class,"LEDdownGreen");
+        LEDdowngreen=HW.get(LEDColor.class,"LEDdownGreen");
         LEDdownred=HW.get(LEDColor.class,"LEDdownRed");
         LEDupgreen=HW.get(LEDColor.class,"LEDupGreen");
-        LEDupred=HW.get(LEDColor.class,"LEDupRed");*/
+        LEDupred=HW.get(LEDColor.class,"LEDupRed");
 
-        imu=HW.get(BNO055IMU.class,"imu");
+        //imu=HW.get(BNO055IMU.class,"imu");
     }
 
     public Action launchPlane(){     //actiune pentru decolarea avionului
@@ -151,17 +154,55 @@ public class HardwareMapp {
             }
         };
     }
+    float[] hsvValues = new float[3];
+    Scalar white=new Scalar(0,0,100);
+    Scalar green=new Scalar(126,88,74);
+    Scalar purple=new Scalar(280,39,79);
+    Scalar yellow=new Scalar(48,91,99);
+    Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
-    /*public Action pixelColor(){
+    public Action pixelColor(){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-
+                //Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
+                if(detectedColorHSV==white){
+                    return white.isReal();
+                }
+                if(detectedColorHSV==green){
+                    return green.isReal();
+                }
+                if(detectedColorHSV==purple){
+                    return purple.isReal();
+                }
+                if(detectedColorHSV==yellow){
+                    return yellow.isReal();
+                }
                 return false;
             }
         };
-    }*/
-    public class imu{
+    }
+    public Action LedColor(){  //nu merge inca
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (detectedColorHSV.equals(green)) {
+                    //return LEDColor.Green;
+                }
+                if (detectedColorHSV.equals(yellow)) {
+                    //return LEDColor.Yellow;
+                }
+                if (detectedColorHSV.equals(white)) {
+                    //return LEDColor.White;
+                }
+                if (detectedColorHSV.equals(purple)) {
+                    //return LEDColor.Purple;
+                }
+                return false;
+            }
+        };
+    }
+    /*public class imu{
         public double TILT_THRESHOLD = 20;
         public double ACCEL_THRESHOLD = 20;  //am pus valori cam random. Trebuie sa ma documentez
         Orientation angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
@@ -173,5 +214,5 @@ public class HardwareMapp {
         double lateralAcceleration = accel.yAccel;
         boolean hasLateralAcceleration = Math.abs(lateralAcceleration) > ACCEL_THRESHOLD;
 
-    }
+    }*/
 }
