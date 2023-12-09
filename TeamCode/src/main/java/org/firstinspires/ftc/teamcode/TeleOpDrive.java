@@ -322,11 +322,11 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Intake level adjustment
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
-                intakeLevel++; if(intakeLevel>5) intakeLevel=5;
+                intakeLevel++; if(intakeLevel>5) intakeLevel=1;
                 else Actions.runBlocking(intake.angle(intakeLevel));
             }
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
-                intakeLevel--; if(intakeLevel<1) intakeLevel=1;
+                intakeLevel--; if(intakeLevel<1) intakeLevel=5;
                 else Actions.runBlocking(intake.angle(intakeLevel));
             }
 

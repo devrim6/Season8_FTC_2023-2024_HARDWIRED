@@ -616,7 +616,7 @@ public class HardwareMapping {
             };
         }
         /**
-         * Turns off the pixel sensing system.
+         * Turns off the pixel sensing system and sensor lights.
          */
         public Action sensingOff(){
             return new Action() {

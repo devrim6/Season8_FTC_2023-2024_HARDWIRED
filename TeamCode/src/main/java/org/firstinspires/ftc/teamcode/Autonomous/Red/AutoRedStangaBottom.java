@@ -35,6 +35,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
         TRAJ2_MiddleLineToStack("TRAJ2_MiddleLineToStack"),
 
         TRAJ3_StackToMiddleBackboard("TRAJ3_StackToMiddleBackboard"),
+
         TRAJ4_MiddleBackboardToStack("TRAJ4_MiddleBackboardToStack"),
 
         TRAJ5_StackToRightBackboard("TRAJ5_StackToRightBackboard"),
@@ -50,9 +51,10 @@ public class AutoRedStangaBottom extends LinearOpMode {
         }
     }
 
-    Pose2d stackPose = new Pose2d(-57, -36, Math.toRadians(180)),
-           middleBackboardPose = new Pose2d(49, -36, Math.toRadians(0)),
-           rightBackboardPose = new Pose2d(49, -42, Math.toRadians(0));
+    Pose2d  stackPose = new Pose2d(-57, -36, Math.toRadians(180)),
+            middleBackboardPose = new Pose2d(49, -36, Math.toRadians(0)),
+            rightBackboardPose = new Pose2d(49, -42, Math.toRadians(0)),
+            leftBackboardPose = new Pose2d(49, -30, Math.toRadians(0));
 
     double cycleCounter = 0;
 
@@ -94,8 +96,71 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         intake.sensingOff()
                 ))
                 .build();
+        Action TRAJ3_StackToLeftBackboard = drive.actionBuilder(stackPose)
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .afterDisp(3, intake.angle(6))              // Higher intake to not get pixels
+                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
+                .afterDisp(10, new ParallelAction(
+                        new SequentialAction(
+                                new ParallelAction(
+                                        outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                                        outtake.pivot(DefVal.pivot60),
+                                        outtake.roll(DefVal.roll60)
+                                ),
+                                outtake.yaw(DefVal.yaw90),
+                                outtake.latch("open")
+                        ),
+                        intake.sensingOff()
+                ))
+                .build();
 
         Action TRAJ4_MiddleBackboardToStack = drive.actionBuilder(middleBackboardPose)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new SequentialAction(
+                        new ParallelAction(
+                                outtake.latch("closed"),
+                                outtake.yaw(DefVal.yaw0)
+                        ),
+                        new ParallelAction(
+                                outtake.pivot(DefVal.pivot0),
+                                outtake.roll(DefVal.roll0)
+                        ),
+                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                ))
+                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new ParallelAction(
+                        intake.powerOn(),
+                        intake.angle(3),     // Take two pixels. Remaining after: 2
+                        intake.sensingOn()
+                ))
+                .build();
+        Action TRAJ4_LeftBackboardToStack = drive.actionBuilder(leftBackboardPose)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new SequentialAction(
+                        new ParallelAction(
+                                outtake.latch("closed"),
+                                outtake.yaw(DefVal.yaw0)
+                        ),
+                        new ParallelAction(
+                                outtake.pivot(DefVal.pivot0),
+                                outtake.roll(DefVal.roll0)
+                        ),
+                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                ))
+                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
+                .afterDisp(3, new ParallelAction(
+                        intake.powerOn(),
+                        intake.angle(3),     // Take two pixels. Remaining after: 2
+                        intake.sensingOn()
+                ))
+                .build();
+        Action TRAJ4_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new SequentialAction(
@@ -216,21 +281,31 @@ public class AutoRedStangaBottom extends LinearOpMode {
                     break;
                 case TRAJ2_MiddleLineToStack:
                     if(!auto.isTrajGoing){
-                        currentTraj = traj.TRAJ3_StackToMiddleBackboard;
-                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ3_StackToMiddleBackboard));
+                        currentTraj=traj.TRAJ3_StackToMiddleBackboard;
+                        if(elementPosition.equals("middle")){
+                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ3_StackToMiddleBackboard));
+                        } else if(elementPosition.equals("left")){
+                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ3_StackToLeftBackboard));
+                        } else {
+                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ5_StackToRightBackboard));
+                        }
                     }
                     break;
                 case TRAJ3_StackToMiddleBackboard:
                     if(!auto.isTrajGoing){
-                        currentTraj = traj.TRAJ4_MiddleBackboardToStack;
                         Actions.runBlocking(new ParallelAction(
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open")
                         ));
                         sleep(200);
+                        //Just in case, stop the intake and start it again in the traj
+                        currentTraj = traj.TRAJ4_MiddleBackboardToStack;
+                        Action traj4=TRAJ4_RightBackboardToStack;
+                        if(elementPosition.equals("left")) traj4=TRAJ4_LeftBackboardToStack;
+                        else if(elementPosition.equals("middle")) traj4=TRAJ4_MiddleBackboardToStack;
                         Actions.runBlocking(new ParallelAction(
-                                auto.followTrajectoryAndStop(TRAJ4_MiddleBackboardToStack),// Just in case, stop the intake
-                                intake.stop()                      // then start it again in the trajectory
+                                auto.followTrajectoryAndStop(traj4),
+                                intake.stop()
                         ));
                     }
                     break;

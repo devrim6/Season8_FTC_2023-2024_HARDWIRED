@@ -49,4 +49,6 @@ public class DefVal {
     public static double pitchPositive = 10;
     public static double pitchNegative = -15;
     public static double TILT_POWER = 1;
+
+    public static String component = "servo";
 }
