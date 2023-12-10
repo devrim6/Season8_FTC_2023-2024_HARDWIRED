@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -15,11 +13,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorColor;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Scalar;
 
 public class HardwareMapp {
@@ -182,28 +175,29 @@ public class HardwareMapp {
                 new Scalar(180,30,255) //Valoare maxima HSV pentru alb
         };
     }
-    public boolean ColorDetected(Scalar targetColor,Scalar[] colorRange){
+    public LEDColor ColorDetected(Scalar targetColor, Scalar[] colorRange){
         ColorRange colorRangeDet=new ColorRange();
         if(detectedColorHSV.val[0] >= colorRangeDet.greenColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.greenColorRange[1].val[0]){
-            //vede verde
-
+            //vede culoare verde
+            //Leduri
+            return LEDColor.Green;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
-            //vede galben
-
+            //vede culoaregalben
+            //Leduri
+            return LEDColor.Yellow;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.whiteColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.whiteColorRange[1].val[0]){
-            //vede alb
-
+            //vede culoare alb
+            //Leduri
+            return LEDColor.White;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
-            //vede mov
-
+            //vede culoare mov
+            //Leduri
+            return LEDColor.Purple;
         }
-        /*return (targetColor.val[0] >= colorRange[0].val[0] && targetColor.val[0] <= colorRange[1].val[0])
-                && (targetColor.val[1] >= colorRange[0].val[1] && targetColor.val[1] <= colorRange[1].val[1])
-                && (targetColor.val[2] >= colorRange[0].val[2] && targetColor.val[2] <= colorRange[1].val[2]);*/
-        return true;
+        return LEDColor.None;
     }
 
     /*public Action pixelColor(){
