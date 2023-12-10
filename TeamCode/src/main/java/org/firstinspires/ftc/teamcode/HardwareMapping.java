@@ -282,14 +282,15 @@ public class HardwareMapping {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if(whichLEDwhite){
+                try {
                     led1.setState(true);
-                    led2.setState(false);               //todo: implement a proper timer, rn its spammy and seizure inducing, red card 110%
-                    whichLEDwhite=false;                //todo: he he he haw de ce este asa de cacat codul acesta - Raul 12B
-                } else {
+                    led2.setState(false);
+                    Thread.sleep(800);
                     led1.setState(false);
                     led2.setState(true);
-                    whichLEDwhite=true;
+                    Thread.sleep(800);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
                 }
                 return stopBlinking;                    //if true then continue. if false then stop
             }
