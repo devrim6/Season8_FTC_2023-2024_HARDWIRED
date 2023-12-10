@@ -213,7 +213,6 @@ public class HardwareMapping {
      *  to ledColourDriver
      * @param led
      * @param colour
-     * @return End the Action
      */
     public Action setLedColour(String led, ledState colour){
         return new Action() {
@@ -450,15 +449,23 @@ public class HardwareMapping {
                     slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     switch(direction){
                         case HIGH:
+                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                             slideMotorLeft.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
                         case MIDDLE:
+                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                             slideMotorLeft.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                         case LOW:
+                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                             slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
                         case GROUND:
+                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                             slideMotorLeft.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
                             slideMotorRight.setTargetPosition(-(int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
                     }
