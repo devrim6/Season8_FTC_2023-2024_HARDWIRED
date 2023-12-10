@@ -154,17 +154,17 @@ public class HardwareMapp {
             }
         };
     }
-    /*float[] hsvValues = new float[3];
-    Scalar white=new Scalar(0,0,100);
+    float[] hsvValues = new float[3];
+    /*Scalar white=new Scalar(0,0,100);
     Scalar green=new Scalar(126,88,74);
     //Scalar lowerGreen=new Scalar(); //valori pentru lowerGreen
     Scalar purple=new Scalar(280,39,79);
     //Scalar lowerPurple=new Scalar(); //valori pentru lowerPurple
     Scalar yellow=new Scalar(48,91,99);
-    //Scalar lowerYellow=new Scalar(); //valori pentru lowerYellow
-    Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);*/
+    //Scalar lowerYellow=new Scalar(); //valori pentru lowerYellow*/
+    Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
-    public class ColorRange{
+    public static class ColorRange{
         public Scalar[] greenColorRange = {
                 new Scalar(40, 40, 40), // Valoare minimă HSV pentru verde
                 new Scalar(80, 255, 255) // Valoare maximă HSV pentru verde
@@ -182,10 +182,28 @@ public class HardwareMapp {
                 new Scalar(180,30,255) //Valoare maxima HSV pentru alb
         };
     }
-    public static boolean ColorDetected(Scalar targetColor,Scalar[] colorRange){
-        return (targetColor.val[0] >= colorRange[0].val[0] && targetColor.val[0] <= colorRange[1].val[0])
+    public boolean ColorDetected(Scalar targetColor,Scalar[] colorRange){
+        ColorRange colorRangeDet=new ColorRange();
+        if(detectedColorHSV.val[0] >= colorRangeDet.greenColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.greenColorRange[1].val[0]){
+            //vede verde
+
+        }
+        if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
+            //vede galben
+
+        }
+        if(detectedColorHSV.val[0] >= colorRangeDet.whiteColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.whiteColorRange[1].val[0]){
+            //vede alb
+
+        }
+        if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
+            //vede mov
+
+        }
+        /*return (targetColor.val[0] >= colorRange[0].val[0] && targetColor.val[0] <= colorRange[1].val[0])
                 && (targetColor.val[1] >= colorRange[0].val[1] && targetColor.val[1] <= colorRange[1].val[1])
-                && (targetColor.val[2] >= colorRange[0].val[2] && targetColor.val[2] <= colorRange[1].val[2]);
+                && (targetColor.val[2] >= colorRange[0].val[2] && targetColor.val[2] <= colorRange[1].val[2]);*/
+        return true;
     }
 
     /*public Action pixelColor(){
