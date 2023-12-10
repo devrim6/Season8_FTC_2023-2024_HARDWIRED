@@ -4,11 +4,13 @@ import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -23,11 +25,11 @@ public class HardwareMapp {
     * Sa fac sa lumineze LED-urile*/
 
     public enum LEDColor{
-        Purple,
-        Green,
-        Yellow,
-        White,
-        None
+        Purple, //red
+        Green, //green
+        Yellow, //between red & green(amber)
+        White, //blinking
+        None //none
     }
     public DcMotorEx hangMotor;  //motor pentru ridicat robotul in hang
     public DcMotorEx misumMotorLeft;  //motor pentru misum-ul stang
@@ -41,10 +43,10 @@ public class HardwareMapp {
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
 
-    public LEDColor LEDdowngreen;
-    public LEDColor LEDupgreen;
-    public LEDColor LEDdownred;
-    public LEDColor LEDupred;
+    public DigitalChannel LEDdowngreen;
+    public DigitalChannel LEDupgreen;
+    public DigitalChannel LEDdownred;
+    public DigitalChannel LEDupred;
 
     BNO055IMU imu;
     HardwareMap HW=null;
@@ -66,10 +68,10 @@ public class HardwareMapp {
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
 
-        LEDdowngreen=HW.get(LEDColor.class,"LEDdownGreen");
-        LEDdownred=HW.get(LEDColor.class,"LEDdownRed");
-        LEDupgreen=HW.get(LEDColor.class,"LEDupGreen");
-        LEDupred=HW.get(LEDColor.class,"LEDupRed");
+        LEDdowngreen=HW.get(DigitalChannel.class,"LEDdownGreen");
+        LEDdownred=HW.get(DigitalChannel.class,"LEDdownRed");
+        LEDupgreen=HW.get(DigitalChannel.class,"LEDupGreen");
+        LEDupred=HW.get(DigitalChannel.class,"LEDupRed");
 
         //imu=HW.get(BNO055IMU.class,"imu");
     }
@@ -197,6 +199,61 @@ public class HardwareMapp {
         }
         return LEDColor.None;
     }
+
+    public Action LED(String led){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                DigitalChannel LED1=null;
+                DigitalChannel LED2=null;
+                if(led.equals("up")){
+                    LED1=LEDupgreen;
+                    LED2=LEDupred;
+                }
+                if(led.equals("down")){
+                    LED1=LEDdowngreen;
+                    LED2=LEDdownred;
+                }
+                return false;
+            }
+        };
+    }
+
+    public Action LEDforDrivers(String stare,DigitalChannel LED1,DigitalChannel LED2){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare) {
+                    case "NONE":
+                        LED1.setState(false); //LED1=green,LED2=red
+                        LED2.setState(false);
+                    case "GREEN":
+                        LED1.setState(true);
+                        LED2.setState(false);
+                    case "PURPLE":
+                        LED1.setState(false);
+                        LED2.setState(true);
+                    case "YELLOW":
+                        LED1.setState(true);
+                        LED2.setState(true);
+                    case "WHITE":
+                        Actions.runBlocking(WhitePixelBlinking(LED1,LED2)); //trebuie facuta actiunea de blinking
+                }
+                return false;
+            }
+        };
+    }
+
+    public Action WhitePixelBlinking(DigitalChannel LED1, DigitalChannel LED2){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                //cod pentru bliking
+                return false;
+            }
+        };
+    }
+
 
     /*public class imu{
         public double TILT_THRESHOLD = 20;
