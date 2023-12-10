@@ -17,6 +17,11 @@ import org.opencv.core.Scalar;
 
 public class HardwareMapp {
 
+    /*Scriu aici ce mai trebuie facut:
+    * Ridicare coborare misumiuri
+    * Prindere pixeli(hook)
+    * Sa fac sa lumineze LED-urile*/
+
     public enum LEDColor{
         Purple,
         Green,
@@ -148,13 +153,6 @@ public class HardwareMapp {
         };
     }
     float[] hsvValues = new float[3];
-    /*Scalar white=new Scalar(0,0,100);
-    Scalar green=new Scalar(126,88,74);
-    //Scalar lowerGreen=new Scalar(); //valori pentru lowerGreen
-    Scalar purple=new Scalar(280,39,79);
-    //Scalar lowerPurple=new Scalar(); //valori pentru lowerPurple
-    Scalar yellow=new Scalar(48,91,99);
-    //Scalar lowerYellow=new Scalar(); //valori pentru lowerYellow*/
     Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
     public static class ColorRange{
@@ -200,47 +198,6 @@ public class HardwareMapp {
         return LEDColor.None;
     }
 
-    /*public Action pixelColor(){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                //Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
-                if(detectedColorHSV==white){
-                    return white.isReal();
-                }
-                if(detectedColorHSV==green){
-                    return green.isReal();
-                }
-                if(detectedColorHSV==purple){
-                    return purple.isReal();
-                }
-                if(detectedColorHSV==yellow){
-                    return yellow.isReal();
-                }
-                return false;
-            }
-        };
-    }*/
-    /*public Action LedColor(){  //nu merge inca
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (detectedColorHSV.equals(green)) {
-                    //return LEDColor.Green;
-                }
-                if (detectedColorHSV.equals(yellow)) {
-                    //return LEDColor.Yellow;
-                }
-                if (detectedColorHSV.equals(white)) {
-                    //return LEDColor.White;
-                }
-                if (detectedColorHSV.equals(purple)) {
-                    //return LEDColor.Purple;
-                }
-                return false;
-            }
-        };
-    }*/
     /*public class imu{
         public double TILT_THRESHOLD = 20;
         public double ACCEL_THRESHOLD = 20;  //am pus valori cam random. Trebuie sa ma documentez
