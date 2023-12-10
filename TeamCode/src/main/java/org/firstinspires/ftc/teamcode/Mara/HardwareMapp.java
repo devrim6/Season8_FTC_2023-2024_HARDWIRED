@@ -1,35 +1,35 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
-import android.graphics.Color;
-
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorColor;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.opencv.core.Scalar;
 
 public class HardwareMapp {
 
+    /*Scriu aici ce mai trebuie facut:
+    * Ridicare coborare misumiuri
+    * Prindere pixeli(hook)
+    * Sa fac sa lumineze LED-urile*/
+
     public enum LEDColor{
-        Purple,
-        Green,
-        Yellow,
-        White,
-        None
+        Purple, //red
+        Green, //green
+        Yellow, //between red & green(amber)
+        White, //blinking
+        None //none
     }
     public DcMotorEx hangMotor;  //motor pentru ridicat robotul in hang
     public DcMotorEx misumMotorLeft;  //motor pentru misum-ul stang
@@ -43,10 +43,10 @@ public class HardwareMapp {
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
 
-    public LEDColor LEDdowngreen;
-    public LEDColor LEDupgreen;
-    public LEDColor LEDdownred;
-    public LEDColor LEDupred;
+    public DigitalChannel LEDdowngreen;
+    public DigitalChannel LEDupgreen;
+    public DigitalChannel LEDdownred;
+    public DigitalChannel LEDupred;
 
     BNO055IMU imu;
     HardwareMap HW=null;
@@ -68,10 +68,10 @@ public class HardwareMapp {
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
 
-        LEDdowngreen=HW.get(LEDColor.class,"LEDdownGreen");
-        LEDdownred=HW.get(LEDColor.class,"LEDdownRed");
-        LEDupgreen=HW.get(LEDColor.class,"LEDupGreen");
-        LEDupred=HW.get(LEDColor.class,"LEDupRed");
+        LEDdowngreen=HW.get(DigitalChannel.class,"LEDdownGreen");
+        LEDdownred=HW.get(DigitalChannel.class,"LEDdownRed");
+        LEDupgreen=HW.get(DigitalChannel.class,"LEDupGreen");
+        LEDupred=HW.get(DigitalChannel.class,"LEDupRed");
 
         //imu=HW.get(BNO055IMU.class,"imu");
     }
@@ -155,13 +155,6 @@ public class HardwareMapp {
         };
     }
     float[] hsvValues = new float[3];
-    /*Scalar white=new Scalar(0,0,100);
-    Scalar green=new Scalar(126,88,74);
-    //Scalar lowerGreen=new Scalar(); //valori pentru lowerGreen
-    Scalar purple=new Scalar(280,39,79);
-    //Scalar lowerPurple=new Scalar(); //valori pentru lowerPurple
-    Scalar yellow=new Scalar(48,91,99);
-    //Scalar lowerYellow=new Scalar(); //valori pentru lowerYellow*/
     Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
     public static class ColorRange{
@@ -182,71 +175,86 @@ public class HardwareMapp {
                 new Scalar(180,30,255) //Valoare maxima HSV pentru alb
         };
     }
-    public boolean ColorDetected(Scalar targetColor,Scalar[] colorRange){
+    public LEDColor ColorDetected(Scalar targetColor, Scalar[] colorRange){
         ColorRange colorRangeDet=new ColorRange();
         if(detectedColorHSV.val[0] >= colorRangeDet.greenColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.greenColorRange[1].val[0]){
-            //vede verde
-
+            //vede culoare verde
+            //Leduri
+            return LEDColor.Green;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
-            //vede galben
-
+            //vede culoaregalben
+            //Leduri
+            return LEDColor.Yellow;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.whiteColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.whiteColorRange[1].val[0]){
-            //vede alb
-
+            //vede culoare alb
+            //Leduri
+            return LEDColor.White;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
-            //vede mov
-
+            //vede culoare mov
+            //Leduri
+            return LEDColor.Purple;
         }
-        /*return (targetColor.val[0] >= colorRange[0].val[0] && targetColor.val[0] <= colorRange[1].val[0])
-                && (targetColor.val[1] >= colorRange[0].val[1] && targetColor.val[1] <= colorRange[1].val[1])
-                && (targetColor.val[2] >= colorRange[0].val[2] && targetColor.val[2] <= colorRange[1].val[2]);*/
-        return true;
+        return LEDColor.None;
     }
 
-    /*public Action pixelColor(){
+    public Action LED(String led){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                //Color.RGBToHSV(colorSensor.red(), colorSensor.green(), colorSensor.blue(), hsvValues);
-                if(detectedColorHSV==white){
-                    return white.isReal();
+                DigitalChannel LED1=null;
+                DigitalChannel LED2=null;
+                if(led.equals("up")){
+                    LED1=LEDupgreen;
+                    LED2=LEDupred;
                 }
-                if(detectedColorHSV==green){
-                    return green.isReal();
-                }
-                if(detectedColorHSV==purple){
-                    return purple.isReal();
-                }
-                if(detectedColorHSV==yellow){
-                    return yellow.isReal();
+                if(led.equals("down")){
+                    LED1=LEDdowngreen;
+                    LED2=LEDdownred;
                 }
                 return false;
             }
         };
-    }*/
-    /*public Action LedColor(){  //nu merge inca
+    }
+
+    public Action LEDforDrivers(String stare,DigitalChannel LED1,DigitalChannel LED2){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (detectedColorHSV.equals(green)) {
-                    //return LEDColor.Green;
-                }
-                if (detectedColorHSV.equals(yellow)) {
-                    //return LEDColor.Yellow;
-                }
-                if (detectedColorHSV.equals(white)) {
-                    //return LEDColor.White;
-                }
-                if (detectedColorHSV.equals(purple)) {
-                    //return LEDColor.Purple;
+                switch (stare) {
+                    case "NONE":
+                        LED1.setState(false); //LED1=green,LED2=red
+                        LED2.setState(false);
+                    case "GREEN":
+                        LED1.setState(true);
+                        LED2.setState(false);
+                    case "PURPLE":
+                        LED1.setState(false);
+                        LED2.setState(true);
+                    case "YELLOW":
+                        LED1.setState(true);
+                        LED2.setState(true);
+                    case "WHITE":
+                        Actions.runBlocking(WhitePixelBlinking(LED1,LED2)); //trebuie facuta actiunea de blinking
                 }
                 return false;
             }
         };
-    }*/
+    }
+
+    public Action WhitePixelBlinking(DigitalChannel LED1, DigitalChannel LED2){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                //cod pentru bliking
+                return false;
+            }
+        };
+    }
+
+
     /*public class imu{
         public double TILT_THRESHOLD = 20;
         public double ACCEL_THRESHOLD = 20;  //am pus valori cam random. Trebuie sa ma documentez
