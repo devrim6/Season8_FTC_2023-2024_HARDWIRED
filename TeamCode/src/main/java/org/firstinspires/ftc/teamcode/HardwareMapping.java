@@ -115,6 +115,7 @@ public class HardwareMapping {
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        hangMotor.setMotorDisable();
 
         /* Sensors */
         upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
@@ -176,7 +177,7 @@ public class HardwareMapping {
     }
 
     /**
-     * Checks what colour (if any) the inputed hsv belongs to.
+     * Checks what colour (if any) the inputted hsv belongs to.
      * @param a
      */
     public ledState isInBounds(@NonNull float[] a){
@@ -268,7 +269,6 @@ public class HardwareMapping {
                 break;
         }
     }
-    private boolean whichLEDwhite=false;
 
     /**
      * Takes the led positions then flashes red and green in sequence to signify that a white pixel is
@@ -309,6 +309,7 @@ public class HardwareMapping {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                hangMotor.setMotorEnable();
                 switch(state){
                     case "up":
                         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -485,6 +486,7 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                    intakeMotor.setMotorEnable();
                     intakeMotor.setPower(DefVal.intakeMotorPower);
                     intakeServoRoller.setPower(-DefVal.intakeRollerPower);
                     return false;
@@ -497,6 +499,7 @@ public class HardwareMapping {
         public SequentialAction reverse(){
             return new SequentialAction(reverseBase(),stop());
         }
+
         private Action reverseBase(){
             final double time = System.currentTimeMillis();
             return new Action() {
@@ -514,6 +517,7 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setPower(0);
                     intakeServoRoller.setPower(0); //todo: see if you should put intake at lvl6
+                    intakeMotor.setMotorDisable();
                     return false;
                 }
             };}
