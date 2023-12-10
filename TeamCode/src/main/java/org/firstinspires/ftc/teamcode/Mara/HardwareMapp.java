@@ -154,14 +154,41 @@ public class HardwareMapp {
             }
         };
     }
-    float[] hsvValues = new float[3];
+    /*float[] hsvValues = new float[3];
     Scalar white=new Scalar(0,0,100);
     Scalar green=new Scalar(126,88,74);
+    //Scalar lowerGreen=new Scalar(); //valori pentru lowerGreen
     Scalar purple=new Scalar(280,39,79);
+    //Scalar lowerPurple=new Scalar(); //valori pentru lowerPurple
     Scalar yellow=new Scalar(48,91,99);
-    Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
+    //Scalar lowerYellow=new Scalar(); //valori pentru lowerYellow
+    Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);*/
 
-    public Action pixelColor(){
+    public class ColorRange{
+        public Scalar[] greenColorRange = {
+                new Scalar(40, 40, 40), // Valoare minimă HSV pentru verde
+                new Scalar(80, 255, 255) // Valoare maximă HSV pentru verde
+        };
+        public Scalar[] yellowColorRange={
+                new Scalar(20,100,100), //Valoare minima HSV pentru galben
+                new Scalar(30,255,255) //Valoare maxima HSV pentru galben
+        };
+        public Scalar[] purpleColorRange={
+                new Scalar(130,50,50), //Valoare minima HSV pentru mov
+                new Scalar(160,255,255) //Valoare maxima HSV pentru mov
+        };
+        public Scalar[] whiteColorRange={
+                new Scalar(0,0,200), //Valoare minima HSV pentru alb
+                new Scalar(180,30,255) //Valoare maxima HSV pentru alb
+        };
+    }
+    public static boolean ColorDetected(Scalar targetColor,Scalar[] colorRange){
+        return (targetColor.val[0] >= colorRange[0].val[0] && targetColor.val[0] <= colorRange[1].val[0])
+                && (targetColor.val[1] >= colorRange[0].val[1] && targetColor.val[1] <= colorRange[1].val[1])
+                && (targetColor.val[2] >= colorRange[0].val[2] && targetColor.val[2] <= colorRange[1].val[2]);
+    }
+
+    /*public Action pixelColor(){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -181,8 +208,8 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
-    public Action LedColor(){  //nu merge inca
+    }*/
+    /*public Action LedColor(){  //nu merge inca
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -201,7 +228,7 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
+    }*/
     /*public class imu{
         public double TILT_THRESHOLD = 20;
         public double ACCEL_THRESHOLD = 20;  //am pus valori cam random. Trebuie sa ma documentez

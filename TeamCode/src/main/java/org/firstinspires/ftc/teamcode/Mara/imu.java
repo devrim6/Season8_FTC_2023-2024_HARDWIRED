@@ -45,7 +45,6 @@ public class imu {
                 leftBack.setPower(-0.5);
                 rightBack.setPower(-0.5);
             }
-
         }
         else{
             //Este ok
