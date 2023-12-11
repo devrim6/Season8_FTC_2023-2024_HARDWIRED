@@ -494,6 +494,7 @@ public class HardwareMapping {
                     intakeMotor.setMotorEnable();
                     intakeMotor.setPower(DefVal.intakeMotorPower);
                     intakeServoRoller.setPower(-DefVal.intakeRollerPower);
+                    isIntakeOn = true;
                     return false;
                 }
             };}
@@ -516,6 +517,7 @@ public class HardwareMapping {
                 }
             };}
 
+        public boolean isIntakeOn = false;
         public Action stop(){
             return new Action() {
                 @Override
@@ -523,6 +525,7 @@ public class HardwareMapping {
                     intakeMotor.setPower(0);
                     intakeServoRoller.setPower(0); //todo: see if you should put intake at lvl6
                     intakeMotor.setMotorDisable();
+                    isIntakeOn = false;
                     return false;
                 }
             };}
@@ -569,7 +572,7 @@ public class HardwareMapping {
                 }
             };}
 
-        public boolean isIntakePowered=false;
+        private boolean isIntakePowered=false;
         boolean upperClosed=false,bottomClosed=false;
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();

@@ -301,7 +301,8 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Intake power controls - reverse also stops the intake
             if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
-                isIntakePowered=!isIntakePowered;
+                isIntakePowered = intake.isIntakeOn;
+                isIntakePowered = !isIntakePowered;
                 if(isIntakePowered){
                     Actions.runBlocking(new ParallelAction(
                             intake.powerOn(),
@@ -314,7 +315,7 @@ public class TeleOpDrive extends LinearOpMode {
             }
             //Intake reverse control manual
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
-                isIntakePowered=false;
+                intake.isIntakeOn = false;
                 Actions.runBlocking(new SequentialAction(
                         intake.reverse(),
                         intake.sensingOff()
