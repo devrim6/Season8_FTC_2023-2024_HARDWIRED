@@ -33,6 +33,7 @@ import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
+import org.firstinspires.ftc.teamcode.cameraStuff.DetectionCamera;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -44,6 +45,7 @@ public class TeleOpDrive extends LinearOpMode {
     HardwareMapping robot = new HardwareMapping();
     HardwareMapping.Intake intake = robot.new Intake();
     HardwareMapping.Outtake outtake = robot.new Outtake();
+    DetectionCamera camera = new DetectionCamera();
     enum mode {
         TELEOP,
         HEADING_LOCK
@@ -121,6 +123,7 @@ public class TeleOpDrive extends LinearOpMode {
         //fa o diagrama sa areti cum merge teleop si autonomie
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
+        camera.initCamera(hardwareMap, DetectionCamera.processor.APRIL_TAG);
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
@@ -344,7 +347,7 @@ public class TeleOpDrive extends LinearOpMode {
                     else if(hangingCounter==3){
                         Actions.runBlocking(robot.hangingEngage("normal"));
                         hangingCounter=0;
-                    };
+                    }
                 }
             }
 
@@ -359,10 +362,12 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
             debuggingTelemetry();
+            camera.aprilTagTelemetry(telemetry);
             telemetry.update();
         }
+        camera.stopCamera();
     }
-    public void debuggingTelemetry(){
+    private void debuggingTelemetry(){
         telemetry.addLine("\n---DEBUG---\n");
         telemetry.addData("intake level: ", intakeLevel);
         telemetry.addData("slideLeft ticks: ", motorLeftTicks);
