@@ -178,6 +178,8 @@ public class TeleOpDrive extends LinearOpMode {
             drive.setDrivePowers(currentVelPose);
             drive.updatePoseEstimate();
 
+            camera.detectTags();
+
 
             // Gamepad controls
 
