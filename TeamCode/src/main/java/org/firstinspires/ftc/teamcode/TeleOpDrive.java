@@ -27,6 +27,7 @@ import com.qualcomm.hardware.lynx.LynxModule;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 import org.checkerframework.checker.units.qual.Angle;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -167,7 +168,7 @@ public class TeleOpDrive extends LinearOpMode {
                     currentVelPose = new PoseVelocity2d(
                             new Vector2d(-gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
-                            outputVel
+                            Range.scale(outputVel, currentPose.heading.log(), Math.toRadians(headingTarget), 0, 1)
                     );
                     break;
             }
@@ -229,13 +230,12 @@ public class TeleOpDrive extends LinearOpMode {
             motorRightTicks = robot.slideMotorRight.getCurrentPosition();
             motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
             if(gp1LeftStickY>0 && motorRightTicks<= robot.TICKS_PER_CM_Z*25
-                    && motorLeftTicks<=-robot.TICKS_PER_CM_Z*25){
+                    && motorLeftTicks<=robot.TICKS_PER_CM_Z*25){
                 robot.slideMotorRight.setTargetPosition(motorRightTicks + (int)(40 * gp1LeftStickY));
                 robot.slideMotorLeft.setTargetPosition(motorLeftTicks + (int)(40 * gp1LeftStickY));
                 robot.slideMotorRight.setPower(0.7);
                 robot.slideMotorLeft.setPower(0.7);
-            } else if(gp1LeftStickY<0 && motorRightTicks<= 10
-                    && motorLeftTicks<= -10){
+            } else if(gp1LeftStickY < 0 && motorLeftTicks >= 10 && motorRightTicks >= 10){
                 robot.slideMotorRight.setTargetPosition(motorRightTicks - (int)(40 * gp1LeftStickY));
                 robot.slideMotorLeft.setTargetPosition(motorLeftTicks - (int)(40 * gp1LeftStickY));
                 robot.slideMotorRight.setPower(0.7);
@@ -243,7 +243,7 @@ public class TeleOpDrive extends LinearOpMode {
             }
             if(gp1LeftStickX > 0){   //todo: maybe works, most likely broken, needs tons of testing
                 Actions.runBlocking(outtake.pivotFixedRoll(gp1LeftStickX*5));
-            } else if(gp1LeftStickY < 0){
+            } else if(gp1LeftStickX < 0){
                 Actions.runBlocking(outtake.pivotFixedRoll(-gp1LeftStickX*5));
             }
 
@@ -287,7 +287,8 @@ public class TeleOpDrive extends LinearOpMode {
             //Outtake 90 degree rotation
             if((robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
                 && !outtake.currentHeight.equals(HardwareMapping.liftHeight.LOW)){
-                isOuttakeRotated=!isOuttakeRotated;
+                isOuttakeRotated = outtake.isOuttakeRotated;
+                isOuttakeRotated = !isOuttakeRotated;
                 if(isOuttakeRotated) Actions.runBlocking(new ParallelAction(
                         outtake.yaw(DefVal.yaw90),
                         outtake.latch("open")
