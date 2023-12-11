@@ -254,6 +254,31 @@ public class HardwareMapp {
         };
     }
 
+    public Action misum(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "GROUND":
+                        misumMotorLeft.setPositionPIDFCoefficients(0);
+                        misumMotorRight.setPositionPIDFCoefficients(0);
+                    case "LOW":
+                        misumMotorLeft.setPositionPIDFCoefficients(5);
+                        misumMotorRight.setPositionPIDFCoefficients(5);
+                    case "MIDDLE":
+                        misumMotorLeft.setPositionPIDFCoefficients(10);
+                        misumMotorRight.setPositionPIDFCoefficients(10);
+                    case "HIGH":
+                        misumMotorLeft.setPositionPIDFCoefficients(15);
+                        misumMotorRight.setPositionPIDFCoefficients(15);
+                }
+                misumMotorLeft.setPower(1);
+                misumMotorRight.setPower(1);
+                return false;
+            }
+        };
+    }
+
 
     /*public class imu{
         public double TILT_THRESHOLD = 20;
