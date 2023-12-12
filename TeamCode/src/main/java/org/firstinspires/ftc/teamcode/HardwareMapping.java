@@ -507,12 +507,16 @@ public class HardwareMapping {
         }
 
         private Action reverseBase(){
-            final double time = System.currentTimeMillis();
             return new Action() {
+                final double time = System.currentTimeMillis();
+                boolean init=true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intakeMotor.setPower(-DefVal.intakeMotorPower);
-                    intakeServoRoller.setPower(DefVal.LiftHIGH);
+                    if(init){
+                        intakeMotor.setPower(-DefVal.intakeMotorPower);
+                        intakeServoRoller.setPower(DefVal.LiftHIGH);
+                        init=false;
+                    }
                     return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
                 }
             };}
