@@ -161,6 +161,7 @@ public class TeleOpDrive extends LinearOpMode {
             double TILT_POWER = DefVal.TILT_POWER;
             TelemetryPacket packet = new TelemetryPacket();
 
+            //TODO: SET IMU ORIENTATION in MecanumDrive before anything else after bot is constructed
             if(pitch > DefVal.pitchPositive) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
             else if (pitch < DefVal.pitchNegative) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
             else switch(currentMode){
