@@ -514,7 +514,7 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     if(init){
                         intakeMotor.setPower(-DefVal.intakeMotorPower);
-                        intakeServoRoller.setPower(DefVal.LiftHIGH);
+                        intakeServoRoller.setPower(DefVal.intakeRollerPower);
                         init=false;
                     }
                     return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
