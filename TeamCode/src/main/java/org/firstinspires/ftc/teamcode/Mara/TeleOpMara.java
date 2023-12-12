@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -41,6 +43,7 @@ public class TeleOpMara extends LinearOpMode {
         while(opModeIsActive()){
 
             if(isStopRequested())return;
+            TelemetryPacket packet = new TelemetryPacket();
 
             if(TuningOpModes.DRIVE_CLASS.equals(MecanumDrive.class)) {
                 drive.setDrivePowers(new PoseVelocity2d(   //miscarea de baza a robotului
@@ -60,10 +63,15 @@ public class TeleOpMara extends LinearOpMode {
             if(gamepad2.x) {
                 runningActions.add(intake.reverse()); //adaugat nou
             }
-            if(gamepad1.b){
 
+            List<Action> newActions = new ArrayList<>();
+            for (Action action : runningActions) {
+                action.preview(packet.fieldOverlay());
+                if (action.run(packet)) {
+                    newActions.add(action);
+                }
             }
+            runningActions = newActions;
         }
-
     }
 }

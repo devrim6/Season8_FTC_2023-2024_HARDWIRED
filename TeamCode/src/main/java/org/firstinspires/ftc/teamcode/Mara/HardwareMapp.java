@@ -20,9 +20,10 @@ import org.opencv.core.Scalar;
 public class HardwareMapp {
 
     /*Scriu aici ce mai trebuie facut:
-    * Ridicare coborare misumiuri
+    * Ridicare coborare misumiuri-gata(mai trebuie pus tick per cm)
     * Prindere pixeli(hook)
-    * Sa fac sa lumineze LED-urile*/
+    * Sa fac sa lumineze LED-urile-gata(mai trebuie blinking pentru alb)
+    * Implementare senzori de culoare*/
 
     public enum LEDColor{
         Purple, //red
@@ -39,6 +40,9 @@ public class HardwareMapp {
     public CRServo intakeServo;  //servo CR pentru intake
     public Servo outakeServo;  //servo pentru deschis outake-ul
     public Servo planeServo; //servo pentru avion               //servo-uri
+
+    public Servo servoHook1;
+    public Servo servoHook2;
 
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
@@ -64,6 +68,8 @@ public class HardwareMapp {
         intakeServo=HW.get(CRServo.class,"intakeServo");
         outakeServo=HW.get(Servo.class,"outakeServo");
         planeServo=HW.get(Servo.class,"planeServo");
+        servoHook1=HW.get(Servo.class,"hook1");
+        servoHook2=HW.get(Servo.class,"hook2");
 
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
@@ -279,6 +285,18 @@ public class HardwareMapp {
         };
     }
 
+    public Action hook(){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                ColorRange colorRangeDet=new ColorRange();
+                if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
+                    //daca vede orice culoare inafara de "none" atunci sa prinda pixelul
+                }
+                return false;
+            }
+        };
+    }
 
     /*public class imu{
         public double TILT_THRESHOLD = 20;
