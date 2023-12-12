@@ -58,7 +58,7 @@ public class TeleOpMara extends LinearOpMode {
                 runningActions.add(intake.powerOn());
             }
             if(gamepad2.x) {
-                runningActions.add(intake.reverse());
+                runningActions.add(intake.reverse()); //adaugat nou
             }
             if(gamepad1.b){
 
