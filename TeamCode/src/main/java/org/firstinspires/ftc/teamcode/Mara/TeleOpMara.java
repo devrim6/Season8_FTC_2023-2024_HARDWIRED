@@ -14,12 +14,17 @@ import org.firstinspires.ftc.teamcode.HardwareMapping;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.tuning.TuningOpModes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOpMara")
 public class TeleOpMara extends LinearOpMode {
 
     HardwareMapping Robot=new HardwareMapping();
     HardwareMapping.Intake intake = Robot.new Intake();
     HardwareMapping.Outtake outtake = Robot.new Outtake();
+
+    private List<Action> runningActions = new ArrayList<>();
 
     //HardwareMapping hw=new HardwareMapping();
     private MecanumDrive drive;
@@ -50,10 +55,10 @@ public class TeleOpMara extends LinearOpMode {
             //gamepad1
 
             if(gamepad1.x){
-                Actions.runBlocking(intake.powerOn());
+                runningActions.add(intake.powerOn());
             }
             if(gamepad2.x) {
-                Actions.runBlocking(intake.reverse());
+                runningActions.add(intake.reverse());
             }
             if(gamepad1.b){
 
