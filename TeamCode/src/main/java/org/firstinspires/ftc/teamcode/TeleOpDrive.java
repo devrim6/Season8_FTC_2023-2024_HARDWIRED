@@ -45,7 +45,6 @@ public class TeleOpDrive extends LinearOpMode {
     HardwareMapping robot = new HardwareMapping();
     HardwareMapping.Intake intake = robot.new Intake();
     HardwareMapping.Outtake outtake = robot.new Outtake();
-    DetectionCamera camera = new DetectionCamera();
     enum mode {
         TELEOP,
         HEADING_LOCK
@@ -121,11 +120,11 @@ public class TeleOpDrive extends LinearOpMode {
         //detectare de nr de pixeli pe stack, ajustare intake level in functie de. dat switch intro o camera frontala si una in spate
         //al trilea senzor/da reverse la intake in caz de 3rd pixel, bream break 100% (adafruit amazon.de)
         //fa o diagrama sa areti cum merge teleop si autonomie
+
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
-        camera.initCamera(hardwareMap, DetectionCamera.processor.APRIL_TAG);
-        camera.stopCamera(); // lol
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
+
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
                 outtake.yaw(DefVal.yaw0),
@@ -172,14 +171,14 @@ public class TeleOpDrive extends LinearOpMode {
                     currentVelPose = new PoseVelocity2d(
                             new Vector2d(-gamepad2.left_stick_y/(1+triggerSlowdown),
                                     -gamepad2.left_stick_x/(1+triggerSlowdown)),
-                            Range.scale(outputVel, currentPose.heading.log(), Math.toRadians(headingTarget), 0, 1)
+                            outputVel
+                            //Range.scale(outputVel, currentPose.heading.log(), Math.toRadians(headingTarget), -1, 1)
                     );
                     break;
             }
             drive.setDrivePowers(currentVelPose);
             drive.updatePoseEstimate();
 
-            //camera.detectTags();
 
 
             // Gamepad controls
@@ -367,7 +366,6 @@ public class TeleOpDrive extends LinearOpMode {
             debuggingTelemetry();
             telemetry.update();
         }
-        camera.stopCamera();
     }
     private void debuggingTelemetry(){
         telemetry.addLine("\n---DEBUG---\n");
@@ -381,6 +379,5 @@ public class TeleOpDrive extends LinearOpMode {
         telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
         telemetry.addData("hangingStage: ", hangingCounter);
         telemetry.addData("isTeleOP: ", isTeleOP);
-        camera.aprilTagTelemetry(telemetry);
     }
 }
