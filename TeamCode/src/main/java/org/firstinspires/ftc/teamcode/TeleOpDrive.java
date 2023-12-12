@@ -124,6 +124,7 @@ public class TeleOpDrive extends LinearOpMode {
         robot.init(hardwareMap);
         robot.gamepadInit(gamepad1, gamepad2);
         camera.initCamera(hardwareMap, DetectionCamera.processor.APRIL_TAG);
+        camera.stopCamera(); // lol
         MecanumDrive drive = new MecanumDrive(hardwareMap, PoseTransfer.currentPose);
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
@@ -178,7 +179,7 @@ public class TeleOpDrive extends LinearOpMode {
             drive.setDrivePowers(currentVelPose);
             drive.updatePoseEstimate();
 
-            camera.detectTags();
+            //camera.detectTags();
 
 
             // Gamepad controls
@@ -364,7 +365,6 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
             debuggingTelemetry();
-            camera.aprilTagTelemetry(telemetry);
             telemetry.update();
         }
         camera.stopCamera();
@@ -381,5 +381,6 @@ public class TeleOpDrive extends LinearOpMode {
         telemetry.addData("isOuttakeRotated: ", isOuttakeRotated);
         telemetry.addData("hangingStage: ", hangingCounter);
         telemetry.addData("isTeleOP: ", isTeleOP);
+        camera.aprilTagTelemetry(telemetry);
     }
 }

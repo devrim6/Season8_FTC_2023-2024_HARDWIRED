@@ -89,8 +89,8 @@ public class DetectionCamera {
                 float[] tagPos = detection.metadata.fieldPosition.getData();
                 double tagX = tagPos[0], tagY = tagPos[1], tagZ = tagPos[2];
 
-                allX+=tagX + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
-                allY+=tagY + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
+                allX+=tagX + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
+                allY+=tagY + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
                 // Only works with pixel stacks (if it works at all) todo: think of a better way
                 allHeading+=Math.toRadians(180 + detection.ftcPose.bearing);
             }
@@ -111,6 +111,7 @@ public class DetectionCamera {
             if(detection.metadata!=null){
                 telemetry.addLine("\n");
                 telemetry.addLine("ID detected: " + detection.id);
+                telemetry.addLine("ATag name: " + detection.metadata.name);
                 telemetry.addLine("Distance from camera: " + detection.ftcPose.range);
                 telemetry.addLine("Angle from camera: " + detection.ftcPose.bearing);
                 telemetry.addLine("Elevation from camera: " + detection.ftcPose.elevation);
