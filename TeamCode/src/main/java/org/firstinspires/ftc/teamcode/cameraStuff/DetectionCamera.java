@@ -28,16 +28,23 @@ public class DetectionCamera {
     public DetectionCamera(){}
     public enum processor {
         APRIL_TAG,
+        TEAM_ELEMENT,
         PIXEL
     }
 
     private VisionPortal.Builder builder;
     private AprilTagProcessor april;
     private TfodProcessor pixel;
+    private TeamElementPipeline teamElement;
     private VisionPortal visionPortal;
     private AprilTagDetection close;
     private List<AprilTagDetection> aprilTagDetections;
 
+    /**
+     * Initialize the camera, set up Vision Portal + the ATag processor and set the required processor
+     * @param hwMap
+     * @param proc
+     */
     public void initCamera(@NonNull HardwareMap hwMap, processor proc){
         builder = new VisionPortal.Builder();
         builder.setCamera(hwMap.get(WebcamName.class, "Webcam 1"));
@@ -45,7 +52,22 @@ public class DetectionCamera {
         builder.setCameraResolution(new Size(640, 480));
         builder.enableLiveView(true);
         builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
-        setProcessor(proc);
+
+        april = new AprilTagProcessor.Builder()
+                .setDrawAxes(false)
+                .setDrawCubeProjection(false)
+                .setDrawTagOutline(true)
+                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
+                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
+                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
+                .build();
+        pixel = new TfodProcessor.Builder()
+                .build();
+
+        //todo: add teamElement after it's done
+        builder.addProcessors(april, pixel);
+
+        enableProcessor(proc);
 
         visionPortal = builder.build();
     }
@@ -54,29 +76,34 @@ public class DetectionCamera {
         if(a) visionPortal.resumeStreaming();
         else visionPortal.stopStreaming();
     }
-    public void stopCamera(){visionPortal.close();}
 
-    public void setProcessor(@NonNull processor proc){
+    /**
+     * Enables a processor and disables the other ones.
+     * @param proc
+     */
+    public void enableProcessor(@NonNull processor proc){
         switch (proc){
             case APRIL_TAG:
-                april = new AprilTagProcessor.Builder()
-                        .setDrawAxes(false)
-                        .setDrawCubeProjection(false)
-                        .setDrawTagOutline(true)
-                        .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                        .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                        .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                        .build();
-                builder.addProcessor(april);
+                visionPortal.setProcessorEnabled(april,true);
+                visionPortal.setProcessorEnabled(pixel,false);
+                //visionPortal.setProcessorEnabled(teamElement, false);
                 break;
             case PIXEL:
-                //todo: make a pixel stack detection algorithm
-                //builder.addProcessor();
+                visionPortal.setProcessorEnabled(april,false);
+                visionPortal.setProcessorEnabled(pixel,true);
+                //visionPortal.setProcessorEnabled(teamElement, false);
+                break;
+            case TEAM_ELEMENT:
+                visionPortal.setProcessorEnabled(april,false);
+                visionPortal.setProcessorEnabled(pixel,false);
+                //visionPortal.setProcessorEnabled(teamElement, true);
                 break;
         }
     }
 
-    public void detectTags(){
+    public void stopCamera(){visionPortal.close();}
+
+    public void detectATags(){
         aprilTagDetections.clear();
         aprilTagDetections = april.getDetections();
     }

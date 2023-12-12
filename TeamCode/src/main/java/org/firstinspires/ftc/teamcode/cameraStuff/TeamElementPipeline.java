@@ -6,7 +6,7 @@ import org.firstinspires.ftc.robotcore.internal.camera.calibration.CameraCalibra
 import org.firstinspires.ftc.vision.VisionProcessor;
 import org.opencv.core.Mat;
 
-public class PipelineTest implements VisionProcessor {
+public class TeamElementPipeline implements VisionProcessor {
     @Override
     public void init(int width, int height, CameraCalibration calibration) {
 
