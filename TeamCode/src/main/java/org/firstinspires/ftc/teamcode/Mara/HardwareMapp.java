@@ -21,7 +21,7 @@ public class HardwareMapp {
 
     /*Scriu aici ce mai trebuie facut:
     * Ridicare coborare misumiuri-gata(mai trebuie pus tick per cm)
-    * Prindere pixeli(hook)
+    * Prindere pixeli(hook)-gata(nush exact daca trebuie sa verific in ColorDetected)
     * Sa fac sa lumineze LED-urile-gata(mai trebuie blinking pentru alb)
     * Implementare senzori de culoare*/
 
@@ -187,6 +187,8 @@ public class HardwareMapp {
             //vede culoare verde
             //Leduri
             return LEDColor.Green;
+            //cod pentru hook
+
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
             //vede culoaregalben
@@ -285,13 +287,30 @@ public class HardwareMapp {
         };
     }
 
-    public Action hook(){
+    public Action hook1(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                ColorRange colorRangeDet=new ColorRange();
-                if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
-                    //daca vede orice culoare inafara de "none" atunci sa prinda pixelul
+                switch (stare){
+                    case "pixel":
+                        servoHook1.setPosition(0.6);
+                    case "noPixel":
+                        servoHook1.setPosition(0);
+                }
+                return false;
+            }
+        };
+    }
+
+    public Action hook2(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "pixel":
+                        servoHook2.setPosition(0.6);
+                    case "noPixel":
+                        servoHook2.setPosition(0);
                 }
                 return false;
             }
