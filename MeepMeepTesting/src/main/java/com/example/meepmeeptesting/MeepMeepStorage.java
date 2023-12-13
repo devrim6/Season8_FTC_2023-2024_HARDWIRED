@@ -149,54 +149,63 @@ public class MeepMeepStorage {
                     driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
 
                             //RIGHT
-//                            .splineToLinearHeading(new Pose2d(-30, -33, Math.toRadians(60)), Math.toRadians(60))
-//                            .setReversed(true)
-//                            .splineTo(new Vector2d(-40, -36), Math.toRadians(180))
-//                            .splineTo(new Vector2d(-57, -25), Math.toRadians(180))
+                            .splineToLinearHeading(new Pose2d(-30, -33, Math.toRadians(60)), Math.toRadians(60))
+                            .setReversed(true)
+                            .splineTo(new Vector2d(-40, -36), Math.toRadians(180))
+                            .splineToConstantHeading(new Vector2d(-57, -25), Math.toRadians(180))
 
                             //MIDDLE
-                            .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(80))
-                            .setReversed(true)
-                            .splineTo(new Vector2d(-40, -38), Math.toRadians(180))
-                            .splineToConstantHeading(new Vector2d(-57, -25), Math.toRadians(180))
+//                            .splineToLinearHeading(new Pose2d(-32.5, -33, Math.toRadians(80)), Math.toRadians(80))
+//                            .setReversed(true)
+//                            .splineTo(new Vector2d(-40, -38), Math.toRadians(180))
+//                            .splineToConstantHeading(new Vector2d(-57, -25), Math.toRadians(180))
 
                             //LEFT
 //                            .splineToLinearHeading(new Pose2d(-43, -33, Math.toRadians(110)), Math.toRadians(120))
 //                            .setReversed(true)
-//                            .splineTo(new Vector2d(-50, -36), Math.toRadians(180))
-//                            .splineTo(new Vector2d(-57, -25), Math.toRadians(180))
+//                            .splineTo(new Vector2d(-52, -40), Math.toRadians(180))
+//                            .splineToConstantHeading(new Vector2d(-57, -25), Math.toRadians(90))
 
 
 
-                            //stackToMiddle
+                            //stackToMiddleFirst
+//                            .setReversed(false)
+//                            .setTangent(Math.toRadians(70))
+//                            .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
+//                            .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
+//                            .splineToLinearHeading(new Pose2d(49, -36, Math.toRadians(0)), Math.toRadians(0))
+                            //stackToRightFirst
                             .setReversed(false)
                             .setTangent(Math.toRadians(70))
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
-                            .splineToSplineHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
-                            .splineToLinearHeading(new Pose2d(49, -36, Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(49, -42, Math.toRadians(0)), Math.toRadians(0))
+                            //stackToLeftFirst
+//                            .setReversed(false)
+//                            .setTangent(Math.toRadians(70))
+//                            .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
+//                            .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
+//                            .splineToLinearHeading(new Pose2d(49, -30, Math.toRadians(0)), Math.toRadians(0))
+
+
                             //middleToStack
                             .setReversed(true)
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(180))
-                            .splineToLinearHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-57, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             //stackToLeft
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
-                            .splineToSplineHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(49, -30, Math.toRadians(0)), Math.toRadians(0))
                             //leftToStack
                             .setReversed(true)
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(180))
-                            .splineToLinearHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             .splineToLinearHeading(new Pose2d(-57, -12.5, Math.toRadians(0)), Math.toRadians(180))
                             //stackToLeft
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
-                            .splineToSplineHeading(new Pose2d(-10, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(49, -30, Math.toRadians(0)), Math.toRadians(0))
                             //parkUpper

@@ -372,6 +372,7 @@ public class TeleOpDrive extends LinearOpMode {
                 }
             }
             runningActions = newActions;
+            dash.sendTelemetryPacket(packet);
 
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
