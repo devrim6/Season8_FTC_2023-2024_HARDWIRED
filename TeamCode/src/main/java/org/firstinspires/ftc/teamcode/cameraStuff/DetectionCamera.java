@@ -32,13 +32,12 @@ public class DetectionCamera {
         PIXEL
     }
 
+    private AprilTagPipeline april;
+
     private VisionPortal.Builder builder;
-    private AprilTagProcessor april;
     private TfodProcessor pixel;
     private TeamElementPipeline teamElement;
     private VisionPortal visionPortal;
-    private AprilTagDetection close;
-    private List<AprilTagDetection> aprilTagDetections;
 
     /**
      * Initialize the camera, set up Vision Portal + the ATag processor and set the required processor
@@ -53,19 +52,11 @@ public class DetectionCamera {
         builder.enableLiveView(true);
         builder.setStreamFormat(VisionPortal.StreamFormat.MJPEG);
 
-        april = new AprilTagProcessor.Builder()
-                .setDrawAxes(false)
-                .setDrawCubeProjection(false)
-                .setDrawTagOutline(true)
-                .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCenterStageTagLibrary())
-                .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
-                .build();
         pixel = new TfodProcessor.Builder()
                 .build();
 
         //todo: add teamElement after it's done
-        builder.addProcessors(april, pixel);
+        builder.addProcessors(april.april, pixel);
 
         enableProcessor(proc);
 
@@ -84,17 +75,17 @@ public class DetectionCamera {
     public void enableProcessor(@NonNull processor proc){
         switch (proc){
             case APRIL_TAG:
-                visionPortal.setProcessorEnabled(april,true);
+                visionPortal.setProcessorEnabled(april.april,true);
                 visionPortal.setProcessorEnabled(pixel,false);
                 //visionPortal.setProcessorEnabled(teamElement, false);
                 break;
             case PIXEL:
-                visionPortal.setProcessorEnabled(april,false);
+                visionPortal.setProcessorEnabled(april.april,false);
                 visionPortal.setProcessorEnabled(pixel,true);
                 //visionPortal.setProcessorEnabled(teamElement, false);
                 break;
             case TEAM_ELEMENT:
-                visionPortal.setProcessorEnabled(april,false);
+                visionPortal.setProcessorEnabled(april.april,false);
                 visionPortal.setProcessorEnabled(pixel,false);
                 //visionPortal.setProcessorEnabled(teamElement, true);
                 break;
@@ -103,57 +94,6 @@ public class DetectionCamera {
 
     public void stopCamera(){visionPortal.close();}
 
-    public void detectATags(){
-        aprilTagDetections.clear();
-        aprilTagDetections = april.getDetections();
-    }
-
-    public Pose2d getEstimatedPosition(Pose2d currentPose){
-        double allX=0, allY=0, allHeading=0;
-        for(AprilTagDetection detection : aprilTagDetections){
-            if(detection.metadata!=null){
-                // 0 - x, 1 - y, 2 - z
-                float[] tagPos = detection.metadata.fieldPosition.getData();
-                double tagX = tagPos[0], tagY = tagPos[1], tagZ = tagPos[2];
-
-                allX+=tagX + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
-                allY+=tagY + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
-                // Only works with pixel stacks (if it works at all) todo: think of a better way
-                allHeading+=Math.toRadians(180 + detection.ftcPose.bearing);
-            }
-        }
-        double size = aprilTagDetections.size();
-        if(size!=0){
-            // Uses the average of all poses calculated. Might be changed.
-            return new Pose2d(allX/size, allY/size, allHeading/size);
-        }
-        return currentPose;
-    }
-
-    public void aprilTagTelemetry(@NonNull Telemetry telemetry){
-        telemetry.addData("Nr of April Tags detected: ", aprilTagDetections.size());
-        double minDis = 999; // It's never gonna be 999 inches lol
-
-        for(AprilTagDetection detection : aprilTagDetections){
-            if(detection.metadata!=null){
-                telemetry.addLine("\n");
-                telemetry.addLine("ID detected: " + detection.id);
-                telemetry.addLine("ATag name: " + detection.metadata.name);
-                telemetry.addLine("Distance from camera: " + detection.ftcPose.range);
-                telemetry.addLine("Angle from camera: " + detection.ftcPose.bearing);
-                telemetry.addLine("Elevation from camera: " + detection.ftcPose.elevation);
-                if(detection.ftcPose.range <= minDis) minDis = detection.ftcPose.range;
-                close = detection;
-            } else {
-                telemetry.addLine("\n");
-                telemetry.addLine("Unknown ID detected: " + detection.id);
-                telemetry.addLine("Distance from camera: " + detection.ftcPose.range);
-                telemetry.addLine("Angle from camera: " + detection.ftcPose.bearing);
-            }
-        }
-
-        telemetry.addLine("Last seen AprilTag: " + close.id);
-
-    }
+    public void aprilTagTelemetry(Telemetry telemetry, Pose2d currentPose){april.aprilTagTelemetry(telemetry, currentPose);}
 
 }
