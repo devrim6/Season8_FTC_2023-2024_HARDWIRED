@@ -4,6 +4,7 @@ import android.util.Size;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -94,6 +95,7 @@ public class DetectionCamera {
 
     public void stopCamera(){visionPortal.close();}
 
-    public void aprilTagTelemetry(Telemetry telemetry, Pose2d currentPose){april.aprilTagTelemetry(telemetry, currentPose);}
+    public void aprilTagTelemetry(Telemetry telemetry, TelemetryPacket packet, Pose2d currentPose)
+    {april.aprilTagTelemetry(telemetry, packet, currentPose);}
 
 }

@@ -12,8 +12,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.checkerframework.checker.units.qual.A;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +21,8 @@ public class actionTest extends LinearOpMode {
     private GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
     private Servo intakeServoLeft, intakeServoRight;
-    private String state;
+    private String state = "not";
+    private String a;
 
     public void runOpMode() throws InterruptedException{
 
@@ -40,6 +39,9 @@ public class actionTest extends LinearOpMode {
                     smth2()
             ));
 
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)) a = "pressed";
+            else a = "not pressed";
+
             // Update running actions
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -53,6 +55,7 @@ public class actionTest extends LinearOpMode {
 
             gamepadEx.readButtons();
             telemetry.addLine(state);
+            telemetry.addLine(a);
             telemetry.update();
         }
     }

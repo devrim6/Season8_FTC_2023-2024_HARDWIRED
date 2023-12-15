@@ -2,6 +2,9 @@ package org.firstinspires.ftc.teamcode.cameraStuff;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.canvas.Canvas;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Pose2d;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -18,6 +21,7 @@ public class AprilTagPipeline {
     private AprilTagDetection close;
     private List<AprilTagDetection> aprilTagDetections;
     public Pose2d estimatedPose;
+    private FtcDashboard dash = FtcDashboard.getInstance();
 
     public AprilTagProcessor april = new AprilTagProcessor.Builder()
                 .setDrawAxes(false)
@@ -28,19 +32,22 @@ public class AprilTagPipeline {
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                 .build();
 
-    private void detectATags(Pose2d currentPose){
+    private void detectATags(Pose2d currentPose, TelemetryPacket packet){
         aprilTagDetections.clear();
         aprilTagDetections = april.getDetections();
-        if(aprilTagDetections.size()!=0) getEstimatedPosition(currentPose);
+        if(aprilTagDetections.size()!=0) getEstimatedPosition(currentPose, packet);
     }
 
-    private void getEstimatedPosition(Pose2d currentPose){
+    private void getEstimatedPosition(Pose2d currentPose, TelemetryPacket packet){
         double allX=0, allY=0, allHeading=0;
+        Canvas fieldOverlay = packet.fieldOverlay();
         for(AprilTagDetection detection : aprilTagDetections){
             if(detection.metadata!=null){
                 // 0 - x, 1 - y, 2 - z
                 float[] tagPos = detection.metadata.fieldPosition.getData();
                 double tagX = tagPos[0], tagY = tagPos[1], tagZ = tagPos[2];
+                fieldOverlay.setStroke("#FF0000");
+                fieldOverlay.strokeCircle(tagX, tagY, 2);
 
                 allX+=tagX + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
                 allY+=tagY + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
@@ -52,13 +59,15 @@ public class AprilTagPipeline {
         if(size!=0){
             // Uses the average of all poses calculated. Might be changed.
             estimatedPose =  new Pose2d(allX/size, allY/size, allHeading/size);
+            fieldOverlay.setStroke("#008000");
+            fieldOverlay.strokeCircle(allX/size, allY/size, 2);
             return;
         }
         estimatedPose = currentPose;
     }
 
-    public void aprilTagTelemetry(@NonNull Telemetry telemetry, Pose2d currentPose){
-        detectATags(currentPose);
+    public void aprilTagTelemetry(@NonNull Telemetry telemetry, TelemetryPacket packet, Pose2d currentPose){
+        detectATags(currentPose, packet);
         telemetry.addData("Nr of April Tags detected: ", aprilTagDetections.size());
         double minDis = 999; // It's never gonna be 999 inches lol
 
@@ -82,6 +91,8 @@ public class AprilTagPipeline {
 
         telemetry.addLine("Last seen AprilTag: " + close.id);
         telemetry.addLine("Estimated pose x: " + estimatedPose.position.x + "y: " + estimatedPose.position.y);
+
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
 
     }
 
