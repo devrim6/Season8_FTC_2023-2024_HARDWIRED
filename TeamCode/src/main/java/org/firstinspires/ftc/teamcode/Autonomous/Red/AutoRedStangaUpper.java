@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
-@Autonomous(name = "AutoRedStangaBottom")
+@Autonomous(group = "Auto", name = "AutoRedStangaUpper")
 public class AutoRedStangaUpper extends LinearOpMode {
     /* Init whatever you need */
     HardwareMapping robot = new HardwareMapping();
