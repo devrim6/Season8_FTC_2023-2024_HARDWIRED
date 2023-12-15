@@ -98,4 +98,6 @@ public class DetectionCamera {
     public void aprilTagTelemetry(Telemetry telemetry, TelemetryPacket packet, Pose2d currentPose)
     {april.aprilTagTelemetry(telemetry, packet, currentPose);}
 
+    public Pose2d getPoseEstimate(){return april.estimatedPose;}
+
 }

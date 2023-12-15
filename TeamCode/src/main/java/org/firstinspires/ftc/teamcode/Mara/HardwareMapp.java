@@ -15,19 +15,24 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorColor;
+import org.firstinspires.ftc.teamcode.Variables.DefVal;
 import org.opencv.core.Scalar;
 
 public class HardwareMapp {
 
     /*Scriu aici ce mai trebuie facut:
-    * Ridicare coborare misumiuri-gata(mai trebuie pus tick per cm)
     * Prindere pixeli(hook)-gata(nush exact daca trebuie sa verific in ColorDetected)
     * Sa fac sa lumineze LED-urile-gata(mai trebuie blinking pentru alb)
     * Implementare senzori de culoare*/
 
+    double PI = 3.1415;
+    double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
+    double WHEEL_DIAMETER_CM = 3.565;
+    double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
+
     public enum LEDColor{
         Purple, //red
-        Green, //green
+        Green,  //green
         Yellow, //between red & green(amber)
         White, //blinking
         None //none
@@ -37,12 +42,13 @@ public class HardwareMapp {
     public DcMotorEx misumMotorRight;  //motor pentru misum-ul drept
     public DcMotorEx intakeMotor;  //motor pentru maturice           //motoare
 
-    public CRServo intakeServo;  //servo CR pentru intake
+    public CRServo intakeCRServo;  //servo CR pentru intake
     public Servo outakeServo;  //servo pentru deschis outake-ul
-    public Servo planeServo; //servo pentru avion               //servo-uri
-
+    public Servo planeServo; //servo pentru avion
     public Servo servoHook1;
     public Servo servoHook2;
+    public Servo intakeServoLeft;
+    public Servo intakeServoRight;                                  //servouri
 
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
@@ -65,11 +71,13 @@ public class HardwareMapp {
         misumMotorRight=HW.get(DcMotorEx.class,"misumMotorRight");
         intakeMotor=HW.get(DcMotorEx.class,"intakeMotor");
 
-        intakeServo=HW.get(CRServo.class,"intakeServo");
+        intakeCRServo=HW.get(CRServo.class,"intakeServo");
         outakeServo=HW.get(Servo.class,"outakeServo");
         planeServo=HW.get(Servo.class,"planeServo");
         servoHook1=HW.get(Servo.class,"hook1");
         servoHook2=HW.get(Servo.class,"hook2");
+        intakeServoLeft=HW.get(Servo.class,"intakeServoLeft");
+        intakeServoRight=HW.get(Servo.class,"intakeServoRight");
 
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
@@ -97,10 +105,10 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "lessThan2Pixels":
-                        intakeServo.setPower(1);
+                        intakeCRServo.setPower(1);
                         break;
                     case "moreThan2Pixels":
-                        intakeServo.setPower(-1);
+                        intakeCRServo.setPower(-1);
                         break;
                 }
                 return false;
@@ -144,7 +152,7 @@ public class HardwareMapp {
         };
     }
 
-    public Action maturice(String stare){
+    public Action maturiceOpen_Close(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -160,6 +168,30 @@ public class HardwareMapp {
             }
         };
     }
+
+    public Action maturiceLevel(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "Level1":
+                        intakeServoLeft.setPosition(DefVal.iLevel1);
+                        intakeServoRight.setPosition(DefVal.iLevel1);
+                    case "Level2":
+                        intakeServoLeft.setPosition(DefVal.iLevel2);
+                        intakeServoRight.setPosition(DefVal.iLevel2);
+                    case "Level3":
+                        intakeServoLeft.setPosition(DefVal.iLevel3);
+                        intakeServoRight.setPosition(DefVal.iLevel3);
+                    case "Level4":
+                        intakeServoLeft.setPosition(DefVal.iLevel4);
+                        intakeServoRight.setPosition(DefVal.iLevel4);
+                }
+                return false;
+            }
+        };
+    }
+
     float[] hsvValues = new float[3];
     Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
@@ -256,8 +288,10 @@ public class HardwareMapp {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                //cod pentru bliking
-                return false;
+                //cod pentru blinking
+                LED1.setState(true);LED2.setState(true);
+
+                return true;
             }
         };
     }
@@ -268,17 +302,17 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "GROUND":
-                        misumMotorLeft.setPositionPIDFCoefficients(0);
-                        misumMotorRight.setPositionPIDFCoefficients(0);
+                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftGROUND*TICKS_PER_CM_Z);
+                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftGROUND*TICKS_PER_CM_Z);
                     case "LOW":
-                        misumMotorLeft.setPositionPIDFCoefficients(5);
-                        misumMotorRight.setPositionPIDFCoefficients(5);
+                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftLOW*TICKS_PER_CM_Z);
+                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftLOW*TICKS_PER_CM_Z);
                     case "MIDDLE":
-                        misumMotorLeft.setPositionPIDFCoefficients(10);
-                        misumMotorRight.setPositionPIDFCoefficients(10);
+                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
+                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
                     case "HIGH":
-                        misumMotorLeft.setPositionPIDFCoefficients(15);
-                        misumMotorRight.setPositionPIDFCoefficients(15);
+                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftHIGH*TICKS_PER_CM_Z);
+                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftHIGH*TICKS_PER_CM_Z);
                 }
                 misumMotorLeft.setPower(1);
                 misumMotorRight.setPower(1);
