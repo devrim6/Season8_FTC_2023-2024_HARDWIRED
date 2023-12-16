@@ -18,37 +18,37 @@ public class MeepMeepStorage1 {
                             .splineToLinearHeading(new Pose2d(-33.16, -38, Math.toRadians(45)), Math.toRadians(90))
                             .setReversed(true)
                             .waitSeconds(0.2)
-                            .splineToLinearHeading(new Pose2d(-50,-36,Math.toRadians(0)),Math.toRadians(0))
+                            .lineToSplineHeading(new Pose2d(-52,-38,Math.toRadians(0)))
                             .setReversed(true)
                             .waitSeconds(0.7)
                             .splineToLinearHeading(new Pose2d(-38.39, -12.02,Math.toRadians(0)), Math.toRadians(0))
                             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-                            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(48.6, -41.31,Math.toRadians(0)), Math.toRadians(0))
                             .waitSeconds(0.7)
                             .setReversed(true)
                             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(180))
-                            .splineToLinearHeading(new Pose2d(-49.2, -12.02,Math.toRadians(0)), Math.toRadians(180))
+                            .splineToLinearHeading(new Pose2d(-56.45, -12.02,Math.toRadians(0)), Math.toRadians(180))
                             .setReversed(false)
                             .waitSeconds(0.7)
                             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-                            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(48.6, -29.65,Math.toRadians(0)), Math.toRadians(0))
                             .waitSeconds(0.7)
                             .setReversed(true)
                             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(180))
-                            .splineToLinearHeading(new Pose2d(-49.2, -12.02,Math.toRadians(0)), Math.toRadians(180))
+                            .splineToLinearHeading(new Pose2d(-56.45, -12.02,Math.toRadians(0)), Math.toRadians(180))
                             .setReversed(false)
                             .waitSeconds(0.7)
                             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-                            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(48.6, -29.65,Math.toRadians(0)), Math.toRadians(0))
                             .waitSeconds(0.7)
                             //de final
                             .setReversed(true)
-                            .splineToLinearHeading(new Pose2d(48, -9.02,Math.toRadians(0)), Math.toRadians(90))
+                            .lineTo(new Vector2d(49,-15))
                             .build()
             );
 
     RoadRunnerBotEntity Autonomie2LessOK = new DefaultBotBuilder(meepMeep)
-            .setConstraints(20, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
             .followTrajectorySequence(driveShim ->
                     driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
 
@@ -86,13 +86,17 @@ public class MeepMeepStorage1 {
                             .splineToLinearHeading(new Pose2d(50, -12.02,Math.toRadians(0)), Math.toRadians(90))
                             .build()
             );
-    RoadRunnerBotEntity AutoDreaptaBlueBottom=new DefaultBotBuilder(meepMeep)
-            .setConstraints(20, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+    RoadRunnerBotEntity AutoTesting=new DefaultBotBuilder(meepMeep)
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
             .followTrajectorySequence(driveShim ->
-                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, 58 , Math.toRadians(270)))
-                            .splineToLinearHeading(new Pose2d(-34, 38,Math.toRadians(330)), Math.toRadians(90))
+                    driveShim.trajectorySequenceBuilder(new Pose2d(48.6, -35.63 , Math.toRadians(0)))
+                            /*.splineToLinearHeading(new Pose2d(-34, 38,Math.toRadians(330)), Math.toRadians(90))
                             .setReversed(true)
-                            .splineToLinearHeading(new Pose2d(-54, 36,Math.toRadians(0)), Math.toRadians(90))
+                            .splineToLinearHeading(new Pose2d(-54, 36,Math.toRadians(0)), Math.toRadians(90))*/
+                            /*.setReversed(false)
+                            .splineToLinearHeading(new Pose2d(-33.16, -38, Math.toRadians(45)), Math.toRadians(90))
+                            .lineToSplineHeading(new Pose2d(-56,-38,Math.toRadians(0)))*/
+                            .lineTo(new Vector2d(49,-15))
                             .build()
             );
 }

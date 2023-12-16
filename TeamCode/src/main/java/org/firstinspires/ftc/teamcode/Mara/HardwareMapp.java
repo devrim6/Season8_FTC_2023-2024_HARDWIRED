@@ -157,10 +157,10 @@ public class HardwareMapp {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare) {
-                    case "lessThan2Pixels":
+                    case "in":
                         intakeMotor.setPower(1);
                         break;
-                    case "moreThan2Pixels":
+                    case "out":
                         intakeMotor.setPower(-1);
                         break;
                 }
@@ -186,6 +186,12 @@ public class HardwareMapp {
                     case "Level4":
                         intakeServoLeft.setPosition(DefVal.iLevel4);
                         intakeServoRight.setPosition(DefVal.iLevel4);
+                    case "Level5":
+                        intakeServoLeft.setPosition(DefVal.iLevel5);
+                        intakeServoRight.setPosition(DefVal.iLevel5);
+                    case "Level6":
+                        intakeServoLeft.setPosition(DefVal.iLevel6);
+                        intakeServoRight.setPosition(DefVal.iLevel6);
                 }
                 return false;
             }

@@ -11,6 +11,7 @@ public class MeepMeepTesting {
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
                 .addEntity(robot1.Autonomie1Better)
+                //.addEntity(robot1.AutoTesting)
                 //.addEntity(robot.AutoStangaRedBottom)
                 //.addEntity(robot.AutoStangaRedBottom)
                 .start();
