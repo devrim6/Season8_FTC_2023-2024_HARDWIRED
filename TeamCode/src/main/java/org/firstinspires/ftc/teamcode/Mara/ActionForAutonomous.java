@@ -21,36 +21,82 @@ public class ActionForAutonomous{
     Pose2d backboardPose=new Pose2d(48,-34,0);
     Pose2d stackPose=new Pose2d(-55,-11,0);
 
-    Action Traj1= drive.actionBuilder(firstPose) //AutoRedDreapta
+    Action Traj1= drive.actionBuilder(firstPose) //Autonomie1
+
             .setReversed(false)
-            .splineToLinearHeading(new Pose2d(-33.16, -38, Math.toRadians(45)), Math.toRadians(90))
-            .setReversed(true)
+            .splineToLinearHeading(new Pose2d(-29, -33, Math.toRadians(60)), Math.toRadians(60))
             .waitSeconds(0.2)
-            .splineToLinearHeading(new Pose2d(-50,-36,Math.toRadians(0)),Math.toRadians(0))
             .setReversed(true)
-            .waitSeconds(0.7)
+            .splineToLinearHeading(new Pose2d(-53,-36,Math.toRadians(0)),Math.toRadians(90))
+            .waitSeconds(0.7) //ia un pixel
+            //1
+            .setTangent(Math.toRadians(90))
             .splineToLinearHeading(new Pose2d(-38.39, -12.02,Math.toRadians(0)), Math.toRadians(0))
             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48, -41.31,Math.toRadians(0)), Math.toRadians(0))
             .waitSeconds(0.7)
             .setReversed(true)
             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(180))
-            .splineToLinearHeading(new Pose2d(-49.2, -12.02,Math.toRadians(0)), Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-56.45, -12.02,Math.toRadians(0)), Math.toRadians(180))
             .setReversed(false)
             .waitSeconds(0.7)
             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48, -29.65,Math.toRadians(0)), Math.toRadians(0))
             .waitSeconds(0.7)
             .setReversed(true)
             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(180))
-            .splineToLinearHeading(new Pose2d(-49.2, -12.02,Math.toRadians(0)), Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-56.45, -12.02,Math.toRadians(0)), Math.toRadians(180))
             .setReversed(false)
             .waitSeconds(0.7)
             .splineToLinearHeading(new Pose2d(27, -12.02,Math.toRadians(0)), Math.toRadians(0))
-            .splineToLinearHeading(new Pose2d(48.6, -35.63,Math.toRadians(0)), Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48, -29.65,Math.toRadians(0)), Math.toRadians(0))
             .waitSeconds(0.7)
             //de final
             .setReversed(true)
-            .splineToLinearHeading(new Pose2d(48, -9.02,Math.toRadians(0)), Math.toRadians(90))
+            .setTangent(Math.toRadians(90))
+            .splineToSplineHeading(new Pose2d(48,-15,Math.toRadians(0)),Math.toRadians(90))
             .build();
+
+    Action Traj2= drive.actionBuilder(firstPose)
+
+            .setReversed(false)
+            .splineToLinearHeading(new Pose2d(-29, -33, Math.toRadians(60)), Math.toRadians(60))
+            .waitSeconds(0.2)
+            .setReversed(true)
+            .splineToLinearHeading(new Pose2d(-53,-36,Math.toRadians(0)),Math.toRadians(180))
+            .waitSeconds(0.7) //ia un pixel
+            //1
+            .setTangent(Math.toRadians(90))
+            .setReversed(false)
+            .splineToLinearHeading(new Pose2d(-33,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(27,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48,-42,Math.toRadians(0)),Math.toRadians(0))
+            .waitSeconds(0.7)
+            .setReversed(true)
+            .splineToLinearHeading(new Pose2d(27,-59,Math.toRadians(0)),Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-33,-59,Math.toRadians(0)),Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-53,-36,Math.toRadians(0)),Math.toRadians(180))
+            .waitSeconds(0.7)
+            .setReversed(false)
+            .splineToLinearHeading(new Pose2d(-33,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(27,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48,-42,Math.toRadians(0)),Math.toRadians(0))
+            .waitSeconds(0.7)
+            .setReversed(true)
+            .splineToLinearHeading(new Pose2d(27,-59,Math.toRadians(0)),Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-33,-59,Math.toRadians(0)),Math.toRadians(180))
+            .splineToLinearHeading(new Pose2d(-53,-36,Math.toRadians(0)),Math.toRadians(180))
+            .waitSeconds(0.7)
+            .setReversed(false)
+            .splineToLinearHeading(new Pose2d(-33,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(27,-59,Math.toRadians(0)),Math.toRadians(0))
+            .splineToLinearHeading(new Pose2d(48,-42,Math.toRadians(0)),Math.toRadians(0))
+            .waitSeconds(0.7)
+
+            //de final
+            .setReversed(true)
+            .setTangent(Math.toRadians(-90))
+            .splineToSplineHeading(new Pose2d(48,-56,Math.toRadians(0)),Math.toRadians(270))
+            .build();
+
 }

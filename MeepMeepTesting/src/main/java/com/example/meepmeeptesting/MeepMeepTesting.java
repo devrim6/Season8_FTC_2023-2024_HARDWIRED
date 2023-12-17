@@ -7,11 +7,12 @@ public class MeepMeepTesting {
         MeepMeepStorage robot = new MeepMeepStorage();
         MeepMeepStorage1 robot1 = new MeepMeepStorage1();
 
-        robot.meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
+        robot1.meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(robot.AutoStangaRedBottom)
+                //.addEntity(robot.AutoStangaRedBottom)
                 //.addEntity(robot1.AutoTesting)
+                .addEntity(robot1.Autonomie2)
                 //.addEntity(robot.AutoStangaRedBottom)
                 //.addEntity(robot.AutoStangaRedBottom)
                 .start();
