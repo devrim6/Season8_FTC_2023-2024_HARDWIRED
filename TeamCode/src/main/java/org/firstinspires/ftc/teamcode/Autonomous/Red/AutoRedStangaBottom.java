@@ -245,7 +245,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
         Action TRAJ7_ParkRight = drive.actionBuilder(leftBackboardPose)
                 .setReversed(false)
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(49, -22, Math.toRadians(0)), Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
                                 outtake.yaw(0),
@@ -259,7 +259,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
                         outtake.roll(DefVal.roll0),
                         outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
                 ))
-                .splineToLinearHeading(new Pose2d(59, -10, Math.toRadians(0)), Math.toRadians(0))
+                //.splineToLinearHeading(new Pose2d(59, -10, Math.toRadians(0)), Math.toRadians(0))
                 .build();
 
         waitForStart();

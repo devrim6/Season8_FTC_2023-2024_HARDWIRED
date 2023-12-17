@@ -71,8 +71,8 @@ public class MeepMeepStorage {
                             //parkBottom
                             .setReversed(false)
                             .setTangent(Math.toRadians(-90))
-                            .splineToLinearHeading(new Pose2d(49, -55, Math.toRadians(0)), Math.toRadians(-90))
-                            .splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(49, -60, Math.toRadians(0)), Math.toRadians(-90))
+                            //.splineToLinearHeading(new Pose2d(57.5, -60, Math.toRadians(0)), Math.toRadians(0))
                             .build()
             );
     RoadRunnerBotEntity AutoDreaptaRedBottom = new DefaultBotBuilder(meepMeep)
@@ -211,8 +211,8 @@ public class MeepMeepStorage {
                             //parkUpper
                             .setReversed(false)
                             .setTangent(Math.toRadians(90))
-                            .splineToLinearHeading(new Pose2d(49, -22, Math.toRadians(0)), Math.toRadians(90))
-                            .splineToLinearHeading(new Pose2d(59, -10, Math.toRadians(0)), Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(49, -19, Math.toRadians(0)), Math.toRadians(90))
+                            //.splineToLinearHeading(new Pose2d(59, -10, Math.toRadians(0)), Math.toRadians(0))
                             .build()
             );
     RoadRunnerBotEntity AutoDreaptaRedUpper = new DefaultBotBuilder(meepMeep) //todo: not finished in the slightest
