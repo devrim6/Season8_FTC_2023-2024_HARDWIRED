@@ -12,7 +12,7 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
                 //.addEntity(robot.AutoStangaRedBottom)
                 //.addEntity(robot1.AutoTesting)
-                .addEntity(robot1.Autonomie2)
+                .addEntity(robot1.Autonomie3)
                 //.addEntity(robot.AutoStangaRedBottom)
                 //.addEntity(robot.AutoStangaRedBottom)
                 .start();
