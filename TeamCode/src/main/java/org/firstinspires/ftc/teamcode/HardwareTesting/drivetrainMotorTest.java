@@ -3,8 +3,10 @@ package org.firstinspires.ftc.teamcode.HardwareTesting;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+@TeleOp(name="drivetrainMotorTest")
 public class drivetrainMotorTest extends LinearOpMode {
 
     private DcMotorEx leftFront, leftBack, rightFront, rightBack;

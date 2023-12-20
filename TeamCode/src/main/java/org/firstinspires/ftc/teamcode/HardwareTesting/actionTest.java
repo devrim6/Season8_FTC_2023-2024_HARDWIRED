@@ -10,11 +10,13 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@TeleOp(name="actionTest")
 public class actionTest extends LinearOpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
