@@ -11,18 +11,22 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name="intakeTest")
 public class intakeTest extends LinearOpMode {
     private Servo intakeServoLeft, intakeServoRight;
-    private CRServo intakeServoRoller;
+   // private CRServo intakeServoRoller;
     private DcMotorEx intakeMotor;
 
-    private GamepadEx gamepadEx = new GamepadEx(gamepad2);
     private double increment;
 
     public void runOpMode() throws InterruptedException{
 
         intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
-        intakeServoRoller = hardwareMap.get(CRServo.class, "intakeServoRoller");
+        //intakeServoRoller = hardwareMap.get(CRServo.class, "intakeServoRoller");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
+
+        GamepadEx gamepadEx = new GamepadEx(gamepad2);
+
+        intakeServoRight.setPosition(0);
+        intakeServoLeft.setPosition(0);
 
         intakeServoRight.setDirection(Servo.Direction.REVERSE);
 
@@ -41,7 +45,7 @@ public class intakeTest extends LinearOpMode {
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.X)) intakeServoLeft.setPosition(increment);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)) intakeServoRight.setPosition(increment);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)) intakeMotor.setPower(increment);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)) intakeServoRoller.setPower(increment);
+            //if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)) intakeServoRoller.setPower(increment);
 
             gamepadEx.readButtons();
 
@@ -49,7 +53,7 @@ public class intakeTest extends LinearOpMode {
             telemetry.addData("ServoLeft: ", intakeServoLeft.getPosition());
             telemetry.addData("ServoRight: ", intakeServoRight.getPosition());
             telemetry.addData("Motor: ", intakeMotor.getPower());
-            telemetry.addData("ServoRoller: ", intakeServoRoller.getPower());
+           // telemetry.addData("ServoRoller: ", intakeServoRoller.getPower());
             telemetry.update();
         }
     }

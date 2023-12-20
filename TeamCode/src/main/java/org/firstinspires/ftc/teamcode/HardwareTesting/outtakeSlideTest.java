@@ -15,8 +15,6 @@ public class outtakeSlideTest extends LinearOpMode {
 
     private DcMotorEx slideMotorLeft, slideMotorRight;
 
-    private GamepadEx gamepadEx = new GamepadEx(gamepad2);
-
     double PI = 3.1415;
     double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
     double WHEEL_DIAMETER_CM = 3.565;
@@ -42,6 +40,8 @@ public class outtakeSlideTest extends LinearOpMode {
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){

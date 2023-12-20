@@ -2,16 +2,18 @@ package org.firstinspires.ftc.teamcode.HardwareTesting;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
+import com.arcrobotics.ftclib.gamepad.ToggleButtonReader;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @TeleOp(name="drivetrainMotorTest")
 public class drivetrainMotorTest extends LinearOpMode {
 
     private DcMotorEx leftFront, leftBack, rightFront, rightBack;
-    private GamepadEx gamepadEx = new GamepadEx(gamepad2);
     private double increment;
+
 
     public void runOpMode() throws InterruptedException{
 
@@ -19,9 +21,16 @@ public class drivetrainMotorTest extends LinearOpMode {
         leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
         rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        GamepadEx gamepadEx = new GamepadEx(gamepad2);
+
+        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
+
+            gamepadEx.readButtons();
+
             // Increment controls
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
                 increment+=0.1;
@@ -41,8 +50,9 @@ public class drivetrainMotorTest extends LinearOpMode {
             if(gamepadEx.isDown(GamepadKeys.Button.B)) rightBack.setPower(increment);
             else rightBack.setPower(0);
 
-            gamepadEx.readButtons();
+            //toggleY.readValue();
 
+            telemetry.addData("increment: ", increment);
             telemetry.addData("leftFront: ", leftBack.getPower());
             telemetry.addData("leftBack: ", leftBack.getPower());
             telemetry.addData("rightFront: ", rightFront.getPower());

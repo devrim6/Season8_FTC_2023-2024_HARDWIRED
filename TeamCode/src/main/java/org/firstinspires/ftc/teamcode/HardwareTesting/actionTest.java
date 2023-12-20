@@ -20,7 +20,6 @@ import java.util.List;
 public class actionTest extends LinearOpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
-    private GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
     private Servo intakeServoLeft, intakeServoRight;
     private String state = "not";
@@ -30,6 +29,8 @@ public class actionTest extends LinearOpMode {
 
         intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
+
+        GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
