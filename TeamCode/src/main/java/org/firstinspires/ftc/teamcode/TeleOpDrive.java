@@ -285,19 +285,22 @@ public class TeleOpDrive extends LinearOpMode {
                     bottomSensorState = robot.checkColorRange("bottom");
                     runningActions.add(new ParallelAction(
                             outtake.bottomHook("closed"), outtake.upperHook("closed"),
-                            robot.setLedColour("upper", upperSensorState), robot.setLedColour("bottom", bottomSensorState),
+                            robot.setLedColour("upper", upperSensorState),
+                            robot.setLedColour("bottom", bottomSensorState),
                             intake.sensingOff()
                     ));
                 }
                 else runningActions.add(new ParallelAction(
                         outtake.bottomHook("open"), outtake.upperHook("open"),
-                        robot.setLedColour("upper", HardwareMapping.ledState.OFF), robot.setLedColour("bottom", HardwareMapping.ledState.OFF),
+                        robot.setLedColour("upper", HardwareMapping.ledState.OFF),
+                        robot.setLedColour("bottom", HardwareMapping.ledState.OFF),
                         intake.sensingOn()
                 ));
             }
 
             //Outtake 90 degree rotation
-            if((robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A) || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
+            if((robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A)
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
                 && !outtake.currentHeight.equals(HardwareMapping.liftHeight.LOW)){
                 isOuttakeRotated = outtake.isOuttakeRotated;
                 isOuttakeRotated = !isOuttakeRotated;
@@ -312,7 +315,8 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Intake power controls - reverse also stops the intake
-            if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X) || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
+            if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X)
+                    || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
                 isIntakePowered = intake.isIntakeOn;
                 isIntakePowered = !isIntakePowered;
                 if(isIntakePowered){
@@ -335,17 +339,20 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Intake level adjustment
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)
+                    || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
                 intakeLevel++; if(intakeLevel>6) intakeLevel=1;
                 else runningActions.add(intake.angle(intakeLevel));
             }
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)
+                    || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
                 intakeLevel--; if(intakeLevel<1) intakeLevel=6;
                 else runningActions.add(intake.angle(intakeLevel));
             }
 
             //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
-            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)
+                    || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                 if(System.currentTimeMillis() > startTime + DefVal.endgameTime) runningActions.add(robot.launchPlane());
             }
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
