@@ -7,27 +7,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.Variables.DefVal;
+
 @TeleOp(name="outtakeTest")
 public class outakeTest extends LinearOpMode {
-    /**
-     * Override this method and place your code here.
-     * <p>
-     * Please do not catch {@link InterruptedException}s that are thrown in your OpMode
-     * unless you are doing it to perform some brief cleanup, in which case you must exit
-     * immediately afterward. Once the OpMode has been told to stop, your ability to
-     * control hardware will be limited.
-     *
-     * @throws InterruptedException When the OpMode is stopped while calling a method
-     *                              that can throw {@link InterruptedException}
-     */
-
     public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
     public Servo outtakeLatch, outtakeClawUpper, outtakeClawBottom;
-    private GamepadEx gamepadEx=new GamepadEx(gamepad1);
-    double increment1,increment2;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        boolean a=false,b=false,x=false,y=false,upper=false,bottom=false;
+        GamepadEx gamepadEx=new GamepadEx(gamepad1);
         outtakePitchLeft=hardwareMap.get(ServoEx.class,"outtakePitchLeft");
         outtakePitchRight=hardwareMap.get(ServoEx.class,"outtakePitchRight");
         outtakeYaw=hardwareMap.get(ServoEx.class,"outtakeYaw");
@@ -37,29 +27,80 @@ public class outakeTest extends LinearOpMode {
         outtakeClawBottom=hardwareMap.get(Servo.class,"outtakeClawBottom");
         outtakeClawUpper=hardwareMap.get(Servo.class,"outtakeClawUpper");
 
+        // Outtake arms
+        outtakePitchRight.turnToAngle(0);
+        outtakePitchLeft.turnToAngle(0);
+
+        outtakeYaw.turnToAngle(0);
+
+        // Outtake box
+        outtakeRollLeft.turnToAngle(0);
+        outtakeRollRight.turnToAngle(0);
+
+        outtakeLatch.setPosition(0);
+
+        outtakeClawBottom.setPosition(0);
+        outtakeClawUpper.setPosition(0);
+
+        outtakePitchLeft.setInverted(true);
+        outtakeRollLeft.setInverted(true);
+
+        telemetry.setMsTransmissionInterval(50);
+
         waitForStart();
 
         while(opModeIsActive() && !isStopRequested()){
 
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
+                a=!a;
+                if(a){
+                    outtakePitchLeft.turnToAngle(DefVal.pivot0);
+                    outtakePitchRight.turnToAngle(DefVal.pivot0);
+                } else {
+                    outtakePitchLeft.turnToAngle(DefVal.pivot60);
+                    outtakePitchRight.turnToAngle(DefVal.pivot60);
+                }
+            }
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)){
+                b=!b;
+                if(b){
+                    outtakeYaw.turnToAngle(DefVal.yaw0);
+                } else outtakeYaw.turnToAngle(DefVal.yaw90);
+            }
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.X)){
+                x=!x;
+                if(x){
+                    outtakeRollLeft.turnToAngle(DefVal.roll0);
+                    outtakeRollRight.turnToAngle(DefVal.roll0);
+                } else {
+                    outtakeRollLeft.turnToAngle(DefVal.roll60);
+                    outtakeRollRight.turnToAngle(DefVal.roll60);
+                }
+            }
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)){
+                y=!y;
+                if(y) outtakeLatch.setPosition(DefVal.latchOpen);
+                else outtakeLatch.setPosition(DefVal.latchClosed);
+            }
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
-                increment1+=0.1;
-                if(increment1>1) increment1=1;
+                upper=!upper;
+                if(upper) outtakeClawUpper.setPosition(DefVal.upperHookOpen);
+                else outtakeClawUpper.setPosition(DefVal.upperHookClosed);
             }
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
-                increment1-=0.1;
-                if(increment1<-0.1) increment1=0.1;
+                bottom=!bottom;
+                if(bottom) outtakeClawBottom.setPosition(DefVal.bottomHookOpen);
+                else outtakeClawBottom.setPosition(DefVal.bottomHookClosed);
             }
 
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)) outtakePitchLeft.rotateByAngle(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)) outtakePitchRight.rotateByAngle(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)) outtakeRollLeft.rotateByAngle(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)) outtakeRollRight.rotateByAngle(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.X)) outtakeClawBottom.setPosition(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.X)) outtakeClawUpper.setPosition(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)) outtakeLatch.setPosition(increment1);
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)) outtakeYaw.rotateByAngle(increment1);
-
+            gamepadEx.readButtons();
+            telemetry.addData("pivot: ", a);
+            telemetry.addData("yaw: ", b);
+            telemetry.addData("roll: ", x);
+            telemetry.addData("latch: ", y);
+            telemetry.addData("uClaw: ", upper);
+            telemetry.addData("bClaw: ", bottom);
+            telemetry.update();
         }
-
     }
 }

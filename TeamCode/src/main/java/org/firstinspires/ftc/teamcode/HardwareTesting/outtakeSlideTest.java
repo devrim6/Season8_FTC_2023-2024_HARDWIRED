@@ -15,10 +15,11 @@ public class outtakeSlideTest extends LinearOpMode {
 
     private DcMotorEx slideMotorLeft, slideMotorRight;
 
-    double PI = 3.1415;
-    double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
+    double PI = Math.PI;
+    double GEAR_RATIO = 3*5;
     double WHEEL_DIAMETER_CM = 3.565;
-    double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
+    double GEAR_MOTOR_REV_ULTRAPLANETARY = 28 * GEAR_RATIO;
+    final double TICKS_PER_CM_Z = GEAR_MOTOR_REV_ULTRAPLANETARY / (WHEEL_DIAMETER_CM * PI);
 
     private enum DIRECTION {
         GROUND,

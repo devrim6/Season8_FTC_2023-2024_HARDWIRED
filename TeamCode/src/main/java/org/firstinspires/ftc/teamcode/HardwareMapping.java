@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -504,21 +505,16 @@ public class HardwareMapping {
          * Reverses the intake for 1.5s to filter out a possible third pixel.
          */
         public SequentialAction reverse(){
-            return new SequentialAction(reverseBase(),stop());
+            return new SequentialAction(reverseBase(), new SleepAction(1.5), stop());
         }
 
         private Action reverseBase(){
             return new Action() {
-                final double time = System.currentTimeMillis();
-                boolean init=true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    if(init){
-                        intakeMotor.setPower(-DefVal.intakeMotorPower);
-                        intakeServoRoller.setPower(DefVal.intakeRollerPower);
-                        init=false;
-                    }
-                    return time < System.currentTimeMillis()+1500; //Run for 1.5s then stop
+                    intakeMotor.setPower(-DefVal.intakeMotorPower);
+                    intakeServoRoller.setPower(DefVal.intakeRollerPower);
+                    return false; //Run for 1.5s then stop
                 }
             };}
 
