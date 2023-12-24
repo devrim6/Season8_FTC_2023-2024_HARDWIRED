@@ -171,9 +171,9 @@ public class MeepMeepStorage {
                             driveShim.trajectorySequenceBuilder(new Pose2d(-34.5 + 2*24 , -58 , Math.toRadians(90)))
 
                                     //RIGHT
-//                            .splineToLinearHeading(new Pose2d(-30 + 2*24, -33, Math.toRadians(60)), Math.toRadians(60))
-//                            .setReversed(true)
-//                            .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(18, -33, Math.toRadians(60)), Math.toRadians(60))
+                            .setReversed(true)
+                            .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
 
                                     //MIDDLE
 //                            .splineToLinearHeading(new Pose2d(-32.5 + 2*24, -33, Math.toRadians(80)), Math.toRadians(80))
@@ -182,10 +182,10 @@ public class MeepMeepStorage {
 
 
                                     //LEFT
-                                    .splineTo(new Vector2d(13.5, -53), Math.toRadians(90))
-                                    .splineTo(new Vector2d(4.5, -33), Math.toRadians(120))
-                                    .setReversed(true)
-                                    .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
+//                                    .splineTo(new Vector2d(13.5, -53), Math.toRadians(90))
+//                                    .splineTo(new Vector2d(4.5, -33), Math.toRadians(120))
+//                                    .setReversed(true)
+//                                    .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
 
 
                                     //backboardToStack

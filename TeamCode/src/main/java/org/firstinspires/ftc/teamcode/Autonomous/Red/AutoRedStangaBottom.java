@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
-@Autonomous(group = "Auto", name = "AutoRedStangaBottom")
+@Autonomous(group = "Auto Red", name = "AutoRedStangaBottom")
 public class AutoRedStangaBottom extends LinearOpMode {
     /* Init whatever you need */
     HardwareMapping robot = new HardwareMapping();
@@ -406,6 +406,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
             telemetry.addData("current traj: ", currentTraj.trajName);
             telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
             telemetry.addData("isTrajGoing: ", auto.isTrajGoing);
+            telemetry.addData("cycleCounter: ", cycleCounter);
         }
     }
 }
