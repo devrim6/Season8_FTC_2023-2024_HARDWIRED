@@ -139,7 +139,7 @@ public class TeleOpDrive extends LinearOpMode {
         robot.checkColorRange("bottom");
 
         // Variables
-        double triggerSlowdown = gamepad2.right_trigger, headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
+        double headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
         intakeLevel = PoseTransfer.intakeLevel;
         long startTime = System.currentTimeMillis();
         HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
@@ -159,6 +159,7 @@ public class TeleOpDrive extends LinearOpMode {
             Pose2d currentPose = drive.pose;                            // Memory management, don't call drive pose too much
             double pitch = drive.imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES);
             double TILT_POWER = DefVal.TILT_POWER;
+            double triggerSlowdown = robot.gamepad2Ex.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             TelemetryPacket packet = new TelemetryPacket();
 
             //TODO: SET IMU ORIENTATION in MecanumDrive before anything else after bot is constructed

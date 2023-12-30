@@ -1,18 +1,16 @@
-package org.firstinspires.ftc.teamcode.HardwareTesting;
+package org.firstinspires.ftc.teamcode.HardwareTesting.outtakeBox;
 
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 @TeleOp(name="outtakeTest")
-public class outakeTest extends LinearOpMode {
+public class outtakeBoxPosition extends LinearOpMode {
     public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
-    public Servo outtakeLatch, outtakeClawUpper, outtakeClawBottom;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -23,9 +21,6 @@ public class outakeTest extends LinearOpMode {
         outtakeYaw=hardwareMap.get(ServoEx.class,"outtakeYaw");
         outtakeRollLeft=hardwareMap.get(ServoEx.class,"outtakeRollLeft");
         outtakeRollRight=hardwareMap.get(ServoEx.class,"outtakeRollRight");
-        outtakeLatch=hardwareMap.get(Servo.class,"outtakeLatch");
-        outtakeClawBottom=hardwareMap.get(Servo.class,"outtakeClawBottom");
-        outtakeClawUpper=hardwareMap.get(Servo.class,"outtakeClawUpper");
 
         // Outtake arms
         outtakePitchRight.turnToAngle(0);
@@ -36,11 +31,6 @@ public class outakeTest extends LinearOpMode {
         // Outtake box
         outtakeRollLeft.turnToAngle(0);
         outtakeRollRight.turnToAngle(0);
-
-        outtakeLatch.setPosition(0);
-
-        outtakeClawBottom.setPosition(0);
-        outtakeClawUpper.setPosition(0);
 
         outtakePitchLeft.setInverted(true);
         outtakeRollLeft.setInverted(true);
@@ -76,21 +66,6 @@ public class outakeTest extends LinearOpMode {
                     outtakeRollLeft.turnToAngle(DefVal.roll60);
                     outtakeRollRight.turnToAngle(DefVal.roll60);
                 }
-            }
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)){
-                y=!y;
-                if(y) outtakeLatch.setPosition(DefVal.latchOpen);
-                else outtakeLatch.setPosition(DefVal.latchClosed);
-            }
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)){
-                upper=!upper;
-                if(upper) outtakeClawUpper.setPosition(DefVal.upperHookOpen);
-                else outtakeClawUpper.setPosition(DefVal.upperHookClosed);
-            }
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)){
-                bottom=!bottom;
-                if(bottom) outtakeClawBottom.setPosition(DefVal.bottomHookOpen);
-                else outtakeClawBottom.setPosition(DefVal.bottomHookClosed);
             }
 
             gamepadEx.readButtons();

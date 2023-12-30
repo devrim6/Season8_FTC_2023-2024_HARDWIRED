@@ -18,10 +18,8 @@ import org.firstinspires.ftc.teamcode.HardwareMapping;
 import java.util.ArrayList;
 import java.util.List;
 
-@TeleOp (name = "SENSOR COLOUR TEST")
+@TeleOp (name = "Test-Outtake-Sensor", group = "testing")
 public class outtakeBoxSensors extends LinearOpMode {
-    private FtcDashboard dash = FtcDashboard.getInstance();
-    private List<Action> runningActions = new ArrayList<>();
     ColorSensor upperHookSensor, bottomHookSensor;
     public void runOpMode() throws InterruptedException{
         /* Sensors */
@@ -33,24 +31,11 @@ public class outtakeBoxSensors extends LinearOpMode {
         upperHookSensor.enableLed(false);
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
-            TelemetryPacket packet = new TelemetryPacket();
 
             float[] hsv = new float[3];
             float[] hsv1 = new float[3];
             Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
             Color.RGBToHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv1);
-
-
-            // Update running actions
-            List<Action> newActions = new ArrayList<>();
-            for (Action action : runningActions) {
-                action.preview(packet.fieldOverlay());
-                if (action.run(packet)) {
-                    newActions.add(action);
-                }
-            }
-            runningActions = newActions;
-            dash.sendTelemetryPacket(packet);
 
             gamepadEx.readButtons();
             telemetry.addLine("\nBottom Sensor: \n");
@@ -78,17 +63,17 @@ public class outtakeBoxSensors extends LinearOpMode {
         return isInBounds(hsv);
     }
     public HardwareMapping.ledState isInBounds(@NonNull float[] a){
-        int[] whiteLower = {75,0,99};
-        int[] whiteUpper = {179,62,255};
+        int[] whiteLower = {SensorValues.WHL,SensorValues.WSL,SensorValues.WVL};
+        int[] whiteUpper = {SensorValues.WHH, SensorValues.WSH, SensorValues.WVH};
 
-        int[] greenLower = {40,40,40};
-        int[] greenUpper = {70,255,255};
+        int[] greenLower = {SensorValues.GHL, SensorValues.GSL, SensorValues.GVL};
+        int[] greenUpper = {SensorValues.GHH, SensorValues.GSH, SensorValues.GVH};
 
-        int[] yellowLower = {30,125,150};
-        int[] yellowUpper = {30,255,150};
+        int[] yellowLower = {SensorValues.YHL, SensorValues.YSL, SensorValues.YVL};
+        int[] yellowUpper = {SensorValues.YHH, SensorValues.YSH, SensorValues.YVH};
 
-        int[] purpleLower = {140,50,70};
-        int[] purpleUpper = {160,250,250};
+        int[] purpleLower = {SensorValues.PHL, SensorValues.PSL, SensorValues.PVL};
+        int[] purpleUpper = {SensorValues.PHH, SensorValues.PSH, SensorValues.PVH};
 
         if((a[0]>=whiteLower[0] && a[0]<=whiteUpper[0])
                 && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])

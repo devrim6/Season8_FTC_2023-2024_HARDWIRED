@@ -78,6 +78,7 @@ public class intakeTest extends LinearOpMode {
             dash.sendTelemetryPacket(packet);
 
             gamepadEx.readButtons();
+            telemetry.addData("intakeLevel: ", intakeLevel);
             telemetry.update();
         }
     }

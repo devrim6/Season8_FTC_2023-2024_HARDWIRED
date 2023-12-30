@@ -47,12 +47,6 @@ public class outtakeSlideTest extends LinearOpMode {
 
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                 runToPosition(DIRECTION.LOW);
-                slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                slideMotorRight.setPower(0.7);
-                slideMotorLeft.setPower(0.7);
             }
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) runToPosition(DIRECTION.GROUND);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) runToPosition(DIRECTION.HIGH);
@@ -84,25 +78,31 @@ public class outtakeSlideTest extends LinearOpMode {
         dir = direction;
         slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         switch(direction){
             case HIGH:
-                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 slideMotorLeft.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
                 slideMotorRight.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
+                break;
             case MIDDLE:
-                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 slideMotorLeft.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                 slideMotorRight.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
+                break;
             case LOW:
+                slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
+                slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
+                slideMotorRight.setPower(0.7);
+                slideMotorLeft.setPower(0.7);
+                break;
             case GROUND:
                 slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 slideMotorLeft.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
                 slideMotorRight.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
+                break;
         }
-        slideMotorRight.setPower(1);
-        slideMotorLeft.setPower(1);
+        slideMotorRight.setPower(0.8);
+        slideMotorLeft.setPower(0.8);
     }
 }

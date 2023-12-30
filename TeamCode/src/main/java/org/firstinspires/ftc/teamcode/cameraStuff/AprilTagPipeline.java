@@ -49,10 +49,10 @@ public class AprilTagPipeline {
                 fieldOverlay.setStroke("#FF0000");
                 fieldOverlay.strokeCircle(tagX, tagY, 2);
 
-                allX+=tagX + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
-                allY+=tagY + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
+                allX += tagX + Math.cos(detection.ftcPose.bearing)/detection.ftcPose.range;
+                allY += tagY + Math.sin(detection.ftcPose.bearing)/detection.ftcPose.range;
                 // Only works with pixel stacks (if it works at all) todo: think of a better way
-                allHeading+=Math.toRadians(180 + detection.ftcPose.bearing);
+                allHeading += Math.toRadians(180 + detection.ftcPose.bearing);
             }
         }
         double size = aprilTagDetections.size();
