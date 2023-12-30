@@ -42,7 +42,7 @@ public class actionTest extends LinearOpMode {
                     smth2()
             ));
 
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)) a = "pressed";
+            if(gamepadEx.isDown(GamepadKeys.Button.B)) a = "pressed";
             else a = "not pressed";
 
             // Update running actions

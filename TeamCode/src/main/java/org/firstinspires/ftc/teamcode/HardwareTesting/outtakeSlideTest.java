@@ -36,30 +36,51 @@ public class outtakeSlideTest extends LinearOpMode {
         slideMotorLeft = hardwareMap.get(DcMotorEx.class, "slideMotorLeft");
         slideMotorRight = hardwareMap.get(DcMotorEx.class, "slideMotorRight");
 
-        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
 
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) runToPosition(DIRECTION.LOW);
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
+                runToPosition(DIRECTION.LOW);
+                slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
+                slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
+                slideMotorRight.setPower(0.7);
+                slideMotorLeft.setPower(0.7);
+            }
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_LEFT)) runToPosition(DIRECTION.GROUND);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) runToPosition(DIRECTION.HIGH);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) runToPosition(DIRECTION.MIDDLE);
+
+            if(gamepadEx.isDown(GamepadKeys.Button.A)) {
+                slideMotorRight.setPower(0.4);
+                slideMotorLeft.setPower(0.4);
+            } else if(gamepadEx.isDown(GamepadKeys.Button.B)){
+                slideMotorRight.setPower(-0.4);
+                slideMotorLeft.setPower(-0.4);
+            }
+            else {
+                slideMotorLeft.setPower(0);
+                slideMotorRight.setPower(0);
+            }
+
 
             gamepadEx.readButtons();
             telemetry.addData("direction: ", dir.toString());
             telemetry.addData("slideLeft: ", slideMotorLeft.getCurrentPosition());
             telemetry.addData("slideRight: ", slideMotorRight.getCurrentPosition());
+            telemetry.addData("s pos", slideMotorLeft.getTargetPosition());
+            telemetry.addData("r pos", slideMotorRight.getTargetPosition());
             telemetry.update();
         }
     }
-    private void runToPosition(DIRECTION direction){
+    public void runToPosition(DIRECTION direction){
         dir = direction;
         slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -75,10 +96,6 @@ public class outtakeSlideTest extends LinearOpMode {
                 slideMotorLeft.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                 slideMotorRight.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
             case LOW:
-                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
             case GROUND:
                 slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

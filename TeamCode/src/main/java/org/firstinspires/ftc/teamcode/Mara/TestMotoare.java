@@ -1,15 +1,17 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+@TeleOp(name="TestMotoareMara")
 public class TestMotoare extends LinearOpMode {
     public DcMotor motorLeft;
     public DcMotor motorRight;
     @Override
     public void runOpMode() throws InterruptedException {
-        motorLeft=hardwareMap.get(DcMotor.class,"motorLeft");
-        motorRight=hardwareMap.get(DcMotor.class,"motorRight");
+        motorLeft=hardwareMap.get(DcMotor.class,"slideMotorLeft");
+        motorRight=hardwareMap.get(DcMotor.class,"slideMotorRight");
 
         waitForStart();
 
