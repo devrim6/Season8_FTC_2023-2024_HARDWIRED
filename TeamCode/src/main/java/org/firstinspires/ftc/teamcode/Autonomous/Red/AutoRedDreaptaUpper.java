@@ -23,8 +23,8 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
-@Autonomous(group = "Auto Red", name = "AutoDreaptaRedBottom")
-public class AutoDreaptaRedBottom extends LinearOpMode {
+@Autonomous(group = "Auto Red", name = "AutoDreaptaRedUpper")
+public class AutoRedDreaptaUpper extends LinearOpMode {
     /* Init whatever you need */
     HardwareMapping robot = new HardwareMapping();
     HardwareMapping.Intake intake = robot.new Intake();
@@ -34,13 +34,13 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
         TRAJ1_StartToLine("TRAJ1_StartToLine"),
         TRAJ2_LineToBackboard("TRAJ2_LineToBackboard"),
 
-        TRAJ3_BackboardToStack("TRAJ3_StackToMiddleBackboard"),
+        TRAJ3_BackboardToStack("TRAJ3_BackboardToStack"),
 
-        TRAJ4_StackToRightBackboard("TRAJ4_MiddleBackboardToStack"),
+        TRAJ4_StackToLeftBackboard("TRAJ4_StackToLeftBackboard"),
 
-        TRAJ5_RightBackboardToStack("TRAJ5_StackToLeftBackboard"),
+        TRAJ5_RightBackboardToStack("TRAJ5_RightBackboardToStack"),
 
-        TRAJ6_ParkRight("TRAJ7_ParkRight"),
+        TRAJ6_ParkLeft("TRAJ7_ParkLeft"),
         IDLE("IDLE");
 
         public final String trajName;
@@ -118,33 +118,30 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(18, -33, Math.toRadians(60)), Math.toRadians(60))
                 .build();
 
-        Action TRAJ4_StackToRightBackboard = drive.actionBuilder(stackBottomPose)
+        Action TRAJ4_StackToLeftBackboard = drive.actionBuilder(stackUpperPose)
                 .setReversed(false)
-                .setTangent(Math.toRadians(-70))
-                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(0))
                 .afterDisp(3, intake.angle(6))              // Higher intake to not get pixels
-                .splineToSplineHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(0))
-                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(0))
                 .afterDisp(0.1, intake.reverse())
-                .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
+                .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
                 .afterDisp(5, pixelToMiddle)
                 .build();
 
-        Action TRAJ5_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
+        Action TRAJ5_LeftBackboardToStack = drive.actionBuilder(leftBackboardPose)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(2, pixelToGround)
-                .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(110))
+                .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(stackUpperPose, Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
                         intake.powerOn(),
-                        // Set intake level in the finite state switch
+                        intake.angle(5),     // Take two pixels. Remaining after: 3
                         intake.sensingOn()
                 ))
                 .build();
 
-        Action TRAJ6_ParkRight = drive.actionBuilder(rightBackboardPose)
+        Action TRAJ6_ParkLeft = drive.actionBuilder(leftBackboardPose)
                 .setReversed(false)
                 .setTangent(Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
@@ -157,6 +154,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                                 intake.sensingOff(),
                                 intake.angle(1)
                         ),
+                        new SleepAction(0.5),
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
                         new SleepAction(1),
@@ -204,11 +202,10 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
         }
         Action TRAJ3_BackboardToStack = drive.actionBuilder(nextNextPose)
                 .setReversed(true)
-                .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(25, -12.5, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(2, pixelToGround)
-                .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(110))
+                .splineToLinearHeading(new Pose2d(-34, -12.5, Math.toRadians(0)), Math.toRadians(180))
+                .splineToLinearHeading(stackUpperPose, Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
                         intake.powerOn(),
                         intake.angle(5),     // Take two pixels. Remaining after: 3
@@ -239,11 +236,11 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 case TRAJ3_BackboardToStack:
                 case TRAJ5_RightBackboardToStack:
                     if(!auto.isTrajGoing){
-                        currentTraj = traj.TRAJ4_StackToRightBackboard;
-                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ4_StackToRightBackboard));
+                        currentTraj = traj.TRAJ4_StackToLeftBackboard;
+                        Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ4_StackToLeftBackboard));
                     }
                     break;
-                case TRAJ4_StackToRightBackboard:
+                case TRAJ4_StackToLeftBackboard:
                     if(!auto.isTrajGoing){
                         cycleCounter++;
                         Actions.runBlocking(new ParallelAction(
@@ -253,15 +250,15 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                         sleep(200);
                         if(cycleCounter==1){
                             currentTraj = traj.TRAJ5_RightBackboardToStack;
-                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ5_RightBackboardToStack));
+                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ5_LeftBackboardToStack));
                         }
                         else if(cycleCounter==2){
-                            currentTraj = traj.TRAJ6_ParkRight;
-                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ6_ParkRight));
+                            currentTraj = traj.TRAJ6_ParkLeft;
+                            Actions.runBlocking(auto.followTrajectoryAndStop(TRAJ6_ParkLeft));
                         }
                     }
                     break;
-                case TRAJ6_ParkRight:
+                case TRAJ6_ParkLeft:
                     if(!auto.isTrajGoing){
                         currentTraj = traj.IDLE;
                     }
