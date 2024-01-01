@@ -36,6 +36,8 @@ public class endgameTest extends LinearOpMode {
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
+        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         hangMotor.setMotorDisable();

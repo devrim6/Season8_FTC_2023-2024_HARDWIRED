@@ -92,8 +92,6 @@ public class outtakeSlideTest extends LinearOpMode {
             case LOW:
                 slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
                 slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                slideMotorRight.setPower(0.7);
-                slideMotorLeft.setPower(0.7);
                 break;
             case GROUND:
                 slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);

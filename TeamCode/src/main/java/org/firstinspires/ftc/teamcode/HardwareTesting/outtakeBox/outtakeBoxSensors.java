@@ -27,8 +27,8 @@ public class outtakeBoxSensors extends LinearOpMode {
         bottomHookSensor = hardwareMap.get(ColorSensor.class, "bottomHookSensor");
         telemetry.setMsTransmissionInterval(50);
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
-        bottomHookSensor.enableLed(false);
-        upperHookSensor.enableLed(false);
+        bottomHookSensor.enableLed(true);
+        upperHookSensor.enableLed(true);
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
 
