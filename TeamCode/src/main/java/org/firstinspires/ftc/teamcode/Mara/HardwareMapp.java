@@ -7,10 +7,13 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.WaitCommand;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -21,14 +24,20 @@ import org.opencv.core.Scalar;
 public class HardwareMapp {
 
     /*Scriu aici ce mai trebuie facut:
-    * Prindere pixeli(hook)-gata(nush exact daca trebuie sa verific in ColorDetected)
-    * Sa fac sa lumineze LED-urile-gata(mai trebuie blinking pentru alb)
-    * Implementare senzori de culoare*/
+     * Prindere pixeli(hook)-gata(nush exact daca trebuie sa verific in ColorDetected)
+     * Sa fac sa lumineze LED-urile-gata(mai trebuie blinking pentru alb)
+     * Implementare senzori de culoare*/
 
     double PI = 3.1415;
     double GEAR_MOTOR_GOBILDA_312_TICKS = 537.7;
     double WHEEL_DIAMETER_CM = 3.565;
     double TICKS_PER_CM_Z = GEAR_MOTOR_GOBILDA_312_TICKS / (WHEEL_DIAMETER_CM * PI);
+    public GamepadEx gamepad1Ex,gamepad2Ex;
+
+    public void gamepadInit(Gamepad gamepad1, Gamepad gamepad2){
+        gamepad1Ex = new GamepadEx(gamepad1);
+        gamepad2Ex = new GamepadEx(gamepad2);
+    }
 
     public enum LEDColor{
         Purple, //red
@@ -43,12 +52,13 @@ public class HardwareMapp {
     public DcMotorEx intakeMotor;  //motor pentru maturice           //motoare
 
     public CRServo intakeCRServo;  //servo CR pentru intake
-    public Servo outakeServo;  //servo pentru deschis outake-ul
+    public Servo outtakeDoorServo;  //servo pentru deschis outake-ul
     public Servo planeServo; //servo pentru avion
     public Servo servoHook1;
     public Servo servoHook2;
     public Servo intakeServoLeft;
-    public Servo intakeServoRight;                                  //servouri
+    public Servo intakeServoRight;
+    public Servo OuttakeTurnServo;                   //servo-uri pentru intors tot outtaku-ul de 2 ori
 
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
@@ -62,7 +72,7 @@ public class HardwareMapp {
     HardwareMap HW=null;
     public HardwareMapp(){}
 
-    public void init() {
+    public void init(HardwareMap hardwareMap) {
 
         //HW=hw;
 
@@ -72,12 +82,13 @@ public class HardwareMapp {
         intakeMotor=HW.get(DcMotorEx.class,"intakeMotor");
 
         intakeCRServo=HW.get(CRServo.class,"intakeServo");
-        outakeServo=HW.get(Servo.class,"outakeServo");
+        outtakeDoorServo=HW.get(Servo.class,"outtakeDoorServo");
         planeServo=HW.get(Servo.class,"planeServo");
         servoHook1=HW.get(Servo.class,"hook1");
         servoHook2=HW.get(Servo.class,"hook2");
         intakeServoLeft=HW.get(Servo.class,"intakeServoLeft");
         intakeServoRight=HW.get(Servo.class,"intakeServoRight");
+        OuttakeTurnServo=HW.get(Servo.class,"OuttakeTurnServo");
 
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
@@ -104,11 +115,14 @@ public class HardwareMapp {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
-                    case "lessThan2Pixels":
+                    case "in":
                         intakeCRServo.setPower(1);
                         break;
-                    case "moreThan2Pixels":
+                    case "out":
                         intakeCRServo.setPower(-1);
+                        break;
+                    case "off":
+                        intakeCRServo.setPower(0);
                         break;
                 }
                 return false;
@@ -127,7 +141,7 @@ public class HardwareMapp {
                         hangMotor.setPower(0);
                         break;
                     case "hang":
-                        hangMotor.setPower(0);
+                        hangMotor.setPower(0.2);
                         break;
                 }
                 return false;
@@ -135,16 +149,33 @@ public class HardwareMapp {
         };
     }
 
-    public Action openOutake(String stare){
+    public Action openOuttake(String stare){ //deschis/inchis cutie outake
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "open":
-                        outakeServo.setPosition(0.6);
+                        outtakeDoorServo.setPosition(0.6);
                         break;
                     case "close":
-                        outakeServo.setPosition(0);
+                        outtakeDoorServo.setPosition(0);
+                        break;
+                }
+                return false;
+            }
+        };
+    }
+
+    public Action turnOuttake(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "noTurn":
+                        OuttakeTurnServo.setPosition(0);
+                        break;
+                    case "turn":
+                        OuttakeTurnServo.setPosition(0.5);
                         break;
                 }
                 return false;
@@ -162,6 +193,9 @@ public class HardwareMapp {
                         break;
                     case "out":
                         intakeMotor.setPower(-1);
+                        break;
+                    case "off":
+                        intakeMotor.setPower(0);
                         break;
                 }
                 return false;
@@ -225,8 +259,6 @@ public class HardwareMapp {
             //vede culoare verde
             //Leduri
             return LEDColor.Green;
-            //cod pentru hook
-
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
             //vede culoaregalben
@@ -302,23 +334,25 @@ public class HardwareMapp {
         };
     }
 
-    public Action misum(String stare){
+    public Action misumHeight(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                misumMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                misumMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                 switch (stare){
                     case "GROUND":
-                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftGROUND*TICKS_PER_CM_Z);
-                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftGROUND*TICKS_PER_CM_Z);
+                        misumMotorLeft.setTargetPosition((int) (DefVal.LiftGROUND*TICKS_PER_CM_Z));
+                        misumMotorRight.setTargetPosition((int) (DefVal.LiftGROUND*TICKS_PER_CM_Z));
                     case "LOW":
-                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftLOW*TICKS_PER_CM_Z);
-                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftLOW*TICKS_PER_CM_Z);
+                        misumMotorLeft.setTargetPosition((int) (DefVal.LiftLOW*TICKS_PER_CM_Z));
+                        misumMotorRight.setTargetPosition((int) (DefVal.LiftLOW*TICKS_PER_CM_Z));
                     case "MIDDLE":
-                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
-                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
+                        misumMotorLeft.setTargetPosition((int) (DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
+                        misumMotorRight.setTargetPosition((int) (DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
                     case "HIGH":
-                        misumMotorLeft.setPositionPIDFCoefficients(DefVal.LiftHIGH*TICKS_PER_CM_Z);
-                        misumMotorRight.setPositionPIDFCoefficients(DefVal.LiftHIGH*TICKS_PER_CM_Z);
+                        misumMotorLeft.setTargetPosition((int) (DefVal.LiftHIGH*TICKS_PER_CM_Z));
+                        misumMotorRight.setTargetPosition((int) (DefVal.LiftHIGH*TICKS_PER_CM_Z));
                 }
                 misumMotorLeft.setPower(1);
                 misumMotorRight.setPower(1);
@@ -332,9 +366,9 @@ public class HardwareMapp {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
-                    case "pixel":
+                    case "close":
                         servoHook1.setPosition(0.6);
-                    case "noPixel":
+                    case "open":
                         servoHook1.setPosition(0);
                 }
                 return false;
@@ -347,9 +381,9 @@ public class HardwareMapp {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
-                    case "pixel":
+                    case "close":
                         servoHook2.setPosition(0.6);
-                    case "noPixel":
+                    case "open":
                         servoHook2.setPosition(0);
                 }
                 return false;
