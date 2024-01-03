@@ -37,14 +37,14 @@ public class DefVal {
     public static double iLevel5 = 0.8;
     public static double iLevel6 = 1;
 
-    public static double yaw0 = 0;
-    public static double yaw90 = 90;
+    public static double yaw0 = 3.25;
+    public static double yaw90 = 1.05;
 
-    public static double pivot60 = 60;
-    public static double pivot0 = 0;
+    public static double pivot0 = 2.8;
+    public static double pivot60 = 7;
 
-    public static double roll60 = 60;
-    public static double roll0 = 0;
+    public static double roll0 = 0.5;
+    public static double roll60 = 4.3;
 
     public static double pitchPositive = 10;
     public static double pitchNegative = -15;

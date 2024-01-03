@@ -3,37 +3,39 @@ package org.firstinspires.ftc.teamcode.HardwareTesting.outtakeBox;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.ServoEx;
+import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
-@TeleOp(name="outtakeTest")
+@TeleOp(name="Test-Outtake-Positions", group = "testing")
 public class outtakeBoxPosition extends LinearOpMode {
     public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        boolean a=false,b=false,x=false,y=false,upper=false,bottom=false;
+        boolean a=false,b=true,x=false,y=false,upper=false,bottom=false;
         GamepadEx gamepadEx=new GamepadEx(gamepad1);
-        outtakePitchLeft=hardwareMap.get(ServoEx.class,"outtakePitchLeft");
-        outtakePitchRight=hardwareMap.get(ServoEx.class,"outtakePitchRight");
-        outtakeYaw=hardwareMap.get(ServoEx.class,"outtakeYaw");
-        outtakeRollLeft=hardwareMap.get(ServoEx.class,"outtakeRollLeft");
-        outtakeRollRight=hardwareMap.get(ServoEx.class,"outtakeRollRight");
+        outtakePitchLeft = new SimpleServo(hardwareMap, "outtakePitchLeft", Math.toRadians(0), Math.toRadians(360));
+        outtakePitchRight = new SimpleServo(hardwareMap, "outtakePitchRight", Math.toRadians(0), Math.toRadians(360));
+        outtakeYaw = new SimpleServo(hardwareMap, "outtakeYaw", Math.toRadians(0), Math.toRadians(360));
+        outtakeRollLeft = new SimpleServo(hardwareMap, "outtakeRollLeft", Math.toRadians(0), Math.toRadians(360));
+        outtakeRollRight = new SimpleServo(hardwareMap, "outtakeRollRight", Math.toRadians(0), Math.toRadians(360));
 
         // Outtake arms
-        outtakePitchRight.turnToAngle(0);
-        outtakePitchLeft.turnToAngle(0);
+        outtakePitchRight.turnToAngle(DefVal.pivot0);
+        outtakePitchLeft.turnToAngle(DefVal.pivot0);
 
-        outtakeYaw.turnToAngle(0);
+        outtakeYaw.turnToAngle(DefVal.yaw0);
 
         // Outtake box
-        outtakeRollLeft.turnToAngle(0);
-        outtakeRollRight.turnToAngle(0);
+        outtakeRollLeft.turnToAngle(DefVal.roll0);
+        outtakeRollRight.turnToAngle(DefVal.roll0);
 
         outtakePitchLeft.setInverted(true);
         outtakeRollLeft.setInverted(true);
+        outtakeYaw.setInverted(true);
 
         telemetry.setMsTransmissionInterval(50);
 
@@ -75,6 +77,11 @@ public class outtakeBoxPosition extends LinearOpMode {
             telemetry.addData("latch: ", y);
             telemetry.addData("uClaw: ", upper);
             telemetry.addData("bClaw: ", bottom);
+            telemetry.addData("servoPitchLeft: ", outtakePitchLeft.getAngle());
+            telemetry.addData("servoPitchRight: ", outtakePitchRight.getAngle());
+            telemetry.addData("yaw: ", outtakeYaw.getAngle());
+            telemetry.addData("servoRollLeft: ", outtakeRollLeft.getAngle());
+            telemetry.addData("servoRollRight: ", outtakeRollLeft.getAngle());
             telemetry.update();
         }
     }

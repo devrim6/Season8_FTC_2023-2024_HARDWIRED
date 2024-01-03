@@ -374,6 +374,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
         ));
 
         while(opModeIsActive() && !isStopRequested()){
+            drive.updatePoseEstimate();
             telemetry.addData("x :",drive.pose.position.x);
             telemetry.addData("y :",drive.pose.position.y);
             telemetry.addData("Current Pose :",cPose);

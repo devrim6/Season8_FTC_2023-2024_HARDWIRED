@@ -35,7 +35,9 @@ public class outtakeBoxSensors extends LinearOpMode {
             float[] hsv = new float[3];
             float[] hsv1 = new float[3];
             Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
+            hsv[1]*=100;
             Color.RGBToHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv1);
+            hsv1[1]*=100;
 
             gamepadEx.readButtons();
             telemetry.addLine("\nBottom Sensor: \n");
@@ -59,7 +61,7 @@ public class outtakeBoxSensors extends LinearOpMode {
                 Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
                 break;
         }
-
+        hsv[1]*=100;
         return isInBounds(hsv);
     }
     public HardwareMapping.ledState isInBounds(@NonNull float[] a){
