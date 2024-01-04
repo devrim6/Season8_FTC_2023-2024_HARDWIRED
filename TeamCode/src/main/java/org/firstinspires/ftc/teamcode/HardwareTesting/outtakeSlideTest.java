@@ -44,6 +44,7 @@ public class outtakeSlideTest extends LinearOpMode {
 
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
+            boolean isOCLeft = slideMotorLeft.isOverCurrent(), isOCRight = slideMotorRight.isOverCurrent();
 
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) {
                 runToPosition(DIRECTION.LOW);
@@ -52,7 +53,10 @@ public class outtakeSlideTest extends LinearOpMode {
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_UP)) runToPosition(DIRECTION.HIGH);
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) runToPosition(DIRECTION.MIDDLE);
 
-            if(gamepadEx.isDown(GamepadKeys.Button.A)) {
+            if(isOCLeft || isOCRight){
+                slideMotorLeft.setPower(0);
+                slideMotorRight.setPower(0);
+            } else if(gamepadEx.isDown(GamepadKeys.Button.A)) {
                 slideMotorRight.setPower(0.4);
                 slideMotorLeft.setPower(0.4);
             } else if(gamepadEx.isDown(GamepadKeys.Button.B)){
@@ -71,6 +75,8 @@ public class outtakeSlideTest extends LinearOpMode {
             telemetry.addData("slideRight: ", slideMotorRight.getCurrentPosition());
             telemetry.addData("s pos", slideMotorLeft.getTargetPosition());
             telemetry.addData("r pos", slideMotorRight.getTargetPosition());
+            telemetry.addData("isOCLeft: ",isOCLeft);
+            telemetry.addData("isOCRight: ", isOCRight);
             telemetry.update();
         }
     }

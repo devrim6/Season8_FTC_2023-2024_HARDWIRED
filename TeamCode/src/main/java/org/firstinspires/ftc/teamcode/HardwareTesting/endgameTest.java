@@ -32,7 +32,7 @@ public class endgameTest extends LinearOpMode {
     int hangingCounter=0;
 
     public void runOpMode() throws InterruptedException{
-        Servo planeLauncherServo = hardwareMap.get(Servo.class, "planeLauncherServo");
+        //Servo planeLauncherServo = hardwareMap.get(Servo.class, "planeLauncherServo");
         hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
@@ -42,7 +42,7 @@ public class endgameTest extends LinearOpMode {
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         hangMotor.setMotorDisable();
 
-        planeLauncherServo.setPosition(0);
+        //planeLauncherServo.setPosition(0);
 
         boolean a=false;
         telemetry.setMsTransmissionInterval(50);
@@ -60,11 +60,11 @@ public class endgameTest extends LinearOpMode {
                     hangingCounter=0;
                 }
             }
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
-                a=!a;
-                if(a) planeLauncherServo.setPosition(DefVal.planeOn);
-                else planeLauncherServo.setPosition(DefVal.planeOff);
-            }
+//            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
+//                a=!a;
+//                if(a) planeLauncherServo.setPosition(DefVal.planeOn);
+//                else planeLauncherServo.setPosition(DefVal.planeOff);
+//            }
 
             // Update running actions
             List<Action> newActions = new ArrayList<>();

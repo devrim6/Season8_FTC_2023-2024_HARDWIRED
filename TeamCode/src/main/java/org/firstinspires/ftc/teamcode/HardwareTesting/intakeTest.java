@@ -40,10 +40,10 @@ public class intakeTest extends LinearOpMode {
 
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
 
-        intakeServoRight.setPosition(0);
-        intakeServoLeft.setPosition(0);
-
         intakeServoRight.setDirection(Servo.Direction.REVERSE);
+
+        intakeServoRight.setPosition(DefVal.iLevel1);
+        intakeServoLeft.setPosition(DefVal.iLevel1);
 
         telemetry.setMsTransmissionInterval(50);
         waitForStart();
@@ -88,7 +88,7 @@ public class intakeTest extends LinearOpMode {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 intakeMotor.setMotorEnable();
                 intakeMotor.setPower(DefVal.intakeMotorPower);
-                intakeServoRoller.setPower(-DefVal.intakeRollerPower);
+                intakeServoRoller.setPower(DefVal.intakeRollerPower);
                 return false;
             }
         };}
@@ -110,7 +110,7 @@ public class intakeTest extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 intakeMotor.setPower(-DefVal.intakeMotorPower);
-                intakeServoRoller.setPower(DefVal.intakeRollerPower);
+                intakeServoRoller.setPower(-DefVal.intakeRollerPower);
                 return false; //Run for 1.5s then stop
             }
         };}

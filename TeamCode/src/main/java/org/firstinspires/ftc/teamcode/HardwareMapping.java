@@ -28,6 +28,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.arcrobotics.ftclib.hardware.SensorColor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.teamcode.HardwareTesting.outtakeBox.SensorValues;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
@@ -184,33 +185,33 @@ public class HardwareMapping {
      * Checks what colour (if any) the inputted hsv belongs to.
      * @param a
      */
-    public ledState isInBounds(@NonNull float[] a){
-        int[] whiteLower = {75,0,99};
-        int[] whiteUpper = {179,62,255};
+    public HardwareMapping.ledState isInBounds(@NonNull float[] a){
+        int[] whiteLower = {SensorValues.WHL,SensorValues.WSL,SensorValues.WVL};
+        int[] whiteUpper = {SensorValues.WHH, SensorValues.WSH, SensorValues.WVH};
 
-        int[] greenLower = {40,40,40};
-        int[] greenUpper = {70,255,255};
+        int[] greenLower = {SensorValues.GHL, SensorValues.GSL, SensorValues.GVL};
+        int[] greenUpper = {SensorValues.GHH, SensorValues.GSH, SensorValues.GVH};
 
-        int[] yellowLower = {30,125,150};
-        int[] yellowUpper = {30,255,150};
+        int[] yellowLower = {SensorValues.YHL, SensorValues.YSL, SensorValues.YVL};
+        int[] yellowUpper = {SensorValues.YHH, SensorValues.YSH, SensorValues.YVH};
 
-        int[] purpleLower = {140,50,70};
-        int[] purpleUpper = {160,250,250};
+        int[] purpleLower = {SensorValues.PHL, SensorValues.PSL, SensorValues.PVL};
+        int[] purpleUpper = {SensorValues.PHH, SensorValues.PSH, SensorValues.PVH};
 
         if((a[0]>=whiteLower[0] && a[0]<=whiteUpper[0])
-            && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])
-            && (a[2]>=whiteLower[2] && a[2]<=whiteUpper[2])) return ledState.WHITE;
+                && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])
+                && (a[2]>=whiteLower[2] && a[2]<=whiteUpper[2])) return HardwareMapping.ledState.WHITE;
         else if((a[0]>=greenLower[0] && a[0]<=greenUpper[0])
                 && (a[1]>=greenLower[1] && a[1]<=greenUpper[1])
-                && (a[2]>=greenLower[2] && a[2]<=greenUpper[2])) return ledState.GREEN;
+                && (a[2]>=greenLower[2] && a[2]<=greenUpper[2])) return HardwareMapping.ledState.GREEN;
         else if((a[0]>=yellowLower[0] && a[0]<=yellowUpper[0])
                 && (a[1]>=yellowLower[1] && a[1]<=yellowUpper[1])
-                && (a[2]>=yellowLower[2] && a[2]<=yellowUpper[2])) return ledState.YELLOW;
+                && (a[2]>=yellowLower[2] && a[2]<=yellowUpper[2])) return HardwareMapping.ledState.YELLOW;
         else if((a[0]>=purpleLower[0] && a[0]<=purpleUpper[0])
                 && (a[1]>=purpleLower[1] && a[1]<=purpleUpper[1])
-                && (a[2]>=purpleLower[2] && a[2]<=purpleUpper[2])) return ledState.PURPLE;
+                && (a[2]>=purpleLower[2] && a[2]<=purpleUpper[2])) return HardwareMapping.ledState.PURPLE;
 
-        return ledState.OFF;
+        return HardwareMapping.ledState.OFF;
     }
 
     /**
