@@ -10,6 +10,7 @@ public class SensorValues {
     public static int WSH = 24;
     public static int WVL = 4;
     public static int WVH = 41;
+    //
 
     public static int GHL = 109;
     public static int GHH = 120;
