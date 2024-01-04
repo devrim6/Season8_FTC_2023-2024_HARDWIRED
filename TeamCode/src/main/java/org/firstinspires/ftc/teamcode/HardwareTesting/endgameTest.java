@@ -38,9 +38,7 @@ public class endgameTest extends LinearOpMode {
 
         hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        hangMotor.setMotorDisable();
 
         //planeLauncherServo.setPosition(0);
 
@@ -60,6 +58,14 @@ public class endgameTest extends LinearOpMode {
                     hangingCounter=0;
                 }
             }
+            if(gamepadEx.isDown(GamepadKeys.Button.A)){
+                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                hangMotor.setPower(0.8);
+            }
+            else if(gamepadEx.isDown(GamepadKeys.Button.Y)){
+                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                hangMotor.setPower(-0.8);
+            } else hangMotor.setPower(0);
 //            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
 //                a=!a;
 //                if(a) planeLauncherServo.setPosition(DefVal.planeOn);
@@ -88,21 +94,23 @@ public class endgameTest extends LinearOpMode {
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                hangMotor.setMotorEnable();
                 switch(state){
                     case "up":
                         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                         hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
+                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         hangMotor.setPower(1);
                         break;
                     case "hang":
                         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                         hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
+                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         hangMotor.setPower(0.3);
                         break;
                     case "normal":
                         hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                         hangMotor.setTargetPosition(0);
+                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         hangMotor.setPower(0.6);
                         break;
                 }
