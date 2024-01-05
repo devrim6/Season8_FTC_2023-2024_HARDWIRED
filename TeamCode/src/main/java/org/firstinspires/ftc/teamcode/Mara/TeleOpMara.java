@@ -135,14 +135,14 @@ public class TeleOpMara extends LinearOpMode {
                 if(!isYPressed){                                   //Deschis/inchis hookul pentru pixeli
                     isYPressed=true;
                     runningActions.add(new ParallelAction(
-                            Robot.hook1("close"),
-                            Robot.hook2("close")
+                            Robot.bottomHook("close"),
+                            Robot.upperHook("close")
                     ));
                 } else {
                     isYPressed=false;
                     runningActions.add(new ParallelAction(
-                            Robot.hook1("open"),
-                            Robot.hook2("open")
+                            Robot.bottomHook("open"),
+                            Robot.upperHook("open")
                     ));
                 }
             }
