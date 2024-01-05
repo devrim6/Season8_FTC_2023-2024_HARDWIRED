@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Mara;
+package org.firstinspires.ftc.teamcode.AutonomieMara;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
@@ -11,8 +11,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.Mara.HardwareMapp;
+import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(name = "AutoRedStanga3Up")
 public class AutoRedStanga3Up extends LinearOpMode {
@@ -48,7 +48,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(-56.45,-36,Math.toRadians(0)),Math.toRadians(90))
                 .afterDisp(1, new SequentialAction(  //1 inch = 2,54 cm
                         new ParallelAction(
-                                Robot.hook1("open"),
+                                Robot.bottomHook("open"),
                                 Robot.Intake("in"),
                                 Robot.maturiceOpen_Close("open"),
                                 Robot.maturiceLevel("Level5")
@@ -71,10 +71,14 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         Robot.turnOutake("noTurn"),
                         Robot.misum("GROUND")
                 ))*/
-                .afterDisp(1,new SequentialAction(  //1 inch = 2,54 cm, (3 1/2), 1=23 inch
+                .afterDisp(1,new SequentialAction(  //1 inch = 2,54 cm, (3 1/2), 1=23 inch (a trecut de truss)
                         Robot.misumHeight("MIDDLE"),
-                        new SleepAction(0.1),
-                        Robot.turnOuttake("turn")
+                        //new SleepAction(0.1),
+                        new ParallelAction(
+                                Robot.turnOuttakeUp_Down("up"),
+                                Robot.backboardAlign("backboard")
+                        ),
+                        Robot.turn90Outtake("turn")
                 ))
                 .build();
 
@@ -243,8 +247,12 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(1,new SequentialAction(
                         Robot.misumHeight("MIDDLE"),
-                        new SleepAction(0.1),
-                        Robot.turnOuttake("turn")
+                        //new SleepAction(0.1),
+                        new ParallelAction(
+                                Robot.turnOuttakeUp_Down("up"),
+                                Robot.backboardAlign("backboard")
+                        ),
+                        Robot.turn90Outtake("turn")
                             /*Robot.openOutake("open"),
                             Robot.openOutake("close"),
                             Robot.turnOutake("noTurn"),
@@ -260,32 +268,36 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 .splineToSplineHeading(new Pose2d(48, -15, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
-                                Robot.hook1("open"),
-                                Robot.hook2("open")
+                                Robot.bottomHook("open"),
+                                Robot.upperHook("open")
                         ),
                         //new SleepAction(0.2),
                         Robot.openOuttake("close"),
-                        new SleepAction(0.1),
-                        Robot.turnOuttake("noTurn"),
+                        Robot.turn90Outtake("noTurn"),
+                        new ParallelAction(
+                                Robot.turnOuttakeUp_Down("down"),
+                                Robot.backboardAlign("ground")
+                        ),
+                        //new SleepAction(0.1),
                         new ParallelAction(
                                 Robot.maturiceOpen_Close("off"),
                                 Robot.Intake("off"),
-                                Robot.maturiceLevel("Level1")
-                        ),
-                        Robot.misumHeight("GROUND")
+                                Robot.maturiceLevel("Level1"),
+                                Robot.misumHeight("GROUND")
+                        )
                 ))
                 .build();
 
         waitForStart();
         Actions.runBlocking(new SequentialAction( //Face actiunile una dupa cealalta
-                Robot.hook2("close"), //pixelul din cuva
+                Robot.bottomHook("close"), //pixelul din cuva
 
                 TrajRightLane,
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
 
                 TrajLeftStack,
-                new SleepAction(0.7),
-                Robot.hook1("close"),  //Pixelul de jos (in cel de sus este deja un pixel)
+                new SleepAction(0.7),    // Astept sa ia pixel-poate mai mult trebuie sa stea?
+                Robot.upperHook("close"),  //Pixelul de jos (in cel de sus este deja un pixel)
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
                         Robot.Intake("off")   //Daca ia prea mult timp bag urmatoarea traiectorie in ParallelAction
@@ -293,91 +305,104 @@ public class AutoRedStanga3Up extends LinearOpMode {
 
                 TrajToBackboardRight,
                 Robot.openOuttake("open"),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 new ParallelAction(
-                        Robot.hook1("open"),
-                        Robot.hook2("open")      //Las pixelii sa cada
+                        Robot.upperHook("open"),
+                        Robot.bottomHook("open")      //Las pixelii sa cada
                 ),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                     /*new ParallelAction(
                             Robot.hook1("close"),
                             Robot.hook2("close")
                     ),*/                                 //Las deschis pentru urmatorii pixeli
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                new SleepAction(0.1),
-                Robot.turnOuttake("noTurn"),
-                new SleepAction(0.1),
+                Robot.turn90Outtake("noTurn"),
+                new ParallelAction(
+                        Robot.turnOuttakeUp_Down("down"),
+                        Robot.backboardAlign("ground")
+                ),
+                //new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.misumHeight("GROUND"),
 
                 TrajRightStackLevel4,                //Level 4 ca sa imi ia primii 2 pixeli din stack ul din dreapta
-                new SleepAction(0.7),
+                new SleepAction(0.7),             //Las timp sa ia pixel
                 new ParallelAction(
-                        Robot.hook1("close"),
-                        Robot.hook2("close")
+                        Robot.upperHook("close"),
+                        Robot.bottomHook("close")
                 ),
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
-                        Robot.Intake("off")
+                        Robot.Intake("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
                 ),
 
                 TrajToBackboardLeft,
                 Robot.openOuttake("open"),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 new ParallelAction(
-                        Robot.hook1("open"),
-                        Robot.hook2("open")      //Las pixelii sa cada
+                        Robot.upperHook("open"),
+                        Robot.bottomHook("open")      //Las pixelii sa cada
                 ),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                     /*new ParallelAction(
                             Robot.hook1("close"),
                             Robot.hook2("close")
                     ),*/                                  //Las deschis pentru urmatorii pixeli
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                new SleepAction(0.1),
-                Robot.turnOuttake("noTurn"),
-                new SleepAction(0.1),
+                Robot.turn90Outtake("noTurn"),
+                new ParallelAction(
+                        Robot.turnOuttakeUp_Down("down"),
+                        Robot.backboardAlign("ground")
+                ),
+                //new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.misumHeight("GROUND"),
 
                 TrajRightStackLevel2,                 //Level 2 ca sa imi ia al doilea si al treilea pixel din stack ul din dreapta
-                new SleepAction(0.7),
+                new SleepAction(0.7),              //Las timp sa ia pixel
                 new ParallelAction(
-                        Robot.hook1("close"),
-                        Robot.hook2("close")
+                        Robot.upperHook("close"),
+                        Robot.bottomHook("close")
                 ),
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
-                        Robot.Intake("off")
+                        Robot.Intake("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
                 ),
 
                 TrajToBackboardLeft,
                 Robot.openOuttake("open"),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 new ParallelAction(
-                        Robot.hook1("open"),
-                        Robot.hook2("open")      //Las pixelii sa cada
+                        Robot.upperHook("open"),
+                        Robot.bottomHook("open")      //Las pixelii sa cada
                 ),
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                     /*new ParallelAction(
                             Robot.hook1("close"),
                             Robot.hook2("close")
                     ),*/
-                new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                new SleepAction(0.1),
-                Robot.turnOuttake("noTurn"),
-                new SleepAction(0.1),
+                Robot.turn90Outtake("noTurn"),
+                new ParallelAction(
+                        Robot.turnOuttakeUp_Down("down"),
+                        Robot.backboardAlign("ground")
+                ),
+                //new SleepAction(0.1),
+                //new SleepAction(0.1),
                 Robot.misumHeight("GROUND"),
 
                 ParkingLeft
         ));
 
         while(opModeIsActive() && !isStopRequested()){
-            drive.updatePoseEstimate();
             telemetry.addData("x :",drive.pose.position.x);
             telemetry.addData("y :",drive.pose.position.y);
             telemetry.addData("Current Pose :",cPose);
+            telemetry.update();
+            drive.updatePoseEstimate();
         }
     }
 }

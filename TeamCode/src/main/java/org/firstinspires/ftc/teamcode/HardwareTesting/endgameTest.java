@@ -53,7 +53,7 @@ public class endgameTest extends LinearOpMode {
                 hangingCounter++; if(hangingCounter>3) hangingCounter=0;
                 if(hangingCounter==1) runningActions.add(hangingEngage("up"));
                 else if(hangingCounter==2) runningActions.add(hangingEngage("hang"));
-                else if(hangingCounter==3){
+                else if(hangingCounter==3){ 
                     runningActions.add(hangingEngage("normal"));
                     hangingCounter=0;
                 }
@@ -118,5 +118,4 @@ public class endgameTest extends LinearOpMode {
             }
         };
     }
-
 }
