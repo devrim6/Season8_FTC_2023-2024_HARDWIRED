@@ -13,10 +13,10 @@ public class DefVal {
     public static double latchOpen = 0.5;
     public static double latchClosed = 0;
 
-    public static double upperHookOpen = 0.5;
-    public static double upperHookClosed = 0;
-    public static double bottomHookClosed = 0;
-    public static double bottomHookOpen = 0.5;
+    public static double upperHookOpen = 0;
+    public static double upperHookClosed = 0.16;
+    public static double bottomHookClosed = 0.1;
+    public static double bottomHookOpen = 0.3;
 
     //CM converted to ticks
     public static double LiftHIGH = 24;
@@ -41,7 +41,7 @@ public class DefVal {
     public static double yaw90 = 1.05;
 
     public static double pivot0 = 2.8;
-    public static double pivot60 = 7;
+    public static double pivot60 = 7.1;
 
     public static double roll0 = 0.5;
     public static double roll60 = 4.3;

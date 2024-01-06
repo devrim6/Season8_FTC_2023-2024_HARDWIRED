@@ -23,6 +23,10 @@ public class outtakeBoxPosition extends LinearOpMode {
         outtakeRollLeft = new SimpleServo(hardwareMap, "outtakeRollLeft", Math.toRadians(0), Math.toRadians(360));
         outtakeRollRight = new SimpleServo(hardwareMap, "outtakeRollRight", Math.toRadians(0), Math.toRadians(360));
 
+        outtakePitchLeft.setInverted(true);
+        outtakeRollLeft.setInverted(true);
+        outtakeYaw.setInverted(true);
+
         // Outtake arms
         outtakePitchRight.turnToAngle(DefVal.pivot0);
         outtakePitchLeft.turnToAngle(DefVal.pivot0);
@@ -32,10 +36,6 @@ public class outtakeBoxPosition extends LinearOpMode {
         // Outtake box
         outtakeRollLeft.turnToAngle(DefVal.roll0);
         outtakeRollRight.turnToAngle(DefVal.roll0);
-
-        outtakePitchLeft.setInverted(true);
-        outtakeRollLeft.setInverted(true);
-        outtakeYaw.setInverted(true);
 
         telemetry.setMsTransmissionInterval(50);
 
