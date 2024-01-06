@@ -1,5 +1,14 @@
 package org.firstinspires.ftc.teamcode.Mara;
 
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.pivot0;
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.pivot60;
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.roll0;
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.roll60;
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw0;
+import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw90;
+
+import android.graphics.Color;
+
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -18,6 +27,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcontroller.external.samples.SensorColor;
+import org.firstinspires.ftc.teamcode.HardwareMapping;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 import org.opencv.core.Scalar;
 
@@ -54,11 +64,15 @@ public class HardwareMapp {
     public CRServo intakeCRServo;  //servo CR pentru intake
     public Servo outtakeDoorServo;  //servo pentru deschis outake-ul
     public Servo planeServo; //servo pentru avion
-    public Servo servoHook1;
-    public Servo servoHook2;
+    public Servo servoBottomHook;
+    public Servo servoUpperHook;
     public Servo intakeServoLeft;
     public Servo intakeServoRight;
-    public Servo OuttakeTurnServo;                   //servo-uri pentru intors tot outtaku-ul de 2 ori
+    public Servo OuttakeTurn90Servo;
+    public Servo backboardAlignServoLeft;
+    public Servo backboardAlignServoRight;  //servo-uri pentru pus outtaku-ul la 60 de grade(backboard)
+    public Servo turnOuttakeLeft;
+    public Servo turnOuttakeRight;
 
     public SensorColor SensorfirstHook;  //senzor pentru primul pixel
     public SensorColor SensorsecondHook;  //senzor pentru al doilea pixel
@@ -84,11 +98,15 @@ public class HardwareMapp {
         intakeCRServo=HW.get(CRServo.class,"intakeServo");
         outtakeDoorServo=HW.get(Servo.class,"outtakeDoorServo");
         planeServo=HW.get(Servo.class,"planeServo");
-        servoHook1=HW.get(Servo.class,"hook1");
-        servoHook2=HW.get(Servo.class,"hook2");
+        servoBottomHook=HW.get(Servo.class,"servoBottomHook");
+        servoUpperHook=HW.get(Servo.class,"servoUpperHook");
         intakeServoLeft=HW.get(Servo.class,"intakeServoLeft");
         intakeServoRight=HW.get(Servo.class,"intakeServoRight");
-        OuttakeTurnServo=HW.get(Servo.class,"OuttakeTurnServo");
+        OuttakeTurn90Servo=HW.get(Servo.class,"OuttakeTurn90Servo");
+        backboardAlignServoLeft=HW.get(Servo.class,"backboardAlignServoLeft");
+        backboardAlignServoRight=HW.get(Servo.class,"backboardAlignServoRight");
+        turnOuttakeLeft=HW.get(Servo.class,"turnOuttakeLeft");
+        turnOuttakeRight=HW.get(Servo.class,"turnOuttakeRight");
 
         SensorfirstHook=HW.get(SensorColor.class,"firstHookPixel");
         SensorsecondHook=HW.get(SensorColor.class,"secondHookPixel");
@@ -129,7 +147,38 @@ public class HardwareMapp {
             }
         };
     }
-
+    public Action backboardAlign(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "ground":
+                        backboardAlignServoLeft.setPosition(roll0);
+                        backboardAlignServoRight.setPosition(roll0);
+                    case "backboard":
+                        backboardAlignServoLeft.setPosition(roll60);
+                        backboardAlignServoRight.setPosition(roll60);
+                }
+                return false;
+            }
+        };
+    }
+    public Action turnOuttakeUp_Down(String stare){
+        return new Action() {
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                switch (stare){
+                    case "up":
+                        turnOuttakeLeft.setPosition(pivot60);
+                        turnOuttakeRight.setPosition(pivot60);
+                    case "down":
+                        turnOuttakeLeft.setPosition(pivot0);
+                        turnOuttakeRight.setPosition(pivot0);
+                }
+                return false;
+            }
+        };
+    }
     public Action hang(String stare){     //actiune pentru hang
         return new Action() {
             @Override
@@ -155,7 +204,7 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "open":
-                        outtakeDoorServo.setPosition(0.6);
+                        outtakeDoorServo.setPosition(0.5);
                         break;
                     case "close":
                         outtakeDoorServo.setPosition(0);
@@ -166,16 +215,16 @@ public class HardwareMapp {
         };
     }
 
-    public Action turnOuttake(String stare){
+    public Action turn90Outtake(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "noTurn":
-                        OuttakeTurnServo.setPosition(0);
+                        OuttakeTurn90Servo.setPosition(yaw0);
                         break;
                     case "turn":
-                        OuttakeTurnServo.setPosition(0.5);
+                        OuttakeTurn90Servo.setPosition(yaw90);
                         break;
                 }
                 return false;
@@ -231,54 +280,49 @@ public class HardwareMapp {
             }
         };
     }
-
     float[] hsvValues = new float[3];
     Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
     public static class ColorRange{
         public Scalar[] greenColorRange = {
-                new Scalar(40, 40, 40), // Valoare minimă HSV pentru verde
-                new Scalar(80, 255, 255) // Valoare maximă HSV pentru verde
+                new Scalar(109, 45, 1), // Valoare minimă HSV pentru verde
+                new Scalar(120, 58, 16) // Valoare maximă HSV pentru verde
         };
         public Scalar[] yellowColorRange={
-                new Scalar(20,100,100), //Valoare minima HSV pentru galben
-                new Scalar(30,255,255) //Valoare maxima HSV pentru galben
+                new Scalar(35,54,2), //Valoare minima HSV pentru galben
+                new Scalar(64,64,22) //Valoare maxima HSV pentru galben
         };
         public Scalar[] purpleColorRange={
-                new Scalar(130,50,50), //Valoare minima HSV pentru mov
-                new Scalar(160,255,255) //Valoare maxima HSV pentru mov
+                new Scalar(27,18,3), //Valoare minima HSV pentru mov
+                new Scalar(249,27,23) //Valoare maxima HSV pentru mov
         };
         public Scalar[] whiteColorRange={
-                new Scalar(0,0,200), //Valoare minima HSV pentru alb
-                new Scalar(180,30,255) //Valoare maxima HSV pentru alb
+                new Scalar(92,8,4), //Valoare minima HSV pentru alb
+                new Scalar(135,24,41) //Valoare maxima HSV pentru alb
         };
     }
     public LEDColor ColorDetected(Scalar targetColor, Scalar[] colorRange){
         ColorRange colorRangeDet=new ColorRange();
         if(detectedColorHSV.val[0] >= colorRangeDet.greenColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.greenColorRange[1].val[0]){
             //vede culoare verde
-            //Leduri
             return LEDColor.Green;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.yellowColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.yellowColorRange[1].val[0]){
             //vede culoaregalben
-            //Leduri
             return LEDColor.Yellow;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.whiteColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.whiteColorRange[1].val[0]){
             //vede culoare alb
-            //Leduri
             return LEDColor.White;
         }
         if(detectedColorHSV.val[0] >= colorRangeDet.purpleColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.purpleColorRange[1].val[0]){
             //vede culoare mov
-            //Leduri
             return LEDColor.Purple;
         }
         return LEDColor.None;
     }
 
-    public Action LED(String led){
+    public Action LED(String led,String color){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -292,6 +336,7 @@ public class HardwareMapp {
                     LED1=LEDdowngreen;
                     LED2=LEDdownred;
                 }
+                LEDforDrivers(color,LED1,LED2);
                 return false;
             }
         };
@@ -327,7 +372,14 @@ public class HardwareMapp {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 //cod pentru blinking
-                LED1.setState(true);LED2.setState(true);
+                try {
+                    LED1.setState(true);LED2.setState(false);
+                    Thread.sleep(500);
+                    LED2.setState(true);LED1.setState(false);
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
 
                 return true;
             }
@@ -361,30 +413,30 @@ public class HardwareMapp {
         };
     }
 
-    public Action hook1(String stare){
+    public Action bottomHook(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "close":
-                        servoHook1.setPosition(0.6);
+                        servoBottomHook.setPosition(0.5);
                     case "open":
-                        servoHook1.setPosition(0);
+                        servoBottomHook.setPosition(0);
                 }
                 return false;
             }
         };
     }
 
-    public Action hook2(String stare){
+    public Action upperHook(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "close":
-                        servoHook2.setPosition(0.6);
+                        servoUpperHook.setPosition(0.5);
                     case "open":
-                        servoHook2.setPosition(0);
+                        servoUpperHook.setPosition(0);
                 }
                 return false;
             }

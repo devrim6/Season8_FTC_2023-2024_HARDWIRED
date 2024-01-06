@@ -31,6 +31,9 @@ public class outtakeBoxHooksLatch extends LinearOpMode {
 
         boolean uHook=false,bHook=false,latch=false;
 
+        outtakeClawUpper.setDirection(Servo.Direction.REVERSE);
+        outtakeClawBottom.setDirection(Servo.Direction.REVERSE);
+
         waitForStart();
         while (opModeIsActive() && !isStopRequested()){
             TelemetryPacket packet = new TelemetryPacket();
