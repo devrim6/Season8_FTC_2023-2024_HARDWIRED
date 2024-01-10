@@ -30,12 +30,12 @@ public class DefVal {
     public static double intakeMotorPower = 0.5;
     public static double intakeRollerPower = 0.3;
 
-    public static double iLevel1 = 0;
-    public static double iLevel2 = 0.2;
-    public static double iLevel3 = 0.4;
-    public static double iLevel4 = 0.6;
-    public static double iLevel5 = 0.8;
-    public static double iLevel6 = 1;
+    public static double iLevel1 = 0.04;
+    public static double iLevel2 = 0.06;
+    public static double iLevel3 = 0.1;
+    public static double iLevel4 = 0.13;
+    public static double iLevel5 = 0.145;
+    public static double iLevel6 = 0.25;
 
     public static double yaw0 = 3.25;
     public static double yaw90 = 1.05;

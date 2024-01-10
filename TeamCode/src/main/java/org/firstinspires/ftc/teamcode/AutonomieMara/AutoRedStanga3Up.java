@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(name = "AutoRedStanga3Up")
 public class AutoRedStanga3Up extends LinearOpMode {
+    //implementat senzori de culoare, daca vede pixel (culoare) timp de 0.5 secunde, atunci sa coboare hook-ul
 
     HardwareMapp Robot = new HardwareMapp();
     private MecanumDrive drive;
@@ -290,14 +291,14 @@ public class AutoRedStanga3Up extends LinearOpMode {
 
         waitForStart();
         Actions.runBlocking(new SequentialAction( //Face actiunile una dupa cealalta
-                Robot.bottomHook("close"), //pixelul din cuva
+                Robot.upperHook("close"), //pixelul din cuva
 
                 TrajRightLane,
                 //new SleepAction(0.1),
 
                 TrajLeftStack,
                 new SleepAction(0.7),    // Astept sa ia pixel-poate mai mult trebuie sa stea?
-                Robot.upperHook("close"),  //Pixelul de jos (in cel de sus este deja un pixel)
+                Robot.bottomHook("close"),  //Pixelul de jos (in cel de sus este deja un pixel)
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
                         Robot.Intake("off")   //Daca ia prea mult timp bag urmatoarea traiectorie in ParallelAction

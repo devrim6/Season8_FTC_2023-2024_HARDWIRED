@@ -38,7 +38,7 @@ public class intakeTest extends LinearOpMode {
         intakeServoRoller = hardwareMap.get(CRServo.class, "intakeServoRoller");
         intakeMotor = hardwareMap.get(DcMotorEx.class, "intakeMotor");
 
-        GamepadEx gamepadEx = new GamepadEx(gamepad2);
+        GamepadEx gamepadEx = new GamepadEx(gamepad1);
 
         intakeServoRight.setDirection(Servo.Direction.REVERSE);
 
@@ -79,6 +79,8 @@ public class intakeTest extends LinearOpMode {
 
             gamepadEx.readButtons();
             telemetry.addData("intakeLevel: ", intakeLevel);
+            telemetry.addData("left: ", intakeServoLeft.getPosition());
+            telemetry.addData("right: ", intakeServoRight.getPosition());
             telemetry.update();
         }
     }

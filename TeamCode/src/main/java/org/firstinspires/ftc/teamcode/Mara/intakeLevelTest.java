@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -27,27 +29,21 @@ public class intakeLevelTest extends LinearOpMode {
 
         intakeServoLeft = hardwareMap.get(Servo.class, "intakeServoLeft");
         intakeServoRight = hardwareMap.get(Servo.class, "intakeServoRight");
-
+        intakeServoRight.setDirection(Servo.Direction.REVERSE);
+        intakeServoRight.setPosition(DefVal.iLevel1);
+        intakeServoLeft.setPosition(DefVal.iLevel1);
+        GamepadEx gamepadEx = new GamepadEx(gamepad1);
         waitForStart();
 
         while (opModeIsActive()) {
             TelemetryPacket packet = new TelemetryPacket();
-            if(gamepad1.a){
-                increment++;
-                if(increment==1){
-                    runningActions.add(maturiceLevel("Level1"));
-                } else if(increment==2){
-                    runningActions.add(maturiceLevel("Level2"));
-                } else if(increment==3){
-                    runningActions.add(maturiceLevel("Level3"));
-                } else if(increment==4){
-                    runningActions.add(maturiceLevel("Level4"));
-                } else if(increment==5){
-                    runningActions.add(maturiceLevel("Level5"));
-                } else if(increment==6){
-                    runningActions.add(maturiceLevel("Level6"));
-                    increment=0;
-                }
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
+                increment++; if(increment>6) increment=1;
+                else runningActions.add(level(increment));
+            }
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
+                increment--; if(increment<1) increment=6;
+                else runningActions.add(level(increment));
             }
             List<Action> newActions = new ArrayList<>();
             for (Action action : runningActions) {
@@ -63,29 +59,35 @@ public class intakeLevelTest extends LinearOpMode {
             telemetry.update();
         }
     }
-    public Action maturiceLevel(String stare){
+    public Action level(int stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
-                    case "Level1":
+                    case 1:
                         intakeServoLeft.setPosition(DefVal.iLevel1);
                         intakeServoRight.setPosition(DefVal.iLevel1);
-                    case "Level2":
+                        break;
+                    case 2:
                         intakeServoLeft.setPosition(DefVal.iLevel2);
                         intakeServoRight.setPosition(DefVal.iLevel2);
-                    case "Level3":
+                        break;
+                    case 3:
                         intakeServoLeft.setPosition(DefVal.iLevel3);
                         intakeServoRight.setPosition(DefVal.iLevel3);
-                    case "Level4":
+                        break;
+                    case 4:
                         intakeServoLeft.setPosition(DefVal.iLevel4);
                         intakeServoRight.setPosition(DefVal.iLevel4);
-                    case "Level5":
+                        break;
+                    case 5:
                         intakeServoLeft.setPosition(DefVal.iLevel5);
                         intakeServoRight.setPosition(DefVal.iLevel5);
-                    case "Level6":
+                        break;
+                    case 6:
                         intakeServoLeft.setPosition(DefVal.iLevel6);
                         intakeServoRight.setPosition(DefVal.iLevel6);
+                        break;
                 }
                 return false;
             }
