@@ -1,30 +1,23 @@
 package org.firstinspires.ftc.teamcode.Autonomous.Red;
 
-import androidx.annotation.NonNull;
-
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TimeTrajectory;
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.checkerframework.checker.units.qual.A;
+import org.firstinspires.ftc.teamcode.Autonomous.ActionStorage;
 import org.firstinspires.ftc.teamcode.HardwareMapping;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
 import org.firstinspires.ftc.teamcode.Variables.DefVal;
 
 @Autonomous(group = "Auto Red", name = "AutoDreaptaRedBottom")
-public class AutoDreaptaRedBottom extends LinearOpMode {
+public class AutoRedDreaptaBottom extends LinearOpMode {
     /* Init whatever you need */
     HardwareMapping robot = new HardwareMapping();
     HardwareMapping.Intake intake = robot.new Intake();
@@ -62,45 +55,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
     String elementPosition = "middle";
     traj currentTraj = traj.TRAJ1_StartToLine;
 
-    Action pixelToLow = new ParallelAction(
-            new SequentialAction(
-                    new ParallelAction(
-                            outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                            outtake.pivot(DefVal.pivot60),
-                            outtake.roll(DefVal.roll60)
-                    ),
-                    new SleepAction(1),
-                    outtake.yaw(DefVal.yaw90),
-                    outtake.latch("open")
-            ),
-            intake.sensingOff()
-    ),
-            pixelToMiddle = new ParallelAction(
-                    new SequentialAction(
-                            new ParallelAction(
-                                    outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
-                                    outtake.pivot(DefVal.pivot60),
-                                    outtake.roll(DefVal.roll60)
-                            ),
-                            new SleepAction(1),
-                            outtake.yaw(DefVal.yaw90),
-                            outtake.latch("open")
-                    ),
-                    intake.sensingOff()
-            ),
-            pixelToGround = new SequentialAction(
-                    new ParallelAction(
-                            outtake.latch("closed"),
-                            outtake.yaw(DefVal.yaw0)
-                    ),
-                    new SleepAction(0.5),
-                    new ParallelAction(
-                            outtake.pivot(DefVal.pivot0),
-                            outtake.roll(DefVal.roll0)
-                    ),
-                    new SleepAction(1),
-                    outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
-            );
+    ActionStorage actionStorage = new ActionStorage(intake, outtake);
 
     public void runOpMode() throws InterruptedException{
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(-34.5 + 2*24 , -58 , Math.toRadians(90)));
@@ -127,13 +82,13 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .afterDisp(0.1, intake.reverse())
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                .afterDisp(5, pixelToMiddle)
+                .afterDisp(5, actionStorage.pixelToMiddle)
                 .build();
 
         Action TRAJ5_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(2, pixelToGround)
+                .afterDisp(2, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(110))
@@ -177,7 +132,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 TRAJ2_LineToStack = drive.actionBuilder(nextPose)
                         .setReversed(true)
                         .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                        .afterDisp(4, pixelToLow)
+                        .afterDisp(4, actionStorage.pixelToLow)
                         .build();
                 nextNextPose=rightBackboardPose;
                 break;
@@ -187,7 +142,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 TRAJ2_LineToStack = drive.actionBuilder(nextPose)
                         .setReversed(true)
                         .splineToLinearHeading(middleBackboardPose, Math.toRadians(0))
-                        .afterDisp(4, pixelToLow)
+                        .afterDisp(4, actionStorage.pixelToLow)
                         .build();
                 nextNextPose=middleBackboardPose;
                 break;
@@ -197,7 +152,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
                 TRAJ2_LineToStack = drive.actionBuilder(nextPose)
                         .setReversed(true)
                         .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
-                        .afterDisp(4, pixelToLow)
+                        .afterDisp(4, actionStorage.pixelToLow)
                         .build();
                 nextNextPose=leftBackboardPose;
                 break;
@@ -205,7 +160,7 @@ public class AutoDreaptaRedBottom extends LinearOpMode {
         Action TRAJ3_BackboardToStack = drive.actionBuilder(nextNextPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(2, pixelToGround)
+                .afterDisp(2, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-10, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(-57, -36, Math.toRadians(0)), Math.toRadians(110))

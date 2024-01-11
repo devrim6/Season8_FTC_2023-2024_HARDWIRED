@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.checkerframework.checker.units.qual.A;
+import org.firstinspires.ftc.teamcode.Autonomous.ActionStorage;
 import org.firstinspires.ftc.teamcode.HardwareMapping;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.PoseTransfer;
@@ -61,45 +62,7 @@ public class AutoRedStangaUpper extends LinearOpMode {
     String elementPosition = "middle";
     traj currentTraj = traj.TRAJ1_StartToLine;
 
-    Action pixelToLow = new ParallelAction(
-            new SequentialAction(
-                    new ParallelAction(
-                            outtake.runToPosition(HardwareMapping.liftHeight.LOW),
-                            outtake.pivot(DefVal.pivot60),
-                            outtake.roll(DefVal.roll60)
-                    ),
-                    new SleepAction(1),
-                    outtake.yaw(DefVal.yaw90),
-                    outtake.latch("open")
-            ),
-            intake.sensingOff()
-    ),
-            pixelToMiddle = new ParallelAction(
-                    new SequentialAction(
-                            new ParallelAction(
-                                    outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
-                                    outtake.pivot(DefVal.pivot60),
-                                    outtake.roll(DefVal.roll60)
-                            ),
-                            new SleepAction(1),
-                            outtake.yaw(DefVal.yaw90),
-                            outtake.latch("open")
-                    ),
-                    intake.sensingOff()
-            ),
-            pixelToGround = new SequentialAction(
-                    new ParallelAction(
-                            outtake.latch("closed"),
-                            outtake.yaw(DefVal.yaw0)
-                    ),
-                    new SleepAction(0.5),
-                    new ParallelAction(
-                            outtake.pivot(DefVal.pivot0),
-                            outtake.roll(DefVal.roll0)
-                    ),
-                    new SleepAction(1),
-                    outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
-            );
+    ActionStorage actionStorage = new ActionStorage(intake, outtake);
 
     public void runOpMode() throws InterruptedException{
         MecanumDrive drive = new MecanumDrive(hardwareMap, new Pose2d(58, -34.5, Math.toRadians(270)));
@@ -123,7 +86,7 @@ public class AutoRedStangaUpper extends LinearOpMode {
                 .afterDisp(3, intake.angle(6))              // Higher intake to not get pixels
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(middleBackboardPose, Math.toRadians(0))
-                .afterDisp(5, pixelToLow)
+                .afterDisp(5, actionStorage.pixelToLow)
                 .build();
         Action TRAJ3_StackToLeftBackboard = drive.actionBuilder(stackPose)
                 .setReversed(false)
@@ -131,13 +94,13 @@ public class AutoRedStangaUpper extends LinearOpMode {
                 .afterDisp(3, intake.angle(6))              // Higher intake to not get pixels
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(leftBackboardPose, Math.toRadians(0))
-                .afterDisp(5, pixelToLow)
+                .afterDisp(5, actionStorage.pixelToLow)
                 .build();
 
         Action TRAJ4_MiddleBackboardToStack = drive.actionBuilder(middleBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(3, pixelToGround)
+                .afterDisp(3, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
@@ -149,7 +112,7 @@ public class AutoRedStangaUpper extends LinearOpMode {
         Action TRAJ4_LeftBackboardToStack = drive.actionBuilder(leftBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(3, pixelToGround)
+                .afterDisp(3, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
@@ -161,7 +124,7 @@ public class AutoRedStangaUpper extends LinearOpMode {
         Action TRAJ4_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(3, pixelToGround)
+                .afterDisp(3, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
@@ -177,13 +140,13 @@ public class AutoRedStangaUpper extends LinearOpMode {
                 .afterDisp(3, intake.angle(6))          // Higher intake to not get pixels
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(0))
                 .splineToLinearHeading(rightBackboardPose, Math.toRadians(0))
-                .afterDisp(5, pixelToMiddle)
+                .afterDisp(5, actionStorage.pixelToMiddle)
                 .build();
 
         Action TRAJ6_RightBackboardToStack = drive.actionBuilder(rightBackboardPose)
                 .setReversed(true)
                 .splineToLinearHeading(new Pose2d(25, -58.5, Math.toRadians(0)), Math.toRadians(180))
-                .afterDisp(3, pixelToGround)
+                .afterDisp(3, actionStorage.pixelToGround)
                 .splineToLinearHeading(new Pose2d(-34, -58.5, Math.toRadians(0)), Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(stackPose.position, Math.toRadians(0)), Math.toRadians(180))
                 .afterDisp(3, new ParallelAction(
