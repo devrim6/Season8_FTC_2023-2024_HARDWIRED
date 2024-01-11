@@ -17,12 +17,11 @@ public class ActionStorage {
     }
     public Action pixelToLow = new ParallelAction(
             new SequentialAction(
+                    outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                     new ParallelAction(
-                            outtake.runToPosition(HardwareMapping.liftHeight.LOW),
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60)
                     ),
-                    new SleepAction(1),
                     outtake.yaw(DefVal.yaw90),
                     outtake.latch("open")
             ),
@@ -30,12 +29,11 @@ public class ActionStorage {
     ),
             pixelToMiddle = new ParallelAction(
                     new SequentialAction(
+                            outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                             new ParallelAction(
-                                    outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
                                     outtake.pivot(DefVal.pivot60),
                                     outtake.roll(DefVal.roll60)
                             ),
-                            new SleepAction(1),
                             outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     ),
@@ -46,12 +44,10 @@ public class ActionStorage {
                             outtake.latch("closed"),
                             outtake.yaw(DefVal.yaw0)
                     ),
-                    new SleepAction(0.5),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot0),
                             outtake.roll(DefVal.roll0)
                     ),
-                    new SleepAction(1),
                     outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
             );
 }
