@@ -37,8 +37,7 @@ import org.opencv.core.Scalar;
 
 public class HardwareMapping {
     public boolean isAtTarget(double db, double target, double offset){
-        if(db<=(target+offset) && db>=(target-offset)) return true;
-        else return false;
+        return db <= (target + offset) && db >= (target - offset);
     }
     /**
      * TICKS_PER_CM_Z converts a specified amount of cm when multiplied with another value to motor ticks.

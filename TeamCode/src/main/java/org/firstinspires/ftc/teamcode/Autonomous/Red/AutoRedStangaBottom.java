@@ -331,6 +331,7 @@ public class AutoRedStangaBottom extends LinearOpMode {
             telemetry.addData("intakeSensingOnline: ", intake.isSensingOnline());
             telemetry.addData("isTrajGoing: ", auto.isTrajGoing);
             telemetry.addData("cycleCounter: ", cycleCounter);
+            telemetry.update();
         }
     }
 }
