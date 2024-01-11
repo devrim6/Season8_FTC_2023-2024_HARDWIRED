@@ -36,6 +36,10 @@ import org.opencv.core.Scalar;
 
 
 public class HardwareMapping {
+    public boolean isAtTarget(double db, double target, double offset){
+        if(db<=(target+offset) && db>=(target-offset)) return true;
+        else return false;
+    }
     /**
      * TICKS_PER_CM_Z converts a specified amount of cm when multiplied with another value to motor ticks.
      */
@@ -345,11 +349,15 @@ public class HardwareMapping {
          */
         public Action pivot(double angle){
             return new Action() {
+                boolean init = true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakePitchLeft.turnToAngle(angle);
-                    outtakePitchRight.turnToAngle(angle);
-                    return false;
+                    if(init){
+                        outtakePitchLeft.turnToAngle(angle);
+                        outtakePitchRight.turnToAngle(angle);
+                        init = false;
+                    }
+                    return isAtTarget(outtakePitchLeft.getAngle(), angle, 0.5);
                 }
             };}
 
@@ -376,12 +384,16 @@ public class HardwareMapping {
          */
         public Action yaw(double angle){
             return new Action() {
+                boolean init = true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakeYaw.turnToAngle(angle);
-                    if(angle==DefVal.yaw0) isOuttakeRotated=false;
-                    else if(angle==DefVal.yaw90) isOuttakeRotated=true;
-                    return false;
+                    if(init){
+                        outtakeYaw.turnToAngle(angle);
+                        if(angle==DefVal.yaw0) isOuttakeRotated=false;
+                        else if(angle==DefVal.yaw90) isOuttakeRotated=true;
+                        init = false;
+                    }
+                    return isAtTarget(outtakeYaw.getAngle(), angle, 0.5);
                 }
             };}
         /**
@@ -389,11 +401,15 @@ public class HardwareMapping {
          */
         public Action roll(double angle){
             return new Action() {
+                boolean init = true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    outtakeRollLeft.turnToAngle(angle);
-                    outtakeRollRight.turnToAngle(angle);
-                    return false;
+                    if(init){
+                        outtakeRollLeft.turnToAngle(angle);
+                        outtakeRollRight.turnToAngle(angle);
+                        init=false;
+                    }
+                    return isAtTarget(outtakeRollLeft.getAngle(), angle, 0.5);
                 }
             };}
         public Action latch(String state){
@@ -452,35 +468,38 @@ public class HardwareMapping {
         public Action runToPosition(liftHeight direction){
             currentHeight = direction;
             return new Action() {
+                boolean init = true;
+                int ticks = 0;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                    switch(direction){
-                        case HIGH:
-                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition((int)(DefVal.LiftHIGH*TICKS_PER_CM_Z));
-                        case MIDDLE:
-                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition((int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z));
-                        case LOW:
-                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition((int)(DefVal.LiftLOW*TICKS_PER_CM_Z));
-                        case GROUND:
-                            slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                            slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                            slideMotorLeft.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
-                            slideMotorRight.setTargetPosition((int)(DefVal.LiftGROUND*TICKS_PER_CM_Z));
+                    if(init){
+                        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        switch(direction){
+                            case HIGH:
+                                ticks = (int)(DefVal.LiftHIGH*TICKS_PER_CM_Z);
+                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            case MIDDLE:
+                                ticks = (int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
+                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            case LOW:
+                                ticks = (int)(DefVal.LiftLOW*TICKS_PER_CM_Z);
+                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                            case GROUND:
+                                ticks = (int)(DefVal.LiftGROUND*TICKS_PER_CM_Z);
+                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                        }
+                        slideMotorLeft.setTargetPosition(ticks);
+                        slideMotorRight.setTargetPosition(ticks);
+                        slideMotorRight.setPower(1);
+                        slideMotorLeft.setPower(1);
+                        init = false;
                     }
-                    slideMotorRight.setPower(1);
-                    slideMotorLeft.setPower(1);
-                    return false;
+                    return isAtTarget(slideMotorLeft.getCurrentPosition(), ticks, 30);
                 }
             };}
     }
