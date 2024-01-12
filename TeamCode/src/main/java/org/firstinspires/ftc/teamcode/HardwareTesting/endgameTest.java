@@ -22,7 +22,7 @@ import java.util.List;
 public class endgameTest extends LinearOpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
-    DcMotorEx hangMotor;
+   // DcMotorEx hangMotor;
 
     double PI = Math.PI;
     double GEAR_RATIO = 3*5;
@@ -32,15 +32,15 @@ public class endgameTest extends LinearOpMode {
     int hangingCounter=0;
 
     public void runOpMode() throws InterruptedException{
-        //Servo planeLauncherServo = hardwareMap.get(Servo.class, "planeLauncherServo");
-        hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
+        Servo planeLauncherServo = hardwareMap.get(Servo.class, "planeLauncherServo");
+//        hangMotor = hardwareMap.get(DcMotorEx.class, "hangMotor");
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
+//
+//        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-
-        //planeLauncherServo.setPosition(0);
+        planeLauncherServo.setPosition(0);
 
         boolean a=false;
         telemetry.setMsTransmissionInterval(50);
@@ -49,28 +49,28 @@ public class endgameTest extends LinearOpMode {
         while (opModeIsActive() && !isStopRequested()){
             TelemetryPacket packet = new TelemetryPacket();
 
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)){
-                hangingCounter++; if(hangingCounter>3) hangingCounter=0;
-                if(hangingCounter==1) runningActions.add(hangingEngage("up"));
-                else if(hangingCounter==2) runningActions.add(hangingEngage("hang"));
-                else if(hangingCounter==3){ 
-                    runningActions.add(hangingEngage("normal"));
-                    hangingCounter=0;
-                }
-            }
-            if(gamepadEx.isDown(GamepadKeys.Button.A)){
-                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                hangMotor.setPower(0.8);
-            }
-            else if(gamepadEx.isDown(GamepadKeys.Button.Y)){
-                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                hangMotor.setPower(-0.8);
-            } else hangMotor.setPower(0);
-//            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
-//                a=!a;
-//                if(a) planeLauncherServo.setPosition(DefVal.planeOn);
-//                else planeLauncherServo.setPosition(DefVal.planeOff);
+//            if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)){
+//                hangingCounter++; if(hangingCounter>3) hangingCounter=0;
+//                if(hangingCounter==1) runningActions.add(hangingEngage("up"));
+//                else if(hangingCounter==2) runningActions.add(hangingEngage("hang"));
+//                else if(hangingCounter==3){
+//                    runningActions.add(hangingEngage("normal"));
+//                    hangingCounter=0;
+//                }
 //            }
+//            if(gamepadEx.isDown(GamepadKeys.Button.A)){
+//                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                hangMotor.setPower(0.8);
+//            }
+//            else if(gamepadEx.isDown(GamepadKeys.Button.Y)){
+//                hangMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//                hangMotor.setPower(-0.8);
+//            } else hangMotor.setPower(0);
+            if(gamepadEx.wasJustPressed(GamepadKeys.Button.A)){
+                a=!a;
+                if(a) planeLauncherServo.setPosition(DefVal.planeOn);
+                else planeLauncherServo.setPosition(DefVal.planeOff);
+            }
 
             // Update running actions
             List<Action> newActions = new ArrayList<>();
@@ -90,32 +90,32 @@ public class endgameTest extends LinearOpMode {
         }
     }
 
-    public Action hangingEngage(String state){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                switch(state){
-                    case "up":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                        hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
-                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        hangMotor.setPower(1);
-                        break;
-                    case "hang":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                        hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
-                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        hangMotor.setPower(0.3);
-                        break;
-                    case "normal":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                        hangMotor.setTargetPosition(0);
-                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        hangMotor.setPower(0.6);
-                        break;
-                }
-                return false;
-            }
-        };
-    }
+//    public Action hangingEngage(String state){
+//        return new Action() {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                switch(state){
+//                    case "up":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                        hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
+//                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                        hangMotor.setPower(1);
+//                        break;
+//                    case "hang":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                        hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
+//                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                        hangMotor.setPower(0.3);
+//                        break;
+//                    case "normal":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//                        hangMotor.setTargetPosition(0);
+//                        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//                        hangMotor.setPower(0.6);
+//                        break;
+//                }
+//                return false;
+//            }
+//        };
+//    }
 }

@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.acmerobotics.roadrunner.DualNum;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -201,7 +202,8 @@ public final class MecanumDrive {
 
         // Comment out to go on drive encoders since it's the default
         //localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
-        localizer = new DriveLocalizer();
+        localizer = new TwoDeadWheelLocalizer(hardwareMap, imu, PARAMS.inPerTick);
+        //localizer = new DriveLocalizer();
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -442,4 +444,20 @@ public final class MecanumDrive {
                 0.25, 0.1
         );
     }
+
+//    public TrajectoryActionBuilder actionBuilder(Pose2d beginPose, boolean reverseField) {
+//        return new TrajectoryActionBuilder(
+//                TurnAction::new,
+//                FollowTrajectoryAction::new,
+//                beginPose, 1e-6, 0.0,
+//                defaultTurnConstraints,
+//                defaultVelConstraint, defaultAccelConstraint,
+//                0.25, 0.1,
+//                reverseField ? (PoseMap) pose2dDual -> {
+//                    pose2dDual = new Pose2dDual<>(
+//                            new Vector2dDual<>(beginPose.position.x, beginPose.position.y), pose.heading.inverse()));
+//                    return pose2dDual;
+//                } : new IdentityPoseMap()
+//        );
+//    }
 }

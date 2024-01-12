@@ -133,7 +133,11 @@ public class TeleOpDrive extends LinearOpMode {
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
                 outtake.yaw(DefVal.yaw0),
-                outtake.bottomHook("open"), outtake.upperHook("open")
+                outtake.bottomHook("open"), outtake.upperHook("open"),
+                intake.angle(1),
+                outtake.yaw(DefVal.yaw0),
+                outtake.roll(DefVal.roll0),
+                outtake.pivot(DefVal.pivot0)
         ));
         robot.checkColorRange("upper");
         robot.checkColorRange("bottom");
@@ -286,15 +290,11 @@ public class TeleOpDrive extends LinearOpMode {
                     bottomSensorState = robot.checkColorRange("bottom");
                     runningActions.add(new ParallelAction(
                             outtake.bottomHook("closed"), outtake.upperHook("closed"),
-                            robot.setLedColour("upper", upperSensorState),
-                            robot.setLedColour("bottom", bottomSensorState),
                             intake.sensingOff()
                     ));
                 }
                 else runningActions.add(new ParallelAction(
                         outtake.bottomHook("open"), outtake.upperHook("open"),
-                        robot.setLedColour("upper", HardwareMapping.ledState.OFF),
-                        robot.setLedColour("bottom", HardwareMapping.ledState.OFF),
                         intake.sensingOn()
                 ));
             }
@@ -356,17 +356,17 @@ public class TeleOpDrive extends LinearOpMode {
                     || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                 if(System.currentTimeMillis() > startTime + DefVal.endgameTime) runningActions.add(robot.launchPlane());
             }
-            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
-                if(System.currentTimeMillis() > startTime + DefVal.endgameTime){
-                    hangingCounter++; if(hangingCounter>3) hangingCounter=0;
-                    if(hangingCounter==1) runningActions.add(robot.hangingEngage("up"));
-                    else if(hangingCounter==2) runningActions.add(robot.hangingEngage("hang"));
-                    else if(hangingCounter==3){
-                        runningActions.add(robot.hangingEngage("normal"));
-                        hangingCounter=0;
-                    }
-                }
-            }
+//            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
+//                if(System.currentTimeMillis() > startTime + DefVal.endgameTime){
+//                    hangingCounter++; if(hangingCounter>3) hangingCounter=0;
+//                    if(hangingCounter==1) runningActions.add(robot.hangingEngage("up"));
+//                    else if(hangingCounter==2) runningActions.add(robot.hangingEngage("hang"));
+//                    else if(hangingCounter==3){
+//                        runningActions.add(robot.hangingEngage("normal"));
+//                        hangingCounter=0;
+//                    }
+//                }
+//            }
 
             robot.gamepad1Ex.readButtons();                 // Bulk reads the gamepad
             robot.gamepad2Ex.readButtons();                 // saves on loop times

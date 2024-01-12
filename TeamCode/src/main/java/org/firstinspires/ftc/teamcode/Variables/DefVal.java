@@ -7,8 +7,8 @@ public class DefVal {
     //in ms
     public static int endgameTime = 50000;
 
-    public static double planeOff = 0.5;
-    public static double planeOn = 0.1;
+    public static double planeOff = 0.3;
+    public static double planeOn = 1;
 
     public static double latchOpen = 0.5;
     public static double latchClosed = 0;

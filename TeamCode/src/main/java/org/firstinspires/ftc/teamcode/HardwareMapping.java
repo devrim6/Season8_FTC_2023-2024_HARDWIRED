@@ -71,7 +71,7 @@ public class HardwareMapping {
     public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
 
     public DcMotorEx intakeMotor;
-    public DcMotorEx hangMotor;
+   // public DcMotorEx hangMotor;
     public DcMotorEx slideMotorLeft;
     public DcMotorEx slideMotorRight;
 
@@ -79,7 +79,6 @@ public class HardwareMapping {
 
     private ColorSensor bottomHookSensor, upperHookSensor;
 
-    private DigitalChannel bottomLEDgreen, bottomLEDred, upperLEDgreen, upperLEDred;
     HardwareMap hwMap = null;
     public HardwareMapping(){}
 
@@ -112,28 +111,22 @@ public class HardwareMapping {
 
         /* Motors */
         intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
-        hangMotor = hwMap.get(DcMotorEx.class, "hangMotor");
+//        hangMotor = hwMap.get(DcMotorEx.class, "hangMotor");
         slideMotorLeft = hwMap.get(DcMotorEx.class, "slideMotorLeft");
         slideMotorRight = hwMap.get(DcMotorEx.class, "slideMotorRight");
 
-        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        slideMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        hangMotor.setMotorDisable();
+//        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//        hangMotor.setMotorDisable();
 
         /* Sensors */
         upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
         bottomHookSensor = ahwMap.get(ColorSensor.class, "bottomHookSensor");
-
-        /* LEDs */ //Fiecare digital channel vine in perechi, n, n+1
-        bottomLEDgreen = hwMap.get(DigitalChannel.class, "bottomLEDgreen");
-        bottomLEDred = hwMap.get(DigitalChannel.class, "bottomLEDred");
-        upperLEDgreen = hwMap.get(DigitalChannel.class, "upperLEDgreen");
-        upperLEDred = hwMap.get(DigitalChannel.class, "upperLEDred");
 
         //Plane armed position
         planeLauncherServo.setPosition(DefVal.planeOff);
@@ -146,13 +139,13 @@ public class HardwareMapping {
     }
 
     public void resetEncoderAuto(){
-        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        hangMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         slideMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        slideMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -178,10 +171,9 @@ public class HardwareMapping {
                 break;
         }
 
-        ledState state = isInBounds(hsv);
-        Actions.runBlocking(setLedColour(sensor, state));
+        //        Actions.runBlocking(setLedColour(sensor, state));
 
-        return state;
+        return isInBounds(hsv);
     }
 
     /**
@@ -217,92 +209,92 @@ public class HardwareMapping {
         return HardwareMapping.ledState.OFF;
     }
 
-    /**
-     *  Takes the position of the led and the colour it needs to be set at then passes it along
-     *  to ledColourDriver
-     * @param led
-     * @param colour
-     */
-    public Action setLedColour(String led, ledState colour){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                DigitalChannel led1 = null, led2 = null;
-                if (led.equals("upper")) {
-                    led1 = upperLEDred;                     //Fiecare digital channel vine in perechi: n, n+1
-                    led2 = upperLEDgreen;
-                } else if (led.equals("bottom")) {
-                    led1 = bottomLEDred;
-                    led2 = bottomLEDgreen;
-                }
-                ledColourDriver(colour, led1, led2);
-                return false;
-            }
-        };
-    }
-    private boolean stopBlinking=false;
+//    /**
+//     *  Takes the position of the led and the colour it needs to be set at then passes it along
+//     *  to ledColourDriver
+//     * @param led
+//     * @param colour
+//     */
+//    public Action setLedColour(String led, ledState colour){
+//        return new Action() {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                DigitalChannel led1 = null, led2 = null;
+//                if (led.equals("upper")) {
+//                    led1 = upperLEDred;                     //Fiecare digital channel vine in perechi: n, n+1
+//                    led2 = upperLEDgreen;
+//                } else if (led.equals("bottom")) {
+//                    led1 = bottomLEDred;
+//                    led2 = bottomLEDgreen;
+//                }
+//                ledColourDriver(colour, led1, led2);
+//                return false;
+//            }
+//        };
+//    }
+//    private boolean stopBlinking=false;
 
-    /**
-     * Takes the colour and led position then sets the colour accordingly. White calls upon the
-     * whitePixelBlink Action asynchroniously to flash the leds on and off in order
-     * @param colour
-     * @param led1
-     * @param led2
-     */
-    public void ledColourDriver(ledState colour, DigitalChannel led1, DigitalChannel led2){
-        switch (colour) {
-            case OFF:
-                stopBlinking=false;                         //stop white blinking
-                led1.setState(false);                       //led1 is red
-                led2.setState(false);                       //led2 is green
-                break;
-            case PURPLE:
-                stopBlinking=false;
-                led1.setState(true);
-                led2.setState(false);
-                break;
-            case YELLOW:
-                stopBlinking=false;
-                led1.setState(true);
-                led1.setState(true);
-                break;
-            case GREEN:
-                stopBlinking=false;
-                led1.setState(false);
-                led2.setState(true);
-                break;
-            case WHITE:
-                stopBlinking=true;                                          //start white blinking
-                Actions.runBlocking(whitePixelBlink(led1, led2));           //separate thread, needs to run continously
-                break;
-        }
-    }
-
-    /**
-     * Takes the led positions then flashes red and green in sequence to signify that a white pixel is
-     * in that place.
-     * @param led1
-     * @param led2
-     * @return false
-     */
-    public Action whitePixelBlink(DigitalChannel led1, DigitalChannel led2){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                try {
-                    led1.setState(true);
-                    led2.setState(false);
-                    Thread.sleep(800);
-                    led1.setState(false);
-                    led2.setState(true);
-                    Thread.sleep(800);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                return stopBlinking;                    //if true then continue. if false then stop
-            }
-        };
-    }
+//    /**
+//     * Takes the colour and led position then sets the colour accordingly. White calls upon the
+//     * whitePixelBlink Action asynchroniously to flash the leds on and off in order
+//     * @param colour
+//     * @param led1
+//     * @param led2
+//     */
+//    public void ledColourDriver(ledState colour, DigitalChannel led1, DigitalChannel led2){
+//        switch (colour) {
+//            case OFF:
+//                stopBlinking=false;                         //stop white blinking
+//                led1.setState(false);                       //led1 is red
+//                led2.setState(false);                       //led2 is green
+//                break;
+//            case PURPLE:
+//                stopBlinking=false;
+//                led1.setState(true);
+//                led2.setState(false);
+//                break;
+//            case YELLOW:
+//                stopBlinking=false;
+//                led1.setState(true);
+//                led1.setState(true);
+//                break;
+//            case GREEN:
+//                stopBlinking=false;
+//                led1.setState(false);
+//                led2.setState(true);
+//                break;
+//            case WHITE:
+//                stopBlinking=true;                                          //start white blinking
+//                Actions.runBlocking(whitePixelBlink(led1, led2));           //separate thread, needs to run continously
+//                break;
+//        }
+//    }
+//
+//    /**
+//     * Takes the led positions then flashes red and green in sequence to signify that a white pixel is
+//     * in that place.
+//     * @param led1
+//     * @param led2
+//     * @return false
+//     */
+//    public Action whitePixelBlink(DigitalChannel led1, DigitalChannel led2){
+//        return new Action() {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                try {
+//                    led1.setState(true);
+//                    led2.setState(false);
+//                    Thread.sleep(800);
+//                    led1.setState(false);
+//                    led2.setState(true);
+//                    Thread.sleep(800);
+//                } catch (InterruptedException e) {
+//                    throw new RuntimeException(e);
+//                }
+//                return stopBlinking;                    //if true then continue. if false then stop
+//            }
+//        };
+//    }
 
     public Action launchPlane(){
         return new Action() {
@@ -313,32 +305,32 @@ public class HardwareMapping {
             }
         };
     }
-    public Action hangingEngage(String state){
-        return new Action() {
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                hangMotor.setMotorEnable();
-                switch(state){
-                    case "up":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                        hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
-                        hangMotor.setPower(1);
-                        break;
-                    case "hang":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                        hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
-                        hangMotor.setPower(0.3);
-                        break;
-                    case "normal":
-                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                        hangMotor.setTargetPosition(0);
-                        hangMotor.setPower(0.6);
-                        break;
-                }
-                return false;
-            }
-        };
-    }
+//    public Action hangingEngage(String state){
+//        return new Action() {
+//            @Override
+//            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                hangMotor.setMotorEnable();
+//                switch(state){
+//                    case "up":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                        hangMotor.setTargetPosition((int)(DefVal.hangup*TICKS_PER_CM_Z));
+//                        hangMotor.setPower(1);
+//                        break;
+//                    case "hang":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                        hangMotor.setTargetPosition((int)(DefVal.hangHang*TICKS_PER_CM_Z));
+//                        hangMotor.setPower(0.3);
+//                        break;
+//                    case "normal":
+//                        hangMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+//                        hangMotor.setTargetPosition(0);
+//                        hangMotor.setPower(0.6);
+//                        break;
+//                }
+//                return false;
+//            }
+//        };
+//    }
 
     public class Outtake {
         public Outtake() {}                 // The constructor
@@ -472,8 +464,6 @@ public class HardwareMapping {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     if(init){
-                        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         switch(direction){
                             case HIGH:
                                 ticks = (int)(DefVal.LiftHIGH*TICKS_PER_CM_Z);
@@ -494,6 +484,8 @@ public class HardwareMapping {
                         }
                         slideMotorLeft.setTargetPosition(ticks);
                         slideMotorRight.setTargetPosition(ticks);
+                        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         slideMotorRight.setPower(1);
                         slideMotorLeft.setPower(1);
                         init = false;
