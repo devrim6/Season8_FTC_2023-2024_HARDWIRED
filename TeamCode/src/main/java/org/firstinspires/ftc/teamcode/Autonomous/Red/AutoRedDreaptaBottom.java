@@ -115,7 +115,7 @@ public class AutoRedDreaptaBottom extends LinearOpMode {
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
                         new SleepAction(1),
-                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                        outtake.runToPosition("ground")
                 ))
                 .build();
 

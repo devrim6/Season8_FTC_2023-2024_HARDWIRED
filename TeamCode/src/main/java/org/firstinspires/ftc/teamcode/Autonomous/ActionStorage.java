@@ -17,7 +17,7 @@ public class ActionStorage {
     }
     public Action pixelToLow = new ParallelAction(
             new SequentialAction(
-                    outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                    outtake.runToPosition("low"),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60)
@@ -29,7 +29,7 @@ public class ActionStorage {
     ),
             pixelToMiddle = new ParallelAction(
                     new SequentialAction(
-                            outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
+                            outtake.runToPosition("middle"),
                             new ParallelAction(
                                     outtake.pivot(DefVal.pivot60),
                                     outtake.roll(DefVal.roll60)
@@ -48,6 +48,6 @@ public class ActionStorage {
                             outtake.pivot(DefVal.pivot0),
                             outtake.roll(DefVal.roll0)
                     ),
-                    outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                    outtake.runToPosition("ground")
             );
 }

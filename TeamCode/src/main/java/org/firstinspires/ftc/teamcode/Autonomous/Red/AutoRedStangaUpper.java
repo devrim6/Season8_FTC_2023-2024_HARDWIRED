@@ -171,7 +171,7 @@ public class AutoRedStangaUpper extends LinearOpMode {
                         ),
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
-                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                        outtake.runToPosition("ground")
                 ))
                 .build();
 

@@ -80,7 +80,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                         ),
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
-                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                        outtake.runToPosition("ground")
                 ))
                 .build();
         Action TRAJ3_ParkM = drive.actionBuilder(middleBackboardPose)
@@ -98,7 +98,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                         ),
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
-                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                        outtake.runToPosition("ground")
                 ))
                 .build();
         Action TRAJ3_ParkR = drive.actionBuilder(rightBackboardPose)
@@ -116,7 +116,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                         ),
                         outtake.pivot(DefVal.pivot0),
                         outtake.roll(DefVal.roll0),
-                        outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                        outtake.runToPosition("ground")
                 ))
                 .build();
 

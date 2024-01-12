@@ -348,7 +348,7 @@ public class HardwareMapping {
                         outtakePitchRight.turnToAngle(angle);
                         init = false;
                     }
-                    return isAtTarget(outtakePitchLeft.getAngle(), angle, 0.5);
+                    return false;
                 }
             };}
 
@@ -384,7 +384,7 @@ public class HardwareMapping {
                         else if(angle==DefVal.yaw90) isOuttakeRotated=true;
                         init = false;
                     }
-                    return isAtTarget(outtakeYaw.getAngle(), angle, 0.5);
+                    return false;
                 }
             };}
         /**
@@ -400,7 +400,7 @@ public class HardwareMapping {
                         outtakeRollRight.turnToAngle(angle);
                         init=false;
                     }
-                    return isAtTarget(outtakeRollLeft.getAngle(), angle, 0.5);
+                    return false;
                 }
             };}
         public Action latch(String state){
@@ -456,41 +456,52 @@ public class HardwareMapping {
          * @param direction
          * @return false
          */
-        public Action runToPosition(liftHeight direction){
-            currentHeight = direction;
+        public Action runToPosition(String direction){
             return new Action() {
                 boolean init = true;
                 int ticks = 0;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    if(init){
-                        switch(direction){
-                            case HIGH:
-                                ticks = (int)(DefVal.LiftHIGH*TICKS_PER_CM_Z);
-                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            case MIDDLE:
-                                ticks = (int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
-                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            case LOW:
-                                ticks = (int)(DefVal.LiftLOW*TICKS_PER_CM_Z);
-                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                            case GROUND:
-                                ticks = (int)(DefVal.LiftGROUND*TICKS_PER_CM_Z);
-                                slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                                slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-                        }
-                        slideMotorLeft.setTargetPosition(ticks);
-                        slideMotorRight.setTargetPosition(ticks);
-                        slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                        slideMotorRight.setPower(1);
-                        slideMotorLeft.setPower(1);
-                        init = false;
+                    switch(direction){
+                        case "high":
+                            ticks = (int)(DefVal.LiftHIGH*TICKS_PER_CM_Z);
+                            slideMotorLeft.setTargetPosition(ticks);
+                            slideMotorRight.setTargetPosition(ticks);
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                            break;
+                        case "middle":
+                            ticks = (int)(DefVal.LiftMIDDLE*TICKS_PER_CM_Z);
+                            slideMotorLeft.setTargetPosition(ticks);
+                            slideMotorRight.setTargetPosition(ticks);
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                            break;
+                        case "low":
+                            ticks = (int)(DefVal.LiftLOW*TICKS_PER_CM_Z);
+                            slideMotorLeft.setTargetPosition(ticks);
+                            slideMotorRight.setTargetPosition(ticks);
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                            break;
+                        case "ground":
+                            ticks = (int)(DefVal.LiftGROUND*TICKS_PER_CM_Z);
+                            slideMotorLeft.setTargetPosition(ticks);
+                            slideMotorRight.setTargetPosition(ticks);
+                            slideMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                            slideMotorRight.setPower(1);
+                            slideMotorLeft.setPower(1);
+                            break;
                     }
-                    return isAtTarget(slideMotorLeft.getCurrentPosition(), ticks, 30);
+                    init = false;
+                    return false;
                 }
             };}
     }
@@ -505,9 +516,8 @@ public class HardwareMapping {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     intakeMotor.setMotorEnable();
-                    intakeMotor.setPower(DefVal.intakeMotorPower);
-                    intakeServoRoller.setPower(-DefVal.intakeRollerPower);
-                    isIntakeOn = true;
+                    intakeMotor.setPower(-DefVal.intakeMotorPower);
+                    intakeServoRoller.setPower(DefVal.intakeRollerPower);
                     return false;
                 }
             };}
@@ -523,13 +533,11 @@ public class HardwareMapping {
             return new Action() {
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    intakeMotor.setPower(-DefVal.intakeMotorPower);
-                    intakeServoRoller.setPower(DefVal.intakeRollerPower);
+                    intakeMotor.setPower(DefVal.intakeMotorPower);
+                    intakeServoRoller.setPower(-DefVal.intakeRollerPower);
                     return false; //Run for 1.5s then stop
                 }
             };}
-
-        public boolean isIntakeOn = false;
         public Action stop(){
             return new Action() {
                 @Override
@@ -537,7 +545,6 @@ public class HardwareMapping {
                     intakeMotor.setPower(0);
                     intakeServoRoller.setPower(0); //todo: see if you should put intake at lvl6
                     intakeMotor.setMotorDisable();
-                    isIntakeOn = false;
                     return false;
                 }
             };}

@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.Pose2dDual;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Time;
 import com.acmerobotics.roadrunner.Trajectory;
 import com.acmerobotics.roadrunner.Twist2d;
@@ -108,7 +109,7 @@ public class TeleOpDrive extends LinearOpMode {
     private final PIDFController HEADING_PIDF = new PIDFController(1,0,0,0); //todo: tune values when you have an actual bot
                                                                                            //standard way
     int motorRightTicks, motorLeftTicks, intakeLevel,hangingCounter = 0;
-    boolean isHook, isTeleOP=true, isOuttakeRotated=false;
+    boolean isHook=true, isTeleOP=true, isOuttakeRotated=false;
     static boolean isIntakePowered = false;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -134,10 +135,11 @@ public class TeleOpDrive extends LinearOpMode {
         Actions.runBlocking(new ParallelAction(
                 outtake.yaw(DefVal.yaw0),
                 outtake.bottomHook("open"), outtake.upperHook("open"),
-                intake.angle(1),
+                intake.angle(6),
                 outtake.yaw(DefVal.yaw0),
                 outtake.roll(DefVal.roll0),
-                outtake.pivot(DefVal.pivot0)
+                outtake.pivot(DefVal.pivot0),
+                outtake.latch("closed")
         ));
         robot.checkColorRange("upper");
         robot.checkColorRange("bottom");
@@ -146,7 +148,7 @@ public class TeleOpDrive extends LinearOpMode {
         double headingTarget=180;      //TODO: transfer hook state between auto in case auto fails OR default state = closed
         intakeLevel = PoseTransfer.intakeLevel;
         long startTime = System.currentTimeMillis();
-        HardwareMapping.ledState bottomSensorState = PoseTransfer.bottomLedState, upperSensorState = PoseTransfer.upperLedState;
+        HardwareMapping.ledState bottomSensorState, upperSensorState;
         PoseVelocity2d currentVelPose = new PoseVelocity2d(new Vector2d(0,0),0);
 
         // Set bulk reads to AUTO, enable PhotonFTC in build.grade (TeamCode)      TODO: test difference between no photon, auto, off for engineering portfolio
@@ -207,11 +209,13 @@ public class TeleOpDrive extends LinearOpMode {
                             outtake.pivot(DefVal.pivot0),
                             outtake.roll(DefVal.roll0)
                     ),
-                    outtake.runToPosition(HardwareMapping.liftHeight.GROUND)
+                    new SleepAction(1),
+                    outtake.runToPosition("ground")
             ));
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP)
-                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) runningActions.add(new SequentialAction(
-                    outtake.runToPosition(HardwareMapping.liftHeight.HIGH),
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_UP)) runningActions.add(new SequentialAction(
+                    outtake.runToPosition("high"),
+                    new SleepAction(0.5),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
@@ -221,7 +225,8 @@ public class TeleOpDrive extends LinearOpMode {
             ));
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_DOWN)) runningActions.add(new SequentialAction(
-                    outtake.runToPosition(HardwareMapping.liftHeight.LOW),
+                    outtake.runToPosition("low"),
+                    new SleepAction(0.5),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
@@ -231,7 +236,8 @@ public class TeleOpDrive extends LinearOpMode {
             ));
             if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)
                     || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT)) runningActions.add(new SequentialAction(
-                    outtake.runToPosition(HardwareMapping.liftHeight.MIDDLE),
+                    outtake.runToPosition("middle"),
+                    new SleepAction(0.5),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
@@ -242,27 +248,27 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Manual driver 2 slide control, very VERY sketchy, virtual limits are most likely wrong, uses gradual acceleration of slides with joystick
             //todo: needs testing
-            float gp1LeftStickY = gamepad1.left_stick_y;
-            float gp1LeftStickX = gamepad1.left_stick_x;
-            motorRightTicks = robot.slideMotorRight.getCurrentPosition();
-            motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
-            if(gp1LeftStickY>0 && motorRightTicks<= robot.TICKS_PER_CM_Z*25
-                    && motorLeftTicks<=robot.TICKS_PER_CM_Z*25){
-                robot.slideMotorRight.setTargetPosition(motorRightTicks + (int)(40 * gp1LeftStickY));
-                robot.slideMotorLeft.setTargetPosition(motorLeftTicks + (int)(40 * gp1LeftStickY));
-                robot.slideMotorRight.setPower(0.7);
-                robot.slideMotorLeft.setPower(0.7);
-            } else if(gp1LeftStickY < 0 && motorLeftTicks >= 10 && motorRightTicks >= 10){
-                robot.slideMotorRight.setTargetPosition(motorRightTicks - (int)(40 * gp1LeftStickY));
-                robot.slideMotorLeft.setTargetPosition(motorLeftTicks - (int)(40 * gp1LeftStickY));
-                robot.slideMotorRight.setPower(0.7);
-                robot.slideMotorLeft.setPower(0.7);
-            }
-            if(gp1LeftStickX > 0){   //todo: maybe works, most likely broken, needs tons of testing
-                runningActions.add(outtake.pivotFixedRoll(gp1LeftStickX*5));
-            } else if(gp1LeftStickX < 0){
-                runningActions.add(outtake.pivotFixedRoll(-gp1LeftStickX*5));
-            }
+//            float gp1LeftStickY = gamepad1.left_stick_y;
+//            float gp1LeftStickX = gamepad1.left_stick_x;
+//            motorRightTicks = robot.slideMotorRight.getCurrentPosition();
+//            motorLeftTicks = robot.slideMotorLeft.getCurrentPosition();
+//            if(gp1LeftStickY>0 && motorRightTicks<= robot.TICKS_PER_CM_Z*25
+//                    && motorLeftTicks<=robot.TICKS_PER_CM_Z*25){
+//                robot.slideMotorRight.setTargetPosition(motorRightTicks + (int)(40 * gp1LeftStickY));
+//                robot.slideMotorLeft.setTargetPosition(motorLeftTicks + (int)(40 * gp1LeftStickY));
+//                robot.slideMotorRight.setPower(0.7);
+//                robot.slideMotorLeft.setPower(0.7);
+//            } else if(gp1LeftStickY < 0 && motorLeftTicks >= 10 && motorRightTicks >= 10){
+//                robot.slideMotorRight.setTargetPosition(motorRightTicks - (int)(40 * gp1LeftStickY));
+//                robot.slideMotorLeft.setTargetPosition(motorLeftTicks - (int)(40 * gp1LeftStickY));
+//                robot.slideMotorRight.setPower(0.7);
+//                robot.slideMotorLeft.setPower(0.7);
+//            }
+//            if(gp1LeftStickX > 0){   //todo: maybe works, most likely broken, needs tons of testing
+//                runningActions.add(outtake.pivotFixedRoll(gp1LeftStickX*5));
+//            } else if(gp1LeftStickX < 0){
+//                runningActions.add(outtake.pivotFixedRoll(-gp1LeftStickX*5));
+//            }
 
             //Switch between movement modes
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.BACK)){
@@ -286,8 +292,6 @@ public class TeleOpDrive extends LinearOpMode {
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.Y) || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.Y)) {
                 intake.setCurrentHook(!isHook);
                 if(isHook) {
-                    upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
-                    bottomSensorState = robot.checkColorRange("bottom");
                     runningActions.add(new ParallelAction(
                             outtake.bottomHook("closed"), outtake.upperHook("closed"),
                             intake.sensingOff()
@@ -301,9 +305,7 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Outtake 90 degree rotation
             if((robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A)
-                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))
-                && !outtake.currentHeight.equals(HardwareMapping.liftHeight.LOW)){
-                isOuttakeRotated = outtake.isOuttakeRotated;
+                    || robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A))){
                 isOuttakeRotated = !isOuttakeRotated;
                 if(isOuttakeRotated) runningActions.add(new ParallelAction(
                         outtake.yaw(DefVal.yaw90),
@@ -316,9 +318,8 @@ public class TeleOpDrive extends LinearOpMode {
             }
 
             //Intake power controls - reverse also stops the intake
-            if(robot.gamepad1Ex.stateJustChanged(GamepadKeys.Button.X)
-                    || robot.gamepad2Ex.stateJustChanged(GamepadKeys.Button.X)){
-                isIntakePowered = intake.isIntakeOn;
+            if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.X)
+                    || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.X)){
                 isIntakePowered = !isIntakePowered;
                 if(isIntakePowered){
                     runningActions.add(new ParallelAction(
@@ -332,7 +333,7 @@ public class TeleOpDrive extends LinearOpMode {
             }
             //Intake reverse control manual
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){
-                intake.isIntakeOn = false;
+                isIntakePowered = false;
                 runningActions.add(new SequentialAction(
                         intake.reverse(),
                         intake.sensingOff()
@@ -343,12 +344,12 @@ public class TeleOpDrive extends LinearOpMode {
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)
                     || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_BUMPER)){
                 intakeLevel++; if(intakeLevel>6) intakeLevel=1;
-                else runningActions.add(intake.angle(intakeLevel));
+                runningActions.add(intake.angle(intakeLevel));
             }
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)
                     || robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.LEFT_BUMPER)){
                 intakeLevel--; if(intakeLevel<1) intakeLevel=6;
-                else runningActions.add(intake.angle(intakeLevel));
+                runningActions.add(intake.angle(intakeLevel));
             }
 
             //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
@@ -382,9 +383,12 @@ public class TeleOpDrive extends LinearOpMode {
             runningActions = newActions;
             dash.sendTelemetryPacket(packet);
 
+            upperSensorState = robot.checkColorRange("upper");      // Update variables and use them below
+            bottomSensorState = robot.checkColorRange("bottom");
+
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
-            telemetry.addData("heading", currentPose.heading);
+            telemetry.addData("heading", currentPose.heading.log());
             telemetry.addData("pitch: ", pitch);
             telemetry.addData("Heading target: ", headingTarget);
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
@@ -398,6 +402,8 @@ public class TeleOpDrive extends LinearOpMode {
         telemetry.addData("intake level: ", intakeLevel);
         telemetry.addData("slideLeft ticks: ", motorLeftTicks);
         telemetry.addData("slideRight ticks: ", motorRightTicks);
+        telemetry.addData("slideLeft target: ", robot.slideMotorLeft.getTargetPosition());
+        telemetry.addData("slideRight target: ", robot.slideMotorRight.getTargetPosition());
         telemetry.addData("slideMotorLeft amperage:", robot.slideMotorLeft.getCurrent(CurrentUnit.AMPS));
         telemetry.addData("slideMotorRight amperage:", robot.slideMotorRight.getCurrent(CurrentUnit.AMPS));
         telemetry.addData("isIntakePowered: ", isIntakePowered);
