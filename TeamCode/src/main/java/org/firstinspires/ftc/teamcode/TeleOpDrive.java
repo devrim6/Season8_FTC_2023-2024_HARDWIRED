@@ -163,15 +163,15 @@ public class TeleOpDrive extends LinearOpMode {
         waitForStart();
         while(opModeIsActive() && !isStopRequested()){
             Pose2d currentPose = drive.pose;                            // Memory management, don't call drive pose too much
-            double pitch = drive.imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES);
-            double TILT_POWER = DefVal.TILT_POWER;
+            //double pitch = drive.imu.getRobotYawPitchRollAngles().getPitch(AngleUnit.DEGREES);
+            //double TILT_POWER = DefVal.TILT_POWER;
             double triggerSlowdown = robot.gamepad2Ex.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             TelemetryPacket packet = new TelemetryPacket();
 
             //TODO: SET IMU ORIENTATION in MecanumDrive before anything else after bot is constructed
-            if(pitch > DefVal.pitchPositive) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
-            else if (pitch < DefVal.pitchNegative) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
-            else switch(currentMode){
+            //if(pitch > DefVal.pitchPositive) currentVelPose = new PoseVelocity2d(new Vector2d(0, -TILT_POWER), 0);
+            //else if (pitch < DefVal.pitchNegative) currentVelPose = new PoseVelocity2d(new Vector2d(0, TILT_POWER), 0);
+            /*else*/ switch(currentMode){
                 case TELEOP:
                     currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
@@ -389,7 +389,7 @@ public class TeleOpDrive extends LinearOpMode {
             telemetry.addData("x", currentPose.position.x);
             telemetry.addData("y", currentPose.position.y);
             telemetry.addData("heading", currentPose.heading.log());
-            telemetry.addData("pitch: ", pitch);
+            //telemetry.addData("pitch: ", pitch);
             telemetry.addData("Heading target: ", headingTarget);
             telemetry.addData("Pixel upper: ", upperSensorState.toString());
             telemetry.addData("Pixel bottom: ", bottomSensorState.toString());
