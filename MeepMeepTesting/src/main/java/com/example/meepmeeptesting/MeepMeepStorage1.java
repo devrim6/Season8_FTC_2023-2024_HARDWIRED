@@ -244,12 +244,10 @@ public class MeepMeepStorage1 {
                             .setReversed(false)
                             .splineToLinearHeading(new Pose2d(-39,-36,Math.toRadians(120)),Math.toRadians(90))
                             .waitSeconds(0.2)
-                            //.setReversed(true)
-                            .setTangent(Math.toRadians(90))
-                            .splineToLinearHeading(new Pose2d(-37,-45,Math.toRadians(120)),Math.toRadians(90))
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-34,-60,Math.toRadians(0)),Math.toRadians(0))
                             .setReversed(false)
-                            .splineToLinearHeading(new Pose2d(-58,-36,Math.toRadians(0)),Math.toRadians(90))
-                            .waitSeconds(0.7) //ia un pixel
+                            .splineToLinearHeading(new Pose2d(60,-60,Math.toRadians(0)),Math.toRadians(0))
                             .build()
             );
 }
