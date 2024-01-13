@@ -19,9 +19,9 @@ public class DefVal {
     public static double bottomHookOpen = 0.9;
 
     //CM converted to ticks
-    public static double LiftHIGH = 24;
-    public static double LiftMIDDLE = 10;
-    public static double LiftLOW = 5;
+    public static double LiftHIGH = 43;
+    public static double LiftMIDDLE = 30;
+    public static double LiftLOW = 20;
     public static double LiftGROUND = 0;
 
     public static double hangHang = 10;
@@ -40,7 +40,7 @@ public class DefVal {
     public static double yaw0 = 0.75;
     public static double yaw90 = 1.3;
 
-    public static double pivot0 = 2.8;
+    public static double pivot0 = 2.7;
     public static double pivot60 = 7.1;
 
     public static double roll0 = 0.5;

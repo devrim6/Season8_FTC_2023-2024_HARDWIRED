@@ -241,13 +241,10 @@ public class MeepMeepStorage1 {
             .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
             .followTrajectorySequence(driveShim ->
                     driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
+                            //.setReversed(true)
                             .setReversed(false)
-                            .splineToLinearHeading(new Pose2d(-39,-36,Math.toRadians(120)),Math.toRadians(90))
-                            .waitSeconds(0.2)
-                            .setReversed(true)
-                            .splineToLinearHeading(new Pose2d(-34,-60,Math.toRadians(0)),Math.toRadians(0))
-                            .setReversed(false)
-                            .splineToLinearHeading(new Pose2d(60,-60,Math.toRadians(0)),Math.toRadians(0))
+                            //.setTangent(Math.toRadians(-90))
+                            .splineToLinearHeading(new Pose2d(48,-56,Math.toRadians(0)),Math.toRadians(0))
                             .build()
             );
 }
