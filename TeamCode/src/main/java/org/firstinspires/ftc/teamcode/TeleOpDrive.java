@@ -219,7 +219,7 @@ public class TeleOpDrive extends LinearOpMode {
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
-                            outtake.yaw(DefVal.yaw90),
+                            //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
@@ -230,7 +230,7 @@ public class TeleOpDrive extends LinearOpMode {
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
-                            outtake.yaw(DefVal.yaw90),
+                            //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
@@ -241,7 +241,7 @@ public class TeleOpDrive extends LinearOpMode {
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60),
-                            outtake.yaw(DefVal.yaw90),
+                            //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )
             ));
