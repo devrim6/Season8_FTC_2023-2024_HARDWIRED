@@ -40,10 +40,10 @@ public class DefVal {
     public static double yaw0 = 0.75;
     public static double yaw90 = 1.3;
 
-    public static double pivot0 = 2.7;
+    public static double pivot0 = 2.65;
     public static double pivot60 = 7.1;
 
-    public static double roll0 = 0.5;
+    public static double roll0 = 0.7;
     public static double roll60 = 4.3;
 
     public static double pitchPositive = 10;
