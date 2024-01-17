@@ -258,7 +258,8 @@ public class TeleOpDrive extends LinearOpMode {
             }*/
 
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
-                    /*|| robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))*/ runningActions.add(new SequentialAction(
+                    /*|| robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))*/
+                runningActions.add(new SequentialAction(
                     new ParallelAction(
                             outtake.yaw(DefVal.yaw0),
                             outtake.latch("closed")

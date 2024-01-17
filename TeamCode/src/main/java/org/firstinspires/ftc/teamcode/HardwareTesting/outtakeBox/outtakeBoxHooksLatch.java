@@ -19,13 +19,13 @@ public class outtakeBoxHooksLatch extends LinearOpMode {
     private FtcDashboard dash = FtcDashboard.getInstance();
     private List<Action> runningActions = new ArrayList<>();
 
-    public Servo outtakeLatch, outtakeClawUpper, outtakeClawBottom;
+    public Servo /*outtakeLatch*/ outtakeClawUpper, outtakeClawBottom;
 
     public void runOpMode() throws InterruptedException{
         GamepadEx gamepadEx = new GamepadEx(gamepad2);
         telemetry.setMsTransmissionInterval(50);
 
-        outtakeLatch = hardwareMap.get(Servo.class, "outtakeLatch");
+        //outtakeLatch = hardwareMap.get(Servo.class, "outtakeLatch");
         outtakeClawBottom = hardwareMap.get(Servo.class, "outtakeClawBottom");
         outtakeClawUpper = hardwareMap.get(Servo.class, "outtakeClawUpper");
 
@@ -49,16 +49,16 @@ public class outtakeBoxHooksLatch extends LinearOpMode {
                 else outtakeClawUpper.setPosition(DefVal.upperHookOpen);
             }
 
-            if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)){
+            /*if(gamepadEx.wasJustPressed(GamepadKeys.Button.Y)){
                 latch=!latch;
                 if(latch) outtakeLatch.setPosition(DefVal.latchClosed);
                 else outtakeLatch.setPosition(DefVal.latchOpen);
-            }
+            }*/
 
             if (gamepadEx.wasJustPressed(GamepadKeys.Button.START)){
                 outtakeClawBottom.setPosition(0);
                 outtakeClawUpper.setPosition(0);
-                outtakeLatch.setPosition(0);
+                //outtakeLatch.setPosition(0);
             }
 
 
@@ -77,7 +77,7 @@ public class outtakeBoxHooksLatch extends LinearOpMode {
 
             telemetry.addData("uHook: ", outtakeClawUpper.getPosition());
             telemetry.addData("bHook: ", outtakeClawBottom.getPosition());
-            telemetry.addData("latch: ", outtakeLatch.getPosition());
+            //telemetry.addData("latch: ", outtakeLatch.getPosition());
             telemetry.update();
         }
     }
