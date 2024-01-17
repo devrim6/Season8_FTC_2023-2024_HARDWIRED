@@ -247,4 +247,26 @@ public class MeepMeepStorage1 {
                             .splineToLinearHeading(new Pose2d(48,-56,Math.toRadians(0)),Math.toRadians(0))
                             .build()
             );
+    RoadRunnerBotEntity lidi=new DefaultBotBuilder(meepMeep)
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(11.38, -59.19, Math.toRadians(90.00)))
+                           .splineTo(new Vector2d(1.63, -30.01), Math.toRadians(90.00))
+                            .setReversed(true)
+                            .splineTo(new Vector2d(54.36, -34.61), Math.toRadians(0.00))
+                            .setReversed(false)
+                            .splineTo(new Vector2d(30.58, -12.18), Math.toRadians(180.00))
+
+                            /*.splineToLinearHeading(new Pose2d(10.83, -42.47, Math.toRadians(141.34)), Math.toRadians(141.34))
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(50.91, -34.61, Math.toRadians(180.00)), Math.toRadians(180.00))
+                            .setReversed(false)
+                            .splineToLinearHeading(new Pose2d(33.46, -12.56, Math.toRadians(177.07)), Math.toRadians(177.07))
+
+                            .splineToLinearHeading(new Pose2d(-54.55, -12.37, Math.toRadians(183.18)), Math.toRadians(183.18))
+                    */
+                    .build()
+
+
+            );
 }
