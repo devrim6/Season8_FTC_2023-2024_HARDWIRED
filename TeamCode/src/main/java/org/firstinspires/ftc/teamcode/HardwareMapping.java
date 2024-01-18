@@ -67,8 +67,8 @@ public class HardwareMapping {
     public CRServo intakeServoRoller;
     public Servo planeLauncherServo;
 
-    public Servo outtakeLatch, outtakeClawUpper, outtakeClawBottom;
-    public ServoEx outtakePitchLeft, outtakePitchRight, outtakeYaw, outtakeRollLeft, outtakeRollRight;
+    public Servo  outtakeClawUpper, outtakeClawBottom;
+    public ServoEx outtakePitchLeft, outtakePitchRight,  outtakeRollLeft, outtakeRollRight;
 
     public DcMotorEx intakeMotor;
    // public DcMotorEx hangMotor;
@@ -97,10 +97,10 @@ public class HardwareMapping {
         intakeServoRoller = hwMap.get(CRServo.class, "intakeServoRoller");
         outtakePitchLeft = new SimpleServo(hwMap, "outtakePitchLeft", Math.toRadians(0), Math.toRadians(350));
         outtakePitchRight = new SimpleServo(hwMap, "outtakePitchRight", Math.toRadians(0), Math.toRadians(350));
-        outtakeYaw = new SimpleServo(hwMap, "outtakeYaw", Math.toRadians(0), Math.toRadians(90));
+        //outtakeYaw = new SimpleServo(hwMap, "outtakeYaw", Math.toRadians(0), Math.toRadians(90));
         outtakeRollLeft = new SimpleServo(hwMap, "outtakeRollLeft", Math.toRadians(0), Math.toRadians(350));
         outtakeRollRight = new SimpleServo(hwMap, "outtakeRollRight", Math.toRadians(0), Math.toRadians(350));
-        outtakeLatch = hwMap.get(Servo.class, "outtakeLatch");
+        //outtakeLatch = hwMap.get(Servo.class, "outtakeLatch");
         outtakeClawBottom = hwMap.get(Servo.class, "outtakeClawBottom");
         outtakeClawUpper = hwMap.get(Servo.class, "outtakeClawUpper");
         planeLauncherServo = hwMap.get(Servo.class, "planeLauncherServo");
@@ -373,15 +373,15 @@ public class HardwareMapping {
         /**
          * Rotates outtake box 0 or 90 degrees
          */
-        public Action yaw(double angle){
+        /*public Action yaw(double angle){
             return new Action() {
                 boolean init = true;
                 @Override
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     if(init){
-                        outtakeYaw.turnToAngle(angle);
-                        if(angle==DefVal.yaw0) isOuttakeRotated=false;
-                        else if(angle==DefVal.yaw90) isOuttakeRotated=true;
+                        //outtakeYaw.turnToAngle(angle);
+                        //if(angle==DefVal.yaw0) isOuttakeRotated=false;
+                        //else if(angle==DefVal.yaw90) isOuttakeRotated=true;
                         init = false;
                     }
                     return false;
@@ -409,10 +409,10 @@ public class HardwareMapping {
                 public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                     switch(state){
                         case "open":
-                            outtakeLatch.setPosition(DefVal.latchOpen);
+                            //outtakeLatch.setPosition(DefVal.latchOpen);
                             break;
                         case "closed" :
-                            outtakeLatch.setPosition(DefVal.latchClosed);
+                            //outtakeLatch.setPosition(DefVal.latchClosed);
                             break;
                     }
                     return false;

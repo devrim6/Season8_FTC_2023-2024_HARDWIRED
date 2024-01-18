@@ -10,8 +10,8 @@ public class DefVal {
     public static double planeOff = 0.3;
     public static double planeOn = 1;
 
-    public static double latchOpen = 0;
-    public static double latchClosed = 0.5;
+    //public static double latchOpen = 0;
+    //public static double latchClosed = 0.5;
 
     public static double upperHookClosed = 0.20;
     public static double upperHookOpen = 0.05;
@@ -37,8 +37,8 @@ public class DefVal {
     public static double iLevel5 = 0.145;
     public static double iLevel6 = 0.4;
 
-    public static double yaw0 = 0.75;
-    public static double yaw90 = 1.3;
+    //public static double yaw0 = 0.75;
+    //public static double yaw90 = 1.3;
 
     public static double pivot0 = 2.65;
     public static double pivot60 = 7.1;

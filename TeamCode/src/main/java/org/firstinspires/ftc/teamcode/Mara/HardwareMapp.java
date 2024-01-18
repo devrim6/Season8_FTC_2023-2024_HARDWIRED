@@ -4,8 +4,8 @@ import static org.firstinspires.ftc.teamcode.Variables.DefVal.pivot0;
 import static org.firstinspires.ftc.teamcode.Variables.DefVal.pivot60;
 import static org.firstinspires.ftc.teamcode.Variables.DefVal.roll0;
 import static org.firstinspires.ftc.teamcode.Variables.DefVal.roll60;
-import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw0;
-import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw90;
+//import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw0;
+//import static org.firstinspires.ftc.teamcode.Variables.DefVal.yaw90;
 
 import android.graphics.Color;
 
@@ -221,10 +221,10 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "noTurn":
-                        OuttakeTurn90Servo.setPosition(yaw0);
+                        //OuttakeTurn90Servo.setPosition(yaw0);
                         break;
                     case "turn":
-                        OuttakeTurn90Servo.setPosition(yaw90);
+                        //OuttakeTurn90Servo.setPosition(yaw90);
                         break;
                 }
                 return false;

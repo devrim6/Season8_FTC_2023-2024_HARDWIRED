@@ -71,7 +71,7 @@ public class Auto2PixelStangaRed extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
-                                outtake.yaw(0),
+                                //outtake.yaw(0),
                                 outtake.latch("closed"),
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open"),

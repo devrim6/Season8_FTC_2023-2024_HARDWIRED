@@ -22,7 +22,7 @@ public class ActionStorage {
                             outtake.pivot(DefVal.pivot60),
                             outtake.roll(DefVal.roll60)
                     ),
-                    outtake.yaw(DefVal.yaw90),
+                    //outtake.yaw(DefVal.yaw90),
                     outtake.latch("open")
             ),
             intake.sensingOff()
@@ -34,15 +34,15 @@ public class ActionStorage {
                                     outtake.pivot(DefVal.pivot60),
                                     outtake.roll(DefVal.roll60)
                             ),
-                            outtake.yaw(DefVal.yaw90),
+                            //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     ),
                     intake.sensingOff()
             ),
             pixelToGround = new SequentialAction(
                     new ParallelAction(
-                            outtake.latch("closed"),
-                            outtake.yaw(DefVal.yaw0)
+                            outtake.latch("closed")
+                            //outtake.yaw(DefVal.yaw0)
                     ),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot0),

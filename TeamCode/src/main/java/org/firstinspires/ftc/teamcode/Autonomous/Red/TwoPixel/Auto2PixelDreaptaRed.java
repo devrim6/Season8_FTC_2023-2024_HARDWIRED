@@ -71,7 +71,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
-                                outtake.yaw(0),
+                                //outtake.yaw(0),
                                 outtake.latch("closed"),
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open"),
@@ -89,7 +89,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
-                                outtake.yaw(0),
+                                //outtake.yaw(0),
                                 outtake.latch("closed"),
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open"),
@@ -100,6 +100,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                         outtake.roll(DefVal.roll0),
                         outtake.runToPosition("ground")
                 ))
+
                 .build();
         Action TRAJ3_ParkR = drive.actionBuilder(rightBackboardPose)
                 .setReversed(false)
@@ -107,7 +108,7 @@ public class Auto2PixelDreaptaRed extends LinearOpMode {
                 .splineToLinearHeading(new Pose2d(49, -18, Math.toRadians(0)), Math.toRadians(90))
                 .afterDisp(0.1, new SequentialAction(
                         new ParallelAction(
-                                outtake.yaw(0),
+                                //outtake.yaw(0),
                                 outtake.latch("closed"),
                                 outtake.bottomHook("open"),
                                 outtake.upperHook("open"),

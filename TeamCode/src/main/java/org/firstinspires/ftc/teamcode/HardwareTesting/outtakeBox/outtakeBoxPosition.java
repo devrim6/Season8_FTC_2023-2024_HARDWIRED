@@ -31,7 +31,7 @@ public class outtakeBoxPosition extends LinearOpMode {
         outtakePitchRight.turnToAngle(DefVal.pivot0);
         outtakePitchLeft.turnToAngle(DefVal.pivot0);
 
-        outtakeYaw.turnToAngle(DefVal.yaw0);
+        //outtakeYaw.turnToAngle(DefVal.yaw0);
 
         // Outtake box
         outtakeRollLeft.turnToAngle(DefVal.roll0);
@@ -56,8 +56,8 @@ public class outtakeBoxPosition extends LinearOpMode {
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.B)){
                 b=!b;
                 if(b){
-                    outtakeYaw.turnToAngle(DefVal.yaw0);
-                } else outtakeYaw.turnToAngle(DefVal.yaw90);
+                    //outtakeYaw.turnToAngle(DefVal.yaw0);
+                } //else outtakeYaw.turnToAngle(DefVal.yaw90);
             }
             if(gamepadEx.wasJustPressed(GamepadKeys.Button.X)){
                 x=!x;

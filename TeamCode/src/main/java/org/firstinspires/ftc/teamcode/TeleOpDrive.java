@@ -146,10 +146,10 @@ public class TeleOpDrive extends LinearOpMode {
 
         // Init motors/servos/etc
         Actions.runBlocking(new ParallelAction(
-                outtake.yaw(DefVal.yaw0),
+                //outtake.yaw(DefVal.yaw0),
                 outtake.bottomHook("open"), outtake.upperHook("open"),
                 intake.angle(6),
-                outtake.yaw(DefVal.yaw0),
+                //outtake.yaw(DefVal.yaw0),
                 outtake.roll(DefVal.roll0),
                 outtake.pivot(DefVal.pivot0),
                 outtake.latch("closed")
@@ -261,7 +261,7 @@ public class TeleOpDrive extends LinearOpMode {
                     /*|| robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))*/
                 runningActions.add(new SequentialAction(
                     new ParallelAction(
-                            outtake.yaw(DefVal.yaw0),
+                            //outtake.yaw(DefVal.yaw0),
                             outtake.latch("closed")
                     ),
                     new ParallelAction(
