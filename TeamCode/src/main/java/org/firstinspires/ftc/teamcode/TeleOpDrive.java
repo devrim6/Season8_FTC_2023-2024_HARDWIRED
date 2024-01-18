@@ -212,50 +212,6 @@ public class TeleOpDrive extends LinearOpMode {
 
             //Slide controls
             //Driver 1 and 2
-            /*if(robot.gamepad2Ex.isDown(GamepadKeys.Button.DPAD_UP)){
-                leftFront.setPower(1);
-                rightFront.setPower(1);
-                leftBack.setPower(1);
-                rightBack.setPower(1);
-            } else {
-                leftFront.setPower(0);
-                rightFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-            }
-            if(robot.gamepad2Ex.isDown(GamepadKeys.Button.DPAD_DOWN)){
-                leftFront.setPower(-1);
-                rightFront.setPower(-1);
-                leftBack.setPower(-1);
-                rightBack.setPower(-1);
-            } else {
-                leftFront.setPower(0);
-                rightFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-            }
-            if(robot.gamepad2Ex.isDown(GamepadKeys.Button.DPAD_RIGHT)){
-                leftFront.setPower(1);
-                rightFront.setPower(-1);
-                leftBack.setPower(-1);
-                rightBack.setPower(1);
-            } else {
-                leftFront.setPower(0);
-                rightFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-            }
-            if(robot.gamepad2Ex.isDown(GamepadKeys.Button.DPAD_LEFT)){
-                leftFront.setPower(-1);
-                rightFront.setPower(1);
-                leftBack.setPower(1);
-                rightBack.setPower(-1);
-            } else {
-                leftFront.setPower(0);
-                rightFront.setPower(0);
-                leftBack.setPower(0);
-                rightBack.setPower(0);
-            }*/
 
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
                     /*|| robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))*/
@@ -277,7 +233,7 @@ public class TeleOpDrive extends LinearOpMode {
                     new SleepAction(0.5),
                     new ParallelAction(
                             outtake.pivot(DefVal.pivot60),
-                            outtake.roll(DefVal.roll60),
+                             outtake.roll(DefVal.roll60),
                             //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
                     )

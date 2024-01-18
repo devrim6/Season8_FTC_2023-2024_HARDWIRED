@@ -78,8 +78,8 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("up"),
                                 Robot.backboardAlign("backboard")
-                        ),
-                        Robot.turn90Outtake("turn")
+                        )
+                        //Robot.turn90Outtake("turn")
                 ))
                 .build();
 
@@ -252,8 +252,8 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("up"),
                                 Robot.backboardAlign("backboard")
-                        ),
-                        Robot.turn90Outtake("turn")
+                        )
+                        //Robot.turn90Outtake("turn")
                             /*Robot.openOutake("open"),
                             Robot.openOutake("close"),
                             Robot.turnOutake("noTurn"),
@@ -274,7 +274,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         ),
                         //new SleepAction(0.2),
                         Robot.openOuttake("close"),
-                        Robot.turn90Outtake("noTurn"),
+                        //Robot.turn90Outtake("noTurn"),
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("down"),
                                 Robot.backboardAlign("ground")
@@ -318,7 +318,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                     ),*/                                 //Las deschis pentru urmatorii pixeli
                 //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                Robot.turn90Outtake("noTurn"),
+                //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
                         Robot.backboardAlign("ground")
@@ -352,7 +352,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                     ),*/                                  //Las deschis pentru urmatorii pixeli
                 //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                Robot.turn90Outtake("noTurn"),
+                //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
                         Robot.backboardAlign("ground")
@@ -386,7 +386,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                     ),*/
                 //new SleepAction(0.1),
                 Robot.openOuttake("close"),
-                Robot.turn90Outtake("noTurn"),
+                //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
                         Robot.backboardAlign("ground")

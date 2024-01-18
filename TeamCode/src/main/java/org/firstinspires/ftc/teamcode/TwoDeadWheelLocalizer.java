@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.DualNum;
 import com.acmerobotics.roadrunner.Rotation2d;
@@ -20,8 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 @Config
 public final class TwoDeadWheelLocalizer implements Localizer {
     public static class Params {
-        public double parYTicks = 4.33/8192; // y position of the parallel encoder (in tick units)
-        public double perpXTicks = 4.33/8192; // x position of the perpendicular encoder (in tick units)
+        public double parYTicks = 602.69; // y position of the parallel encoder (in tick units)
+        public double perpXTicks = 602.69; // x position of the perpendicular encoder (in tick units)
     }
 
     public static Params PARAMS = new Params();
@@ -79,6 +81,12 @@ public final class TwoDeadWheelLocalizer implements Localizer {
         lastParPos = parPosVel.position;
         lastPerpPos = perpPosVel.position;
         lastHeading = heading;
+
+        telemetry.addData("Par Encoder Pos", parPosVel.position);
+        telemetry.addData("Par Encoder Vel", parPosVel.velocity);
+        telemetry.addData("Perp Encoder Pos", perpPosVel.position);
+        telemetry.addData("Perp Encoder Vel", perpPosVel.velocity);
+        telemetry.update();
 
         return twist;
     }
