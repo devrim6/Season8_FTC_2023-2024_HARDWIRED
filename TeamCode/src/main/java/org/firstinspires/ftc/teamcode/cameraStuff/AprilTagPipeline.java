@@ -32,7 +32,7 @@ public class AprilTagPipeline {
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
                 .build();
 
-    private void detectATags(Pose2d currentPose, TelemetryPacket packet){
+    public void detectATags(Pose2d currentPose, TelemetryPacket packet){
         aprilTagDetections.clear();
         aprilTagDetections = april.getDetections();
         if(aprilTagDetections.size()!=0) getEstimatedPosition(currentPose, packet);
@@ -66,8 +66,12 @@ public class AprilTagPipeline {
         estimatedPose = currentPose;
     }
 
-    public void aprilTagTelemetry(@NonNull Telemetry telemetry, TelemetryPacket packet, Pose2d currentPose){
-        detectATags(currentPose, packet);
+    /**
+     * Make sure to add a .detectATags call before calling this method.
+     * @param telemetry
+     * @param packet
+     */
+    public void aprilTagTelemetry(@NonNull Telemetry telemetry, TelemetryPacket packet){
         telemetry.addData("Nr of April Tags detected: ", aprilTagDetections.size());
         double minDis = 999; // It's never gonna be 999 inches lol
 
@@ -93,8 +97,5 @@ public class AprilTagPipeline {
         telemetry.addLine("Estimated pose x: " + estimatedPose.position.x + "y: " + estimatedPose.position.y);
 
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
-
     }
-
-
 }

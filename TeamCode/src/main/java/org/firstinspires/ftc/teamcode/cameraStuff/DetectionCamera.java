@@ -33,7 +33,7 @@ public class DetectionCamera {
         PIXEL
     }
 
-    private AprilTagPipeline april;
+    AprilTagPipeline april;
 
     private VisionPortal.Builder builder;
     private TfodProcessor pixel;
@@ -95,8 +95,10 @@ public class DetectionCamera {
 
     public void stopCamera(){visionPortal.close();}
 
-    public void aprilTagTelemetry(Telemetry telemetry, TelemetryPacket packet, Pose2d currentPose)
-    {april.aprilTagTelemetry(telemetry, packet, currentPose);}
+    public void aprilTagTelemetry(Telemetry telemetry, TelemetryPacket packet)
+    {april.aprilTagTelemetry(telemetry, packet);}
+
+    public void detectATags(Pose2d currentPose, TelemetryPacket packet){april.detectATags(currentPose, packet);}
 
     public Pose2d getPoseEstimate(){return april.estimatedPose;}
 
