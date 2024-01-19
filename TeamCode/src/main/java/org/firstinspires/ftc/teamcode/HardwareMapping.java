@@ -77,7 +77,7 @@ public class HardwareMapping {
 
     public GamepadEx gamepad1Ex, gamepad2Ex;
 
-    private ColorSensor bottomHookSensor, upperHookSensor;
+    //private ColorSensor bottomHookSensor, upperHookSensor;
 
     HardwareMap hwMap = null;
     public HardwareMapping(){}
@@ -125,8 +125,8 @@ public class HardwareMapping {
 //        hangMotor.setMotorDisable();
 
         /* Sensors */
-        upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
-        bottomHookSensor = ahwMap.get(ColorSensor.class, "bottomHookSensor");
+//        upperHookSensor = ahwMap.get(ColorSensor.class, "upperHookSensor");
+//        bottomHookSensor = ahwMap.get(ColorSensor.class, "bottomHookSensor");
 
         //Plane armed position
         planeLauncherServo.setPosition(DefVal.planeOff);
@@ -152,63 +152,63 @@ public class HardwareMapping {
         intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Takes sensor position, converts RGB to HSV then compares with predetermined values to see
-     * which colour the pixel is, or if there is one at all, then passes the data along to the
-     * call AND switches the LED lights
-     * @param sensor
-     * @return ledState
-     */
-    public ledState checkColorRange(@NonNull String sensor){
-        float[] hsv = new float[3];
-        switch (sensor){
-            case "upper":
-                upperHookSensor.enableLed(true);
-                Color.RGBToHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
-                break;
-            case "bottom":
-                bottomHookSensor.enableLed(true);
-                Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
-                break;
-        }
+//    /**
+//     * Takes sensor position, converts RGB to HSV then compares with predetermined values to see
+//     * which colour the pixel is, or if there is one at all, then passes the data along to the
+//     * call AND switches the LED lights
+//     * @param sensor
+//     * @return ledState
+//     */
+//    public ledState checkColorRange(@NonNull String sensor){
+//        float[] hsv = new float[3];
+//        switch (sensor){
+//            case "upper":
+//                upperHookSensor.enableLed(true);
+//                Color.RGBToHSV(upperHookSensor.red(), upperHookSensor.green(), upperHookSensor.blue(), hsv);
+//                break;
+//            case "bottom":
+//                bottomHookSensor.enableLed(true);
+//                Color.RGBToHSV(bottomHookSensor.red(), bottomHookSensor.green(), bottomHookSensor.blue(), hsv);
+//                break;
+//        }
+//
+//        //        Actions.runBlocking(setLedColour(sensor, state));
+//
+//        return isInBounds(hsv);
+//    }
 
-        //        Actions.runBlocking(setLedColour(sensor, state));
-
-        return isInBounds(hsv);
-    }
-
-    /**
-     * Checks what colour (if any) the inputted hsv belongs to.
-     * @param a
-     */
-    public HardwareMapping.ledState isInBounds(@NonNull float[] a){
-        int[] whiteLower = {SensorValues.WHL,SensorValues.WSL,SensorValues.WVL};
-        int[] whiteUpper = {SensorValues.WHH, SensorValues.WSH, SensorValues.WVH};
-
-        int[] greenLower = {SensorValues.GHL, SensorValues.GSL, SensorValues.GVL};
-        int[] greenUpper = {SensorValues.GHH, SensorValues.GSH, SensorValues.GVH};
-
-        int[] yellowLower = {SensorValues.YHL, SensorValues.YSL, SensorValues.YVL};
-        int[] yellowUpper = {SensorValues.YHH, SensorValues.YSH, SensorValues.YVH};
-
-        int[] purpleLower = {SensorValues.PHL, SensorValues.PSL, SensorValues.PVL};
-        int[] purpleUpper = {SensorValues.PHH, SensorValues.PSH, SensorValues.PVH};
-
-        if((a[0]>=whiteLower[0] && a[0]<=whiteUpper[0])
-                && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])
-                && (a[2]>=whiteLower[2] && a[2]<=whiteUpper[2])) return HardwareMapping.ledState.WHITE;
-        else if((a[0]>=greenLower[0] && a[0]<=greenUpper[0])
-                && (a[1]>=greenLower[1] && a[1]<=greenUpper[1])
-                && (a[2]>=greenLower[2] && a[2]<=greenUpper[2])) return HardwareMapping.ledState.GREEN;
-        else if((a[0]>=yellowLower[0] && a[0]<=yellowUpper[0])
-                && (a[1]>=yellowLower[1] && a[1]<=yellowUpper[1])
-                && (a[2]>=yellowLower[2] && a[2]<=yellowUpper[2])) return HardwareMapping.ledState.YELLOW;
-        else if((a[0]>=purpleLower[0] && a[0]<=purpleUpper[0])
-                && (a[1]>=purpleLower[1] && a[1]<=purpleUpper[1])
-                && (a[2]>=purpleLower[2] && a[2]<=purpleUpper[2])) return HardwareMapping.ledState.PURPLE;
-
-        return HardwareMapping.ledState.OFF;
-    }
+//    /**
+//     * Checks what colour (if any) the inputted hsv belongs to.
+//     * @param a
+//     */
+//    public HardwareMapping.ledState isInBounds(@NonNull float[] a){
+//        int[] whiteLower = {SensorValues.WHL,SensorValues.WSL,SensorValues.WVL};
+//        int[] whiteUpper = {SensorValues.WHH, SensorValues.WSH, SensorValues.WVH};
+//
+//        int[] greenLower = {SensorValues.GHL, SensorValues.GSL, SensorValues.GVL};
+//        int[] greenUpper = {SensorValues.GHH, SensorValues.GSH, SensorValues.GVH};
+//
+//        int[] yellowLower = {SensorValues.YHL, SensorValues.YSL, SensorValues.YVL};
+//        int[] yellowUpper = {SensorValues.YHH, SensorValues.YSH, SensorValues.YVH};
+//
+//        int[] purpleLower = {SensorValues.PHL, SensorValues.PSL, SensorValues.PVL};
+//        int[] purpleUpper = {SensorValues.PHH, SensorValues.PSH, SensorValues.PVH};
+//
+//        if((a[0]>=whiteLower[0] && a[0]<=whiteUpper[0])
+//                && (a[1]>=whiteLower[1] && a[1]<=whiteUpper[1])
+//                && (a[2]>=whiteLower[2] && a[2]<=whiteUpper[2])) return HardwareMapping.ledState.WHITE;
+//        else if((a[0]>=greenLower[0] && a[0]<=greenUpper[0])
+//                && (a[1]>=greenLower[1] && a[1]<=greenUpper[1])
+//                && (a[2]>=greenLower[2] && a[2]<=greenUpper[2])) return HardwareMapping.ledState.GREEN;
+//        else if((a[0]>=yellowLower[0] && a[0]<=yellowUpper[0])
+//                && (a[1]>=yellowLower[1] && a[1]<=yellowUpper[1])
+//                && (a[2]>=yellowLower[2] && a[2]<=yellowUpper[2])) return HardwareMapping.ledState.YELLOW;
+//        else if((a[0]>=purpleLower[0] && a[0]<=purpleUpper[0])
+//                && (a[1]>=purpleLower[1] && a[1]<=purpleUpper[1])
+//                && (a[2]>=purpleLower[2] && a[2]<=purpleUpper[2])) return HardwareMapping.ledState.PURPLE;
+//
+//        return HardwareMapping.ledState.OFF;
+//    }
 
 //    /**
 //     *  Takes the position of the led and the colour it needs to be set at then passes it along
@@ -597,78 +597,78 @@ public class HardwareMapping {
         double currentTime1 = System.currentTimeMillis(), currentTime2 = System.currentTimeMillis();
         Outtake outtake = new Outtake();
 
-        /**
-         * Starts the pixel sensing system. If it detects two pixels inside the outtake box for x amount of seconds
-         * it closes the hooks and reverses the intake for y seconds to filter out a potential third pixel.
-         * This is an action because we want to save on loop times by asynchronously running it in a trajectory.
-         * @return isSensingOnline status
-         */
-        public Action sensingOn(){
-            isIntakePowered = false;
-            bottomClosed=false; upperClosed=false;
-            //currentTime1=currentTime2=System.currentTimeMillis();
-            return new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    ledState upperSensorState, bottomSensorState;
-                    upperSensorState = checkColorRange("upper");
-                    bottomSensorState = checkColorRange("bottom");
-                    boolean upper = upperSensorState.equals(ledState.OFF), bottom = bottomSensorState.equals(ledState.OFF);
-
-                    if(!upper) {
-                        if(System.currentTimeMillis()> currentTime1 + 500){ // No false positives (maybe)
-                            Actions.runBlocking(outtake.upperHook("closed"));
-                            a = true;
-                            upperClosed=true;
-                        }
-                    } else{
-                        currentTime1 = System.currentTimeMillis();
-                        upperClosed = false;
-                    }
-
-                    if(!bottom) {
-                        if(System.currentTimeMillis()> currentTime2 + 500){
-                            Actions.runBlocking(outtake.bottomHook("closed"));
-                            a = true;
-                            bottomClosed = true;
-                        }
-                    } else{
-                        currentTime2 = System.currentTimeMillis();
-                        bottomClosed = false;
-                    }
-
-                    if(bottomClosed && upperClosed){
-                        Actions.runBlocking(new SequentialAction(
-                                new ParallelAction(
-                                        outtake.bottomHook("closed"),
-                                        outtake.upperHook("closed")
-                                ),
-                                reverse()
-                        ));                                                     // Reverse intake to filter out
-                        isIntakePowered = true;                                 // potential third pixel
-                        TeleOpDrive.isIntakePowered=false;
-                        a = true;
-                        return false;                                           // todo: implement beam break
-                    }
-
-                    return !isIntakePowered;
-                }
-            };
-        }
-        /**
-         * Turns off the pixel sensing system and sensor lights.
-         */
-        public Action sensingOff(){
-            return new Action() {
-                @Override
-                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                    isIntakePowered=true;                   // This is an action because we need to use it inside a trajectory
-                    upperHookSensor.enableLed(false);
-                    bottomHookSensor.enableLed(false);
-                    return false;
-                }
-            };
-        }
+//        /**
+//         * Starts the pixel sensing system. If it detects two pixels inside the outtake box for x amount of seconds
+//         * it closes the hooks and reverses the intake for y seconds to filter out a potential third pixel.
+//         * This is an action because we want to save on loop times by asynchronously running it in a trajectory.
+//         * @return isSensingOnline status
+//         */
+//        public Action sensingOn(){
+//            isIntakePowered = false;
+//            bottomClosed=false; upperClosed=false;
+//            //currentTime1=currentTime2=System.currentTimeMillis();
+//            return new Action() {
+//                @Override
+//                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                    ledState upperSensorState, bottomSensorState;
+//                    upperSensorState = checkColorRange("upper");
+//                    bottomSensorState = checkColorRange("bottom");
+//                    boolean upper = upperSensorState.equals(ledState.OFF), bottom = bottomSensorState.equals(ledState.OFF);
+//
+//                    if(!upper) {
+//                        if(System.currentTimeMillis()> currentTime1 + 500){ // No false positives (maybe)
+//                            Actions.runBlocking(outtake.upperHook("closed"));
+//                            a = true;
+//                            upperClosed=true;
+//                        }
+//                    } else{
+//                        currentTime1 = System.currentTimeMillis();
+//                        upperClosed = false;
+//                    }
+//
+//                    if(!bottom) {
+//                        if(System.currentTimeMillis()> currentTime2 + 500){
+//                            Actions.runBlocking(outtake.bottomHook("closed"));
+//                            a = true;
+//                            bottomClosed = true;
+//                        }
+//                    } else{
+//                        currentTime2 = System.currentTimeMillis();
+//                        bottomClosed = false;
+//                    }
+//
+//                    if(bottomClosed && upperClosed){
+//                        Actions.runBlocking(new SequentialAction(
+//                                new ParallelAction(
+//                                        outtake.bottomHook("closed"),
+//                                        outtake.upperHook("closed")
+//                                ),
+//                                reverse()
+//                        ));                                                     // Reverse intake to filter out
+//                        isIntakePowered = true;                                 // potential third pixel
+//                        TeleOpDrive.isIntakePowered=false;
+//                        a = true;
+//                        return false;                                           // todo: implement beam break
+//                    }
+//
+//                    return !isIntakePowered;
+//                }
+//            };
+//        }
+//        /**
+//         * Turns off the pixel sensing system and sensor lights.
+//         */
+//        public Action sensingOff(){
+//            return new Action() {
+//                @Override
+//                public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+//                    isIntakePowered=true;                   // This is an action because we need to use it inside a trajectory
+//                    upperHookSensor.enableLed(false);
+//                    bottomHookSensor.enableLed(false);
+//                    return false;
+//                }
+//            };
+//        }
 
         public void setCurrentHook(boolean aa){
             a=aa;

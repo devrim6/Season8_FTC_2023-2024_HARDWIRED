@@ -24,8 +24,8 @@ public class ActionStorage {
                     ),
                     //outtake.yaw(DefVal.yaw90),
                     outtake.latch("open")
-            ),
-            intake.sensingOff()
+            )
+           // intake.sensingOff()
     ),
             pixelToMiddle = new ParallelAction(
                     new SequentialAction(
@@ -36,8 +36,8 @@ public class ActionStorage {
                             ),
                             //outtake.yaw(DefVal.yaw90),
                             outtake.latch("open")
-                    ),
-                    intake.sensingOff()
+                    )
+                //    intake.sensingOff()
             ),
             pixelToGround = new SequentialAction(
                     new ParallelAction(
