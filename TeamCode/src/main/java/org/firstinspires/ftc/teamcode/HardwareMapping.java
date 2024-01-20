@@ -105,8 +105,10 @@ public class HardwareMapping {
         outtakeClawUpper = hwMap.get(Servo.class, "outtakeClawUpper");
         planeLauncherServo = hwMap.get(Servo.class, "planeLauncherServo");
 
-        outtakePitchLeft.setInverted(true);
-        outtakeRollLeft.setInverted(true);
+        outtakePitchLeft.setInverted(false);
+        outtakePitchRight.setInverted(true);
+        outtakeRollLeft.setInverted(false);
+        outtakeRollRight.setInverted(true );
         intakeServoRight.setDirection(Servo.Direction.REVERSE);
 
         /* Motors */
@@ -118,6 +120,7 @@ public class HardwareMapping {
         slideMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotorLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         slideMotorLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 //        hangMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         slideMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         slideMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -147,9 +150,7 @@ public class HardwareMapping {
         slideMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         slideMotorRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
 //    /**
