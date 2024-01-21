@@ -122,12 +122,12 @@ public class TeleOpMara extends LinearOpMode {
                 if (!isXPressed) {                                 //Directia intake-ului in functie de cati pixeli exista
                     isXPressed = true;
                     runningActions.add(new SequentialAction(
-                            Robot.Intake("in")
+                            Robot.intakeRoller("in")
                     ));
                 } else {
                     isXPressed = false;
                     runningActions.add(new SequentialAction(
-                            Robot.Intake("out ")
+                            Robot.intakeRoller("out ")
                     ));
                 }
             }
@@ -149,7 +149,7 @@ public class TeleOpMara extends LinearOpMode {
             if(Robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.B)){   //Pentru hang
                 runningActions.add(Robot.hang("up"));
             }
-            if(Robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A) && misumMotorLeft.equals(LiftGROUND) && misumMotorRight.equals(LiftGROUND)){
+            /*if(Robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.A) && misumMotorLeft.equals(LiftGROUND) && misumMotorRight.equals(LiftGROUND)){
                 if(!isAPressed){                                           //Turn outake la 90 de grade
                     isAPressed=true;
                     runningActions.add(Robot.turn90Outtake("turn"));
@@ -157,8 +157,8 @@ public class TeleOpMara extends LinearOpMode {
                     isAPressed=false;
                     runningActions.add(Robot.turn90Outtake("noTurn"));
                 }
-            }
-            if(Robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A)){   //Open/Close outake
+            }*/
+            /*if(Robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.A)){   //Open/Close outake
                 if(!isAPressedforOpenOuttake){
                     isAPressedforOpenOuttake=true;
                     runningActions.add(Robot.openOuttake("open"));
@@ -166,7 +166,7 @@ public class TeleOpMara extends LinearOpMode {
                     isAPressedforOpenOuttake=false;
                     runningActions.add(Robot.openOuttake("close"));
                 }
-            }
+            }*/
             if(Robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON) || Robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)){
                 runningActions.add(Robot.launchPlane());           //Launch plane
             }

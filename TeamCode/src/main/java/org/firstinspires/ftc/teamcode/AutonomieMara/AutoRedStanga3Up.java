@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(name = "AutoRedStanga3Up")
 public class AutoRedStanga3Up extends LinearOpMode {
-    //implementat senzori de culoare, daca vede pixel (culoare) timp de 0.5 secunde, atunci sa coboare hook-ul
 
     HardwareMapp Robot = new HardwareMapp();
     private MecanumDrive drive;
@@ -50,7 +49,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 .afterDisp(1, new SequentialAction(  //1 inch = 2,54 cm
                         new ParallelAction(
                                 Robot.bottomHook("open"),
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("open"),
                                 Robot.maturiceLevel("Level5")
                         )
@@ -77,7 +76,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         //new SleepAction(0.1),
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("up"),
-                                Robot.backboardAlign("backboard")
+                                Robot.outtakeRoll("backboard")  //daca nu merge asa fac una dupa alta actiunile
                         )
                         //Robot.turn90Outtake("turn")
                 ))
@@ -100,7 +99,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(  //40 inch, ca sa treaca de truss
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level6")
                                 //Robot.maturiceOpen_Close("off")
@@ -124,7 +123,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level5")
                                 //Robot.maturiceOpen_Close("off")
@@ -148,7 +147,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level4")
                                 //Robot.maturiceOpen_Close("off")
@@ -172,7 +171,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level3")
                                 //Robot.maturiceOpen_Close("off")
@@ -196,7 +195,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level2")
                                 //Robot.maturiceOpen_Close("off")
@@ -220,7 +219,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))*/
                 .afterDisp(40,new SequentialAction(
                         new ParallelAction(
-                                Robot.Intake("in"),
+                                Robot.intakeRoller("in"),
                                 Robot.maturiceOpen_Close("in"),
                                 Robot.maturiceLevel("Level1")
                                 //Robot.maturiceOpen_Close("off")
@@ -251,7 +250,7 @@ public class AutoRedStanga3Up extends LinearOpMode {
                         //new SleepAction(0.1),
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("up"),
-                                Robot.backboardAlign("backboard")
+                                Robot.outtakeRoll("backboard")
                         )
                         //Robot.turn90Outtake("turn")
                             /*Robot.openOutake("open"),
@@ -273,16 +272,16 @@ public class AutoRedStanga3Up extends LinearOpMode {
                                 Robot.upperHook("open")
                         ),
                         //new SleepAction(0.2),
-                        Robot.openOuttake("close"),
+                        //Robot.openOuttake("close"),
                         //Robot.turn90Outtake("noTurn"),
                         new ParallelAction(
                                 Robot.turnOuttakeUp_Down("down"),
-                                Robot.backboardAlign("ground")
+                                Robot.outtakeRoll("ground")
                         ),
                         //new SleepAction(0.1),
                         new ParallelAction(
                                 Robot.maturiceOpen_Close("off"),
-                                Robot.Intake("off"),
+                                Robot.intakeRoller("off"),
                                 Robot.maturiceLevel("Level1"),
                                 Robot.misumHeight("GROUND")
                         )
@@ -301,11 +300,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 Robot.bottomHook("close"),  //Pixelul de jos (in cel de sus este deja un pixel)
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
-                        Robot.Intake("off")   //Daca ia prea mult timp bag urmatoarea traiectorie in ParallelAction
+                        Robot.intakeRoller("off")   //Daca ia prea mult timp bag urmatoarea traiectorie in ParallelAction
                 ),
 
                 TrajToBackboardRight,
-                Robot.openOuttake("open"),
+                //Robot.openOuttake("open"),
                 //new SleepAction(0.1),
                 new ParallelAction(
                         Robot.upperHook("open"),
@@ -317,11 +316,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                             Robot.hook2("close")
                     ),*/                                 //Las deschis pentru urmatorii pixeli
                 //new SleepAction(0.1),
-                Robot.openOuttake("close"),
+                //Robot.openOuttake("close"),
                 //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
-                        Robot.backboardAlign("ground")
+                        Robot.outtakeRoll("ground")
                 ),
                 //new SleepAction(0.1),
                 //new SleepAction(0.1),
@@ -335,11 +334,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ),
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
-                        Robot.Intake("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
+                        Robot.intakeRoller("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
                 ),
 
                 TrajToBackboardLeft,
-                Robot.openOuttake("open"),
+                //Robot.openOuttake("open"),
                 //new SleepAction(0.1),
                 new ParallelAction(
                         Robot.upperHook("open"),
@@ -351,11 +350,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                             Robot.hook2("close")
                     ),*/                                  //Las deschis pentru urmatorii pixeli
                 //new SleepAction(0.1),
-                Robot.openOuttake("close"),
+                //Robot.openOuttake("close"),
                 //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
-                        Robot.backboardAlign("ground")
+                        Robot.outtakeRoll("ground")
                 ),
                 //new SleepAction(0.1),
                 //new SleepAction(0.1),
@@ -369,11 +368,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ),
                 new ParallelAction(
                         Robot.maturiceOpen_Close("off"),
-                        Robot.Intake("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
+                        Robot.intakeRoller("off")      //Daca ia prea mult timp bag actiunile astea mai sus in parallelAction
                 ),
 
                 TrajToBackboardLeft,
-                Robot.openOuttake("open"),
+                //Robot.openOuttake("open"),
                 //new SleepAction(0.1),
                 new ParallelAction(
                         Robot.upperHook("open"),
@@ -385,11 +384,11 @@ public class AutoRedStanga3Up extends LinearOpMode {
                             Robot.hook2("close")
                     ),*/
                 //new SleepAction(0.1),
-                Robot.openOuttake("close"),
+                //Robot.openOuttake("close"),
                 //Robot.turn90Outtake("noTurn"),
                 new ParallelAction(
                         Robot.turnOuttakeUp_Down("down"),
-                        Robot.backboardAlign("ground")
+                        Robot.outtakeRoll("ground")
                 ),
                 //new SleepAction(0.1),
                 //new SleepAction(0.1),

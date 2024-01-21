@@ -52,7 +52,7 @@ public class HardwareMapp {
     public enum LEDColor{
         Purple, //red
         Green,  //green
-        Yellow, //between red & green(amber)
+        Yellow, //between red & green
         White, //blinking
         None //none
     }
@@ -128,16 +128,16 @@ public class HardwareMapp {
             }
         };
     }
-    public Action Intake(String stare){     //actiune pentru intake (roller)
+    public Action intakeRoller(String stare){     //actiune pentru intake (roller)
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "in":
-                        intakeCRServo.setPower(1);
+                        intakeCRServo.setPower(DefVal.intakeRollerPower);
                         break;
                     case "out":
-                        intakeCRServo.setPower(-1);
+                        intakeCRServo.setPower(-DefVal.intakeRollerPower);
                         break;
                     case "off":
                         intakeCRServo.setPower(0);
@@ -147,7 +147,7 @@ public class HardwareMapp {
             }
         };
     }
-    public Action backboardAlign(String stare){
+    public Action outtakeRoll(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -198,7 +198,7 @@ public class HardwareMapp {
         };
     }
 
-    public Action openOuttake(String stare){ //deschis/inchis cutie outake
+    /*public Action openOuttake(String stare){ //deschis/inchis cutie outake
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -213,9 +213,9 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
+    }*/
 
-    public Action turn90Outtake(String stare){
+    /*public Action turn90Outtake(String stare){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -230,7 +230,7 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
+    }*/
 
     public Action maturiceOpen_Close(String stare){
         return new Action() {
@@ -238,10 +238,10 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare) {
                     case "in":
-                        intakeMotor.setPower(1);
+                        intakeMotor.setPower(DefVal.intakeMotorPower);
                         break;
                     case "out":
-                        intakeMotor.setPower(-1);
+                        intakeMotor.setPower(-DefVal.intakeMotorPower);
                         break;
                     case "off":
                         intakeMotor.setPower(0);
@@ -280,7 +280,7 @@ public class HardwareMapp {
             }
         };
     }
-    float[] hsvValues = new float[3];
+    /*float[] hsvValues = new float[3];
     Scalar detectedColorHSV = new Scalar(hsvValues[0], hsvValues[1], hsvValues[2]);
 
     public static class ColorRange{
@@ -300,8 +300,8 @@ public class HardwareMapp {
                 new Scalar(92,8,4), //Valoare minima HSV pentru alb
                 new Scalar(135,24,41) //Valoare maxima HSV pentru alb
         };
-    }
-    public LEDColor ColorDetected(Scalar targetColor, Scalar[] colorRange){
+    }*/
+    /*public LEDColor ColorDetected(Scalar targetColor, Scalar[] colorRange){
         ColorRange colorRangeDet=new ColorRange();
         if(detectedColorHSV.val[0] >= colorRangeDet.greenColorRange[0].val[0] && detectedColorHSV.val[0] <= colorRangeDet.greenColorRange[1].val[0]){
             //vede culoare verde
@@ -320,9 +320,9 @@ public class HardwareMapp {
             return LEDColor.Purple;
         }
         return LEDColor.None;
-    }
+    }*/
 
-    public Action LED(String led,String color){
+    /*public Action LED(String led,String color){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -340,9 +340,9 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
+    }*/
 
-    public Action LEDforDrivers(String stare,DigitalChannel LED1,DigitalChannel LED2){
+    /*public Action LEDforDrivers(String stare,DigitalChannel LED1,DigitalChannel LED2){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -365,9 +365,9 @@ public class HardwareMapp {
                 return false;
             }
         };
-    }
+    }*/
 
-    public Action WhitePixelBlinking(DigitalChannel LED1, DigitalChannel LED2){
+    /*public Action WhitePixelBlinking(DigitalChannel LED1, DigitalChannel LED2){
         return new Action() {
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
@@ -384,7 +384,7 @@ public class HardwareMapp {
                 return true;
             }
         };
-    }
+    }*/
 
     public Action misumHeight(String stare){
         return new Action() {
@@ -419,9 +419,9 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "close":
-                        servoBottomHook.setPosition(0.5);
+                        servoBottomHook.setPosition(DefVal.bottomHookClosed);
                     case "open":
-                        servoBottomHook.setPosition(0);
+                        servoBottomHook.setPosition(DefVal.bottomHookOpen);
                 }
                 return false;
             }
@@ -434,9 +434,9 @@ public class HardwareMapp {
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
                 switch (stare){
                     case "close":
-                        servoUpperHook.setPosition(0.5);
+                        servoUpperHook.setPosition(DefVal.upperHookClosed);
                     case "open":
-                        servoUpperHook.setPosition(0);
+                        servoUpperHook.setPosition(DefVal.upperHookOpen);
                 }
                 return false;
             }
