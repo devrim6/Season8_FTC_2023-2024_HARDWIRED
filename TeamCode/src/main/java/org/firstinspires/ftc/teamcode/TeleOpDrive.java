@@ -186,9 +186,9 @@ public class TeleOpDrive extends LinearOpMode {
                 case TELEOP:
                     currentVelPose = new PoseVelocity2d( // Slowdown by pressing right trigger, is gradual
                             new Vector2d(
-                                    -gamepad2.left_stick_y/(1+triggerSlowdown)/1.5,
-                                    -gamepad2.left_stick_x/(1+triggerSlowdown)/1.5),
-                            -gamepad2.right_stick_x/(1+triggerSlowdown*3)/1.5
+                                    -gamepad2.left_stick_y/(1+triggerSlowdown),
+                                    -gamepad2.left_stick_x/(1+triggerSlowdown)),
+                            -gamepad2.right_stick_x/(1+triggerSlowdown*3)
                     );
                     break;
                 case HEADING_LOCK:
@@ -394,7 +394,7 @@ public class TeleOpDrive extends LinearOpMode {
             //Plane and hanging, only works if 50s have passed since teleop started, might be a pain to troubleshoot!!!!!
             if(robot.gamepad1Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)
                 /*|| robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.RIGHT_STICK_BUTTON)*/){
-                if(System.currentTimeMillis() > startTime + DefVal.endgameTime) runningActions.add(robot.launchPlane());
+                /*if(System.currentTimeMillis() > startTime + DefVal.endgameTime)*/ runningActions.add(robot.launchPlane());
             }
 //            if(robot.gamepad2Ex.wasJustPressed(GamepadKeys.Button.B)){
 //                if(System.currentTimeMillis() > startTime + DefVal.endgameTime){
