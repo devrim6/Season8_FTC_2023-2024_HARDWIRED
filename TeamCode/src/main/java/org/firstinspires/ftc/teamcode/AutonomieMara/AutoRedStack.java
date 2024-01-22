@@ -13,18 +13,22 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Mara.HardwareMapp;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.cameraStuff.cameraHW;
 
-@Autonomous(name = "AutoRedStanga3Up")
-public class AutoRedStanga3Up extends LinearOpMode {
-
+@Autonomous(name = "AutoRedStack")
+public class AutoRedStack extends LinearOpMode {
+    //Robotul de langa stack merge pe sus, cel de langa backboard pe jos
     HardwareMapp Robot = new HardwareMapp();
     private MecanumDrive drive;
     private Pose2d cPose;
+    cameraHW camera = new cameraHW();
+    String elementPosition="Middle";
     @Override
     public void runOpMode() throws InterruptedException {
 
-
         Robot.init(hardwareMap);
+        camera.initTeamPropCamera("RED");
+        elementPosition=camera.isPointInsideRect();
         //Robot.gamepadInit(gamepad1, gamepad2);
 
         Pose2d firstPose=new Pose2d(-34.5,-58,90);
@@ -39,6 +43,29 @@ public class AutoRedStanga3Up extends LinearOpMode {
         Action TrajRightLane = drive.actionBuilder(cPose)  //Traiectorie pana la linia din dreapta
                 .setReversed(false)
                 .splineToLinearHeading(new Pose2d(-29, -33, Math.toRadians(60)), Math.toRadians(60))
+                .build();
+
+        cPose=firstPose;
+
+        Action TrajMiddleLane = drive.actionBuilder(cPose)
+                .splineToLinearHeading(new Pose2d(-35,-33,Math.toRadians(90)),Math.toRadians(90))
+                //nsh daca trebe si astea
+                //.waitSeconds(0.7)
+                .setReversed(true)
+                .splineToLinearHeading(new Pose2d(-35,-42,Math.toRadians(90)),Math.toRadians(90))
+                .build();
+
+        cPose=firstPose;
+
+        Action TrajLeftLane = drive.actionBuilder(cPose)
+                .setReversed(false)
+                .splineToLinearHeading(new Pose2d(-39,-36,Math.toRadians(120)),Math.toRadians(90))
+                //nsh daca trebe si asta
+                //.waitSeconds(0.2)
+                //.setReversed(true)
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(-37,-45,Math.toRadians(90)),Math.toRadians(90))
+                .setReversed(false)
                 .build();
 
         cPose=RightLane;
@@ -288,12 +315,31 @@ public class AutoRedStanga3Up extends LinearOpMode {
                 ))
                 .build();
 
+        camera.initTeamPropCamera("RED");
+        elementPosition=camera.isPointInsideRect();
+
         waitForStart();
+
+        switch (elementPosition){
+            case "Middle":  //daca ii middle,atunci merg la linia din mijloc, dupa merg la backboard mijloc, apoi depinde sus/jos
+                Actions.runBlocking(new SequentialAction(
+                        TrajMiddleLane
+                ));
+
+            case "Left":    //daca ii left,atunci merg la linia din stanga, dupa merg la backboard stanga, apoi depinde sus/jos
+                Actions.runBlocking(new SequentialAction(
+                        TrajLeftLane
+                ));
+
+            case "Right":   //daca ii right,atunci merg la linia din dreapta, dupa merg la backboard dreapta, apoi depinde sus/jos
+                Actions.runBlocking(new SequentialAction(
+                        TrajRightLane
+                ));
+
+        }
+
         Actions.runBlocking(new SequentialAction( //Face actiunile una dupa cealalta
                 Robot.upperHook("close"), //pixelul din cuva
-
-                TrajRightLane,
-                //new SleepAction(0.1),
 
                 TrajLeftStack,
                 new SleepAction(0.7),    // Astept sa ia pixel-poate mai mult trebuie sa stea?

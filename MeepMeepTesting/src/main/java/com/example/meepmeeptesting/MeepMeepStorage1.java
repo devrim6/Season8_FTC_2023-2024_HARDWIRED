@@ -372,6 +372,38 @@ public class MeepMeepStorage1 {
                                     .splineToLinearHeading(new Pose2d(49, -19, Math.toRadians(0)), Math.toRadians(90))
                                     .build()
             );
-
-
+    RoadRunnerBotEntity LinieMijloc=new DefaultBotBuilder(meepMeep)    //Linie mijloc
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
+                            .splineToLinearHeading(new Pose2d(-35,-33,Math.toRadians(90)),Math.toRadians(90))
+                            .waitSeconds(0.7)
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-35,-42,Math.toRadians(90)),Math.toRadians(90))
+                            .build()
+            );
+    RoadRunnerBotEntity LinieStanga=new DefaultBotBuilder(meepMeep)    //Linie stanga
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
+                            .setReversed(false)
+                            .splineToLinearHeading(new Pose2d(-39,-36,Math.toRadians(120)),Math.toRadians(90))
+                            .waitSeconds(0.2)
+                            //.setReversed(true)
+                            .setTangent(Math.toRadians(90))
+                            .splineToLinearHeading(new Pose2d(-37,-45,Math.toRadians(90)),Math.toRadians(90))
+                            .setReversed(false)
+                            .build()
+            );
+    RoadRunnerBotEntity LinieDreapta=new DefaultBotBuilder(meepMeep)    //Linie dreapta
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
+                            .setReversed(false)
+                            .splineToLinearHeading(new Pose2d(-29, -33, Math.toRadians(60)), Math.toRadians(60))
+                            .waitSeconds(0.2)
+                            .setReversed(true)
+                            .splineToLinearHeading(new Pose2d(-40,-48,Math.toRadians(0)),Math.toRadians(180))
+                            .build()
+            );
 }
