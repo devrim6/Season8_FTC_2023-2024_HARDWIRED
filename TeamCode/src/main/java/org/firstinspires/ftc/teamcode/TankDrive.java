@@ -53,12 +53,12 @@ import java.util.List;
 public final class TankDrive {
     public static class Params {
         // drive model parameters
-        public double inPerTick = 0;
-        public double trackWidthTicks = 0;
+        public double inPerTick = 0.00053594;
+        public double trackWidthTicks =21179.3680618507;
 
         // feedforward parameters (in tick units)
-        public double kS = 0;
-        public double kV = 0;
+        public double kS = 1.2059941149018178;
+        public double kV = 0.00007872075028969054;
         public double kA = 0;
 
         // path profile parameters (in inches)

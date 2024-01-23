@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.Mara.HardwareMapp;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.cameraStuff.cameraHW;
 
-@Autonomous(name = "AutoRedStack")
+@Autonomous(name = "AutoTestRedStack")
 public class AutoTestRedStack extends LinearOpMode {
     //Robotul de langa stack merge pe sus, cel de langa backboard pe jos
     //Nu ia pixel prima oare cand il lasa pe cel mov jos
