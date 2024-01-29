@@ -406,4 +406,26 @@ public class MeepMeepStorage1 {
                             .splineToLinearHeading(new Pose2d(-40,-48,Math.toRadians(0)),Math.toRadians(180))
                             .build()
             );
+
+    RoadRunnerBotEntity TEST=new DefaultBotBuilder(meepMeep)
+            .setConstraints(45, 50, Math.toRadians(180), Math.toRadians(180), 15.1)
+            .followTrajectorySequence(driveShim ->
+                    driveShim.trajectorySequenceBuilder(new Pose2d(-34.5, -58 , Math.toRadians(90)))
+                            .setReversed(false)
+                            .splineToLinearHeading(new Pose2d(-41,-36,Math.toRadians(120)),Math.toRadians(90))
+                            .setTangent(Math.toRadians(-90))
+                            //robotul este in pozitia principala
+                            .splineToLinearHeading(new Pose2d(-34.5,-58,Math.toRadians(90)),Math.toRadians(-90))
+                            .waitSeconds(0.1)
+                            .setTangent(Math.toRadians(90))
+                            .splineToLinearHeading(new Pose2d(-67,-40,Math.toRadians(180)),Math.toRadians(90))
+                            .setTangent(Math.toRadians(-90))
+                            .splineToLinearHeading(new Pose2d(-34.5,-58,Math.toRadians(180)),Math.toRadians(-90))
+                            .setTangent(Math.toRadians(0))
+                            .splineToLinearHeading(new Pose2d(40,-58,Math.toRadians(180)),Math.toRadians(0))
+                            //parcare
+                            //.setTangent(Math.toRadians(180))
+                            //.splineToLinearHeading(new Pose2d(-80,-54,Math.toRadians(90)),Math.toRadians(180))
+                            .build()
+            );
 }

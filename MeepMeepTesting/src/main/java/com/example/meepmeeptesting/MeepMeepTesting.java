@@ -10,7 +10,7 @@ public class MeepMeepTesting {
         robot1.meepMeep.setBackground(MeepMeep.Background.FIELD_CENTERSTAGE_JUICE_DARK)
                 .setDarkMode(true)
                 .setBackgroundAlpha(0.95f)
-                .addEntity(robot1.LinieDreapta)
+                .addEntity(robot1.TEST)
                 .start();
 
                 //.start();
